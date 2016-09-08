@@ -14,11 +14,14 @@
 
 static void error_callback(int error, const char* description)
 {
+	(void)error;
 	fprintf(stderr, "Error: %s\n", description);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	(void)scancode;
+	(void)mods;
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
@@ -53,14 +56,16 @@ static void mouse_click_callback(GLFWwindow *win, int button, int action, int mo
 	(void)win;
 	(void)action;
 	(void)mods;
+	(void)button;
 	if (action == 1)
-		mouse.y = 1;
+		mouse.z = 1;
 	else
-		mouse.y = 0;
+		mouse.z = 0;
 }
 
 static void mouse_scroll_callback(GLFWwindow *win, double xOffset, double yOffset)
 {
+	(void)win;
 	scroll.x += xOffset;
 	scroll.y += yOffset;
 
@@ -82,6 +87,7 @@ static void mouse_scroll_callback(GLFWwindow *win, double xOffset, double yOffse
 
 static void resize_callback(GLFWwindow *win, int width, int height)
 {
+	(void)win;
 	window.x = width;
 	window.y = height;
 }
@@ -89,7 +95,6 @@ static void resize_callback(GLFWwindow *win, int width, int height)
 GLFWwindow	*init(char *name)
 {
 	GLFWwindow *win;
-	GLuint		vertex_buffer;
 
 	//GLFW
 	glfwSetErrorCallback(error_callback);

@@ -68,15 +68,35 @@ char		*getFileSource(int fd)
 	return ret;
 }
 
-GLuint		CompileShaderFragment(int fd, bool fatal)
+char		**getShaderFragmentSources(int *fds, int *count)
+{
+	int		i;
+	char	**ret;
+
+	i = 0;
+	while (fds[i])
+		i++;
+	ret = (char **)malloc(sizeof(char *) * (i + 2));
+	ret[0] = (char *)fragment_shader_text;
+	i = 1;
+	while (*fds)
+		ret[i++] = getFileSource(*fds++);
+	ret[i] = NULL;
+	*count = i;
+	return ret;
+}
+
+GLuint		CompileShaderFragments(int *fds, bool fatal)
 {
 	GLuint		ret;
-	const char	*srcs[] = {fragment_shader_text, getFileSource(fd)};
+	char		**srcs;
+	int			src_count;
 
+	srcs = getShaderFragmentSources(fds, &src_count);
 	if (srcs[1] == NULL)
 		return (0);
 	ret = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(ret, 2, srcs, NULL);
+	glShaderSource(ret, src_count, (const char * const *)srcs, NULL);
 	glCompileShader(ret);
 	checkCompilation(ret, fatal);
 	return (ret);
@@ -93,12 +113,12 @@ GLuint		CompileShaderVertex(bool fatal)
 	return (ret);
 }
 
-GLuint		createProgram(int fd, bool fatal)
+GLuint		createProgram(int *fds, bool fatal)
 {
 	GLuint		program;
 
 	GLuint		shaderVertex = CompileShaderVertex(fatal);
-	GLuint		shaderFragment = CompileShaderFragment(fd, fatal);
+	GLuint		shaderFragment = CompileShaderFragments(fds, fatal);
 
 	if (shaderVertex == 0 || shaderFragment == 0)
 		return (0);

@@ -120,10 +120,10 @@ extern vec4		fractalWindow;
 #endif
 extern int			keys;
 extern int			input_pause;
-extern long			lastModifiedFile;
+extern long			lastModifiedFile[0xF0];
 
 GLFWwindow		*init(char *fname);
-GLuint			createProgram(int fd, bool fatal);
+GLuint			createProgram(int *fd, bool fatal);
 
 static const char* vertex_shader_text =
 "#version 330\n"

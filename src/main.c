@@ -31,7 +31,7 @@ vec4		fractalWindow = {-1, -1, 1, 1}; //xmin, ymin, xmax, ymax
 #endif
 int        	keys = 0;
 int         input_pause = 0;
-long        lastModifiedFile = 0;
+long        lastModifiedFile[0xF0] = {0};
 
 float points[] = {
    	-1.0f,  -1.0f,
@@ -62,7 +62,6 @@ GLuint		createVBO(void)
 GLuint		createVAO(GLuint vbo, int program)
 {
 	GLint		fragPos;
-	GLint		resPos;
 	GLuint		vao = 0;
 
 	glGenVertexArrays (1, &vao);
@@ -219,35 +218,55 @@ GLint		*getUniformLocation(GLuint program)
 	return unis;
 }
 
-int			getFileFd(const char *fname)
+#define	FILE_CHECK_EXT(x, y) (strrchr(x, '.') != NULL && !strcmp(strrchr(x, '.') + 1, y))
+int			*getFilesFds(char **fnames)
 {
+	static int		fds[0xF0];
+	int				i;
 	struct stat	st;
-	int		fd = open(fname, O_RDONLY);
-	fstat(fd, &st);
-	lastModifiedFile = st.st_mtime;
-	if (fd == -1 || !S_ISREG(st.st_mode))
-		printf("not a valid file: %s\n", fname), exit(-1);
-	return fd;
+
+	i = 0;
+	fnames--;
+	while (*++fnames)
+	{
+		if (!FILE_CHECK_EXT(*fnames, "fs"))
+			continue ;
+		fds[i] = open(*fnames, O_RDONLY);
+		fstat(fds[i], &st);
+		lastModifiedFile[i] = st.st_mtime;
+		if (fds[i] == -1 || !S_ISREG(st.st_mode))
+			printf("not a valid file: %s\n", *fnames), exit(-1);
+		i++;
+	}
+	return fds;
 }
 
-void		checkFileChanged(GLuint *program, char *file, int *fd)
+void		checkFileChanged(GLuint *program, char **files, int *fds)
 {
 	struct stat		st;
-	stat(file, &st);
+	const int		*fd_start = fds;
 
-	if (lastModifiedFile != st.st_mtime)
+	fds--;
+	while (*++fds)
 	{
-		lastModifiedFile = st.st_mtime;
-		close(*fd);
-		*fd = open(file, O_RDONLY);
-		GLint new_program = createProgram(*fd, false);
-		if (new_program != 0)
+		if (!FILE_CHECK_EXT(*files, "fs"))
+			continue ;
+		stat(*files, &st);
+		if (lastModifiedFile[fds - fd_start] != st.st_mtime)
 		{
-			glDeleteProgram(*program);
-			*program = new_program;
-			printf("shader reloaded !\n");
-			getUniformLocation(*program);
+			lastModifiedFile[fds - fd_start] = st.st_mtime;
+			close(*fds);
+			*fds = open(*files, O_RDONLY);
+			GLint new_program = createProgram((int *)fd_start, false);
+			if (new_program != 0)
+			{
+				glDeleteProgram(*program);
+				*program = new_program;
+				printf("shader reloaded !\n");
+				getUniformLocation(*program);
+			}
 		}
+		files++;
 	}
 }
 
@@ -271,8 +290,6 @@ GLint		*loadImages(char **av)
 {
 	static GLint	texts[0xF0];
 	int				k = 0;
-	int				width;
-	int				height;
 
 	for (int i = 0; av[i]; i++)
 	{
@@ -308,13 +325,12 @@ int			main(int ac, char **av)
 	if (ac < 2)
 		usage(*av);
 
-	int			fd = getFileFd(av[1]);
+	const int	*fds = getFilesFds(av + 1);
 	double		t1;
-	int			frameDisplay = 0;
 
 	GLFWwindow *win = init(av[1]);
 
-	GLuint		program = createProgram(fd, true);
+	GLuint		program = createProgram((int *)fds, true);
 	GLuint		vbo = createVBO();
 	GLuint		vao = createVAO(vbo, program);
 	GLint		*unis = getUniformLocation(program);
@@ -322,12 +338,12 @@ int			main(int ac, char **av)
 
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
-		checkFileChanged(&program, av[1], &fd);
+		checkFileChanged(&program, av + 1, (int *)fds);
 		loop(win, program, vao, unis, images);
 		display_window_fps();
 	}
 
-	close(fd);
+	close(*fds);
 	glfwTerminate();
 	return (0);
 }
