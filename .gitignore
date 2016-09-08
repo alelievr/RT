@@ -1,4 +1,37 @@
+# Object files
 *.o
-obj/
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+RT
+RTv1
 visualishader
-*.~
+
+# Debug files
+*.dSYM/
+*.su
+>>>>>>> 583c192c08b38b427707021dadca9a8ba6adb30d
