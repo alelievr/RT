@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created  2016/07/21 00:13:40 by alelievr          #+#    #+#             */
-/*   Updated  2016/07/21 00:17:52 by alelievr         ###   ########.fr       */
+/*   Created  2016/09/08 21:25:14 by alelievr          #+#    #+#             */
+/*   Updated  2016/09/08 21:25:20 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,61 +14,70 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-void		checkCompilation(GLuint shader, bool fatal)
+void		check_compilation(GLuint shader, bool fatal)
 {
-	GLint isCompiled = 0;
+	GLint	is_compiled;
+	GLint	max_length;
+	char	buff[0xF000];
 
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
-	if (isCompiled == GL_FALSE)
+	is_compiled = 0;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &is_compiled);
+	if (is_compiled == GL_FALSE)
 	{
-		GLint maxLength = 0;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
-
-		char		buff[maxLength];
-		glGetShaderInfoLog(shader, maxLength, &maxLength, buff);
+		max_length = 0;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &max_length);
+		glGetShaderInfoLog(shader, max_length, &max_length, buff);
 		printf("%s\n", buff);
-
 		glDeleteShader(shader);
 		if (fatal)
-			printf("shader compilation error, exiting\n"), exit(-1);
+		{
+			printf("shader compilation error, exiting\n");
+			exit(-1);
+		}
 	}
 }
 
-void		checkLink(GLuint program, bool fatal)
+void		check_link(GLuint program, bool fatal)
 {
-	GLint isLinked = 0;
+	GLint	is_linked;
+	GLint	max_length;
+	char	buff[0xF000];
 
-	glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
-	if (isLinked == GL_FALSE)
+	is_linked = 0;
+	glGetProgramiv(program, GL_LINK_STATUS, (int *)&is_linked);
+	if (is_linked == GL_FALSE)
 	{
-		GLint maxLength = 0;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-
-		char		buff[maxLength];
-		glGetProgramInfoLog(program, maxLength, &maxLength, buff);
+		max_length = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &max_length);
+		glGetProgramInfoLog(program, max_length, &max_length, buff);
 		printf("%s\n", buff);
-
 		glDeleteProgram(program);
 		if (fatal)
-			printf("link error, exiting\n"), exit(-1);
+		{
+			printf("link error, exiting\n");
+			exit(-1);
+		}
 	}
 }
 
-char		*getFileSource(int fd)
+char		*get_file_source(int fd)
 {
 	struct stat	st;
+	char		*ret;
+
 	fstat(fd, &st);
-	char	*ret = mmap(NULL, st.st_size + 1, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	ret = mmap(NULL, st.st_size + 1, PROT_READ | PROT_WRITE,
+			MAP_PRIVATE, fd, 0);
 	if (ret == MAP_FAILED)
 	{
 		perror("mmap");
 		return (NULL);
 	}
 	ret[st.st_size] = 0;
-	return ret;
+	return (ret);
 }
 
-char		**getShaderFragmentSources(int *fds, int *count)
+char		**get_shader_fragment_sources(int *fds, int *count)
 {
 	int		i;
 	char	**ret;
@@ -80,53 +89,51 @@ char		**getShaderFragmentSources(int *fds, int *count)
 	ret[0] = (char *)fragment_shader_text;
 	i = 1;
 	while (*fds)
-		ret[i++] = getFileSource(*fds++);
+		ret[i++] = get_file_source(*fds++);
 	ret[i] = NULL;
 	*count = i;
-	return ret;
+	return (ret);
 }
 
-GLuint		CompileShaderFragments(int *fds, bool fatal)
+GLuint		compile_shader_fragments(int *fds, bool fatal)
 {
 	GLuint		ret;
 	char		**srcs;
 	int			src_count;
 
-	srcs = getShaderFragmentSources(fds, &src_count);
+	srcs = get_shader_fragment_sources(fds, &src_count);
 	if (srcs[1] == NULL)
 		return (0);
 	ret = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(ret, src_count, (const char * const *)srcs, NULL);
+	glShaderSource(ret, src_count, (const char*const*)srcs, NULL);
 	glCompileShader(ret);
-	checkCompilation(ret, fatal);
+	check_compilation(ret, fatal);
 	return (ret);
 }
 
-GLuint		CompileShaderVertex(bool fatal)
+GLuint		compile_shader_vertex(bool fatal)
 {
 	GLuint		ret;
 
 	ret = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(ret, 1, &vertex_shader_text, NULL);
 	glCompileShader(ret);
-	checkCompilation(ret, fatal);
+	check_compilation(ret, fatal);
 	return (ret);
 }
 
-GLuint		createProgram(int *fds, bool fatal)
+GLuint		create_program(int *fds, bool fatal)
 {
-	GLuint		program;
+	GLuint				program;
+	const GLuint		shader_vertex = compile_shader_vertex(fatal);
+	const GLuint		shader_fragment = compile_shader_fragments(fds, fatal);
 
-	GLuint		shaderVertex = CompileShaderVertex(fatal);
-	GLuint		shaderFragment = CompileShaderFragments(fds, fatal);
-
-	if (shaderVertex == 0 || shaderFragment == 0)
+	if (shader_vertex == 0 || shader_fragment == 0)
 		return (0);
 	program = glCreateProgram();
-	glAttachShader(program, shaderVertex);
-	glAttachShader(program, shaderFragment);
+	glAttachShader(program, shader_vertex);
+	glAttachShader(program, shader_fragment);
 	glLinkProgram(program);
-	checkLink(program, fatal);
-
-	return program;
+	check_link(program, fatal);
+	return (program);
 }

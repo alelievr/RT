@@ -20,13 +20,13 @@
 #include <sys/stat.h>
 #include <string.h>
 
-vec4        mouse = {0, 0, 0, 0};
-vec2        scroll = {0, 0};
-vec4        move = {0, 0, 0, 0};
+vec4		mouse = {0, 0, 0, 0};
+vec2		scroll = {0, 0};
+vec4		move = {0, 0, 0, 0};
 vec2		window = {WIN_W, WIN_H};
-int        	keys = 0;
-int         input_pause = 0;
-long        lastModifiedFile[0xF0] = {0};
+int			keys = 0;
+int			input_pause = 0;
+long		lastModifiedFile[0xF0] = {0};
 
 float points[] = {
    	-1.0f,  -1.0f,
@@ -136,19 +136,13 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	ratio = width / (float) height;
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	update_keys();
-
-	//glEnable(GL_ARB_multisample);
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_TEXTURE_2D);
-
 	updateUniforms(unis, images);
-
 	glUseProgram(program);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
-
 	glfwSwapBuffers(win);
 	glfwPollEvents();
 }
@@ -163,7 +157,6 @@ GLint		*getUniformLocation(GLuint program)
 	unis[3] = glGetUniformLocation(program, "iScrollAmount");
 	unis[4] = glGetUniformLocation(program, "iMoveAmount");
 	unis[5] = glGetUniformLocation(program, "iResolution");
-
 	unis[10] = glGetUniformLocation(program, "iChannel0");
 	unis[11] = glGetUniformLocation(program, "iChannel1");
 	unis[12] = glGetUniformLocation(program, "iChannel2");
@@ -214,7 +207,7 @@ void		checkFileChanged(GLuint *program, char **files, int *fds)
 			lastModifiedFile[fds - fd_start] = st.st_mtime;
 			close(*fds);
 			*fds = open(*files, O_RDONLY);
-			GLint new_program = createProgram((int *)fd_start, false);
+			GLint new_program = create_program((int *)fd_start, false);
 			if (new_program != 0)
 			{
 				glDeleteProgram(*program);
@@ -287,7 +280,7 @@ int			main(int ac, char **av)
 
 	GLFWwindow *win = init(av[1]);
 
-	GLuint		program = createProgram((int *)fds, true);
+	GLuint		program = create_program((int *)fds, true);
 	GLuint		vbo = createVBO();
 	GLuint		vao = createVAO(vbo, program);
 	GLint		*unis = getUniformLocation(program);
@@ -299,7 +292,6 @@ int			main(int ac, char **av)
 		loop(win, program, vao, unis, images);
 		display_window_fps();
 	}
-
 	close(*fds);
 	glfwTerminate();
 	return (0);
