@@ -6,7 +6,7 @@
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2016/08/05 15:48:51 by alelievr         ###   ########.fr        #
+#    Updated: 2016/09/08 19:57:02 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,6 @@ SRC			=	main.c			\
 				glfw_init.c		\
 				shader.c		\
 				fmod.c			\
-				wav.c			\
 
 #	Objects
 OBJDIR		=	obj

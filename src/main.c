@@ -77,7 +77,7 @@ GLuint		createVAO(GLuint vbo, int program)
 	return vao;
 }
 
-void		updateUniforms(GLint *unis, GLint *images, int *sounds)
+void		updateUniforms(GLint *unis, GLint *images)
 {
 	struct timeval	t;
 	static int		frames = 0;
@@ -101,35 +101,21 @@ void		updateUniforms(GLint *unis, GLint *images, int *sounds)
 #endif
 
 	int		i = 0;
-	for (int j = 0; j < 4; j++)
+	for (int j = 0; j < 8; j++)
 		if (images[j] != 0)
 		{
 			glActiveTexture(glTextures[i++]);
 			glBindTexture(GL_TEXTURE_2D, images[j]);
-		}
-	GLuint			soundTex[4];
-
-	soundTex[0] = get_sound_texture(sounds[0]);
-	soundTex[1] = get_sound_texture(sounds[1]);
-	soundTex[2] = get_sound_texture(sounds[2]);
-	soundTex[3] = get_sound_texture(sounds[3]);
-
-	for (int j = 0; j < 4; j++)
-		if (sounds[j] != 0)
-		{
-			glActiveTexture(glTextures[i++]);
-			glBindTexture(GL_TEXTURE_2D, soundTex[j]);
 		}
 
 	glUniform1i(unis[10], images[0]);
 	glUniform1i(unis[11], images[1]);
 	glUniform1i(unis[12], images[2]);
 	glUniform1i(unis[13], images[3]);
-
-	glUniform1i(unis[14], soundTex[0]);
-	glUniform1i(unis[15], soundTex[1]);
-	glUniform1i(unis[16], soundTex[2]);
-	glUniform1i(unis[17], soundTex[3]);
+	glUniform1i(unis[14], images[0]);
+	glUniform1i(unis[15], images[1]);
+	glUniform1i(unis[16], images[2]);
+	glUniform1i(unis[17], images[3]);
 }
 
 void		update_keys(void)
@@ -184,7 +170,7 @@ void		update_keys(void)
 	}
 }
 
-void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *images, int *sounds)
+void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *images)
 {
 	float ratio;
 	int width, height;
@@ -200,7 +186,7 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glEnable(GL_TEXTURE_2D);
 
 	if (!input_pause)
-		updateUniforms(unis, images, sounds);
+		updateUniforms(unis, images);
 
 	glUseProgram(program);
 	glBindVertexArray(vao);
@@ -226,11 +212,10 @@ GLint		*getUniformLocation(GLuint program)
 	unis[11] = glGetUniformLocation(program, "iChannel1");
 	unis[12] = glGetUniformLocation(program, "iChannel2");
 	unis[13] = glGetUniformLocation(program, "iChannel3");
-
-	unis[14] = glGetUniformLocation(program, "iSoundChannel0");
-	unis[15] = glGetUniformLocation(program, "iSoundChannel1");
-	unis[16] = glGetUniformLocation(program, "iSoundChannel2");
-	unis[17] = glGetUniformLocation(program, "iSoundChannel3");
+	unis[14] = glGetUniformLocation(program, "iChannel4");
+	unis[15] = glGetUniformLocation(program, "iChannel5");
+	unis[16] = glGetUniformLocation(program, "iChannel6");
+	unis[17] = glGetUniformLocation(program, "iChannel7");
 	return unis;
 }
 
@@ -302,20 +287,6 @@ GLint		*loadImages(char **av)
 	return texts;
 }
 
-int			*loadSounds(char **av)
-{
-	static int		sounds[0xF0];
-	int				k = 0;
-
-	for (int i = 0; av[i]; i++)
-	{
-		if (!checkFileExtention(av[i], (char *[]){"wav", NULL}))
-			continue ;
-		sounds[k++] = load_wav_file(av[i]);
-	}
-	return sounds;
-}
-
 void		display_window_fps(void)
 {
 	static int		frames = 0;
@@ -342,20 +313,17 @@ int			main(int ac, char **av)
 	int			frameDisplay = 0;
 
 	GLFWwindow *win = init(av[1]);
-	fmod_init();
 
 	GLuint		program = createProgram(fd, true);
 	GLuint		vbo = createVBO();
 	GLuint		vao = createVAO(vbo, program);
 	GLint		*unis = getUniformLocation(program);
 	GLint		*images = loadImages(av + 2);
-	int			*sounds = loadSounds(av + 2);
 
-	play_all_sounds();
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
 		checkFileChanged(&program, av[1], &fd);
-		loop(win, program, vao, unis, images, sounds);
+		loop(win, program, vao, unis, images);
 		display_window_fps();
 	}
 

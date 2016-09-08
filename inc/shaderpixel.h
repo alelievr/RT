@@ -124,14 +124,6 @@ extern long			lastModifiedFile;
 
 GLFWwindow		*init(char *fname);
 GLuint			createProgram(int fd, bool fatal);
-int				load_wav_file(char *f);
-GLuint			get_sound_texture(int id);
-void			fmod_init(void);
-FMOD_SOUND		*load_sound(char *f);
-void			play_all_sounds(void);
-void			pause_all_sounds(void);
-void			play_sound(FMOD_SOUND *s);
-void			pause_sound(FMOD_SOUND *s);
 
 static const char* vertex_shader_text =
 "#version 330\n"
