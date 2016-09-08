@@ -24,11 +24,6 @@ vec4        mouse = {0, 0, 0, 0};
 vec2        scroll = {0, 0};
 vec4        move = {0, 0, 0, 0};
 vec2		window = {WIN_W, WIN_H};
-#if DOUBLE_PRECISION
-dvec4		fractalWindow = {-1, -1, 1, 1}; //xmin, ymin, xmax, ymax
-#else
-vec4		fractalWindow = {-1, -1, 1, 1}; //xmin, ymin, xmax, ymax
-#endif
 int        	keys = 0;
 int         input_pause = 0;
 long        lastModifiedFile[0xF0] = {0};
@@ -87,17 +82,13 @@ void		updateUniforms(GLint *unis, GLint *images)
 		lTime = time(NULL);
 	gettimeofday(&t, NULL);
 
-	glUniform1f(unis[0], (float)(time(NULL) - lTime) + (float)t.tv_usec / 1000000.0);
+	if (!input_pause)
+		glUniform1f(unis[0], (float)(time(NULL) - lTime) + (float)t.tv_usec / 1000000.0);
 	glUniform1i(unis[1], frames++);
 	glUniform4f(unis[2], mouse.x, WIN_H - mouse.y, mouse.y, mouse.y);
 	glUniform2f(unis[3], scroll.x, scroll.y);
 	glUniform4f(unis[4], move.x, move.y, move.z, move.w);
 	glUniform2f(unis[5], window.x, window.y);
-#if DOUBLE_PRECISION
-	glUniform4d(unis[6], fractalWindow.x, fractalWindow.y, fractalWindow.z, fractalWindow.w);
-#else
-	glUniform4f(unis[6], fractalWindow.x, fractalWindow.y, fractalWindow.z, fractalWindow.w);
-#endif
 
 	int		i = 0;
 	for (int j = 0; j < 8; j++)
@@ -119,54 +110,22 @@ void		updateUniforms(GLint *unis, GLint *images)
 
 void		update_keys(void)
 {
-	vec2	winSize;
-
-	winSize.x = fractalWindow.z - fractalWindow.x;
-	winSize.y = fractalWindow.w - fractalWindow.y;
 	if (BIT_GET(keys, RIGHT))
-	{
 		move.x += MOVE_AMOUNT;
-		fractalWindow.x += winSize.x / SCALE;
-		fractalWindow.z += winSize.x / SCALE;
-	}
 	if (BIT_GET(keys, LEFT))
-	{
 		move.x -= MOVE_AMOUNT;
-		fractalWindow.x -= winSize.x / SCALE;
-		fractalWindow.z -= winSize.x / SCALE;
-	}
 	if (BIT_GET(keys, UP))
-	{
 		move.y += MOVE_AMOUNT;
-		fractalWindow.y += winSize.y / SCALE;
-		fractalWindow.w += winSize.y / SCALE;
-	}
 	if (BIT_GET(keys, DOWN))
-	{
 		move.y -= MOVE_AMOUNT;
-		fractalWindow.y -= winSize.y / SCALE;
-		fractalWindow.w -= winSize.y / SCALE;
-	}
 	if (BIT_GET(keys, FORWARD))
 		move.z += MOVE_AMOUNT;
 	if (BIT_GET(keys, BACK))
 		move.z -= MOVE_AMOUNT;
 	if (BIT_GET(keys, PLUS))
-	{
 		move.w += MOVE_AMOUNT;
-		fractalWindow.z += -.5 * winSize.x / 25;
-		fractalWindow.w += -.5 * winSize.y / 25;
-		fractalWindow.x += .5 * winSize.x / 25;
-		fractalWindow.y += .5 * winSize.y / 25;
-	}
 	if (BIT_GET(keys, MOIN))
-	{
 		move.w -= MOVE_AMOUNT;
-		fractalWindow.z += -.5 * winSize.x / -25;
-		fractalWindow.w += -.5 * winSize.y / -25;
-		fractalWindow.x += .5 * winSize.x / -25;
-		fractalWindow.y += .5 * winSize.y / -25;
-	}
 }
 
 void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *images)
@@ -184,8 +143,7 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_TEXTURE_2D);
 
-	if (!input_pause)
-		updateUniforms(unis, images);
+	updateUniforms(unis, images);
 
 	glUseProgram(program);
 	glBindVertexArray(vao);
@@ -205,7 +163,6 @@ GLint		*getUniformLocation(GLuint program)
 	unis[3] = glGetUniformLocation(program, "iScrollAmount");
 	unis[4] = glGetUniformLocation(program, "iMoveAmount");
 	unis[5] = glGetUniformLocation(program, "iResolution");
-	unis[6] = glGetUniformLocation(program, "iFractalWindow");
 
 	unis[10] = glGetUniformLocation(program, "iChannel0");
 	unis[11] = glGetUniformLocation(program, "iChannel1");
@@ -218,7 +175,7 @@ GLint		*getUniformLocation(GLuint program)
 	return unis;
 }
 
-#define	FILE_CHECK_EXT(x, y) (strrchr(x, '.') != NULL && !strcmp(strrchr(x, '.') + 1, y))
+#define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
 int			*getFilesFds(char **fnames)
 {
 	static int		fds[0xF0];
