@@ -124,6 +124,9 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 {
 	float ratio;
 	int width, height;
+	glfwSetCursorPos(win, window.x / 2, window.y / 2);
+	//glfwSetInputMode(win, GLFW_CURSOR, GLFW_HAND_CURSOR);
+	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	glfwGetFramebufferSize(win, &width, &height);
 	ratio = width / (float) height;
 	glViewport(0, 0, width, height);
