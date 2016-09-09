@@ -6,7 +6,7 @@
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2016/09/08 20:30:42 by alelievr         ###   ########.fr        #
+#    Updated: 2016/09/09 14:26:37 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,7 @@ GLFWLIB		=	glfw/src/libglfw3.a
 SOILLIB		=	SOIL2-clone/libSOIL2.a
 
 #	Output
-NAME		=	visualishader
+NAME		=	RT
 
 #	Compiler
 WERROR		=	-Werror
