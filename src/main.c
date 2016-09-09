@@ -96,16 +96,8 @@ void		updateUniforms(GLint *unis, GLint *images)
 		{
 			glActiveTexture(glTextures[i++]);
 			glBindTexture(GL_TEXTURE_2D, images[j]);
+			glUniform1i(unis[10 + j], images[j]);
 		}
-
-	glUniform1i(unis[10], images[0]);
-	glUniform1i(unis[11], images[1]);
-	glUniform1i(unis[12], images[2]);
-	glUniform1i(unis[13], images[3]);
-	glUniform1i(unis[14], images[0]);
-	glUniform1i(unis[15], images[1]);
-	glUniform1i(unis[16], images[2]);
-	glUniform1i(unis[17], images[3]);
 }
 
 void		update_keys(void)
@@ -286,6 +278,7 @@ int			main(int ac, char **av)
 	GLint		*unis = getUniformLocation(program);
 	GLint		*images = loadImages(av + 2);
 
+	printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
 		checkFileChanged(&program, av + 1, (int *)fds);

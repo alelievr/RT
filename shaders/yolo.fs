@@ -1,4 +1,7 @@
-vec4 yolo()
+vec4 yolo(vec2 coord)
 {
-	return vec4(iMouse.xy, 1, 1);
+	vec2 uv = coord / iResolution;
+	vec3 c1 = texture(iChannel0, uv).xyz;
+	vec3 c2 = texture(iChannel1, uv).xyz;
+	return vec4(mix(c1, c2, .5), 1);
 }

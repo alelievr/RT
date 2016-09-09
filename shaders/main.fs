@@ -1,6 +1,6 @@
-vec4 yolo();
+vec4 yolo(vec2);
 
 void	mainImage(vec2 fragCoord)
 {
-	fragColor = yolo();
+	fragColor = yolo(fragCoord);
 }
