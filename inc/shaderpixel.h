@@ -98,7 +98,7 @@ typedef struct	s_sound
 extern vec4			mouse;
 extern vec4			move;
 extern vec2			window;
-extern vec3			rotation;
+extern vec3			forward;
 extern int			keys;
 extern int			input_pause;
 extern long			lastModifiedFile[0xF0];
@@ -134,7 +134,7 @@ static const char* fragment_shader_text =
 "uniform float		iGlobalTime;\n"
 "uniform int		iFrame;\n"
 "uniform vec4		iMouse;\n"
-"uniform vec3		iRotation;\n"
+"uniform vec3		iForward;\n"
 "uniform vec4		iMoveAmount;\n"
 "uniform sampler2D	iChannel0;\n"
 "uniform sampler2D	iChannel1;\n"

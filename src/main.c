@@ -23,7 +23,7 @@
 vec4		mouse = {0, 0, 0, 0};
 vec4		move = {0, 0, 0, 0};
 vec2		window = {WIN_W, WIN_H};
-vec3		rotation = {0, 0, 1};
+vec3		forward = {0, 0, 1};
 int			keys = 0;
 int			input_pause = 0;
 long		lastModifiedFile[0xF0] = {0};
@@ -86,7 +86,7 @@ void		updateUniforms(GLint *unis, GLint *images)
 		glUniform1f(unis[0], (float)(time(NULL) - lTime) + (float)t.tv_usec / 1000000.0);
 	glUniform1i(unis[1], frames++);
 	glUniform4f(unis[2], mouse.x, WIN_H - mouse.y, mouse.y, mouse.y);
-	glUniform3f(unis[3], rotation.x, rotation.y, rotation.z);
+	glUniform3f(unis[3], forward.x, forward.y, forward.z);
 	glUniform4f(unis[4], move.x, move.y, move.z, move.w);
 	glUniform2f(unis[5], window.x, window.y);
 
@@ -100,20 +100,29 @@ void		updateUniforms(GLint *unis, GLint *images)
 		}
 }
 
+vec3		vec3_cross(vec3 v1, vec3 v2)
+{
+	return (vec3){v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x};
+}
+
+#define VEC3_ADD_DIV(v1, v2, f) { v1.x += v2.x / f; v1.y += v2.y / f; v1.z += v2.z / f; }
 void		update_keys(void)
 {
+	vec3	right = vec3_cross(forward, (vec3){0, 1, 0});
+	vec3	up = vec3_cross(forward, (vec3){1, 0, 0});
+
 	if (BIT_GET(keys, RIGHT))
-		move.x += MOVE_AMOUNT;
+		VEC3_ADD_DIV(move, right, 10);
 	if (BIT_GET(keys, LEFT))
-		move.x -= MOVE_AMOUNT;
+		VEC3_ADD_DIV(move, -right, 10);
 	if (BIT_GET(keys, UP))
-		move.y += MOVE_AMOUNT;
+		VEC3_ADD_DIV(move, up, 10);
 	if (BIT_GET(keys, DOWN))
-		move.y -= MOVE_AMOUNT;
+		VEC3_ADD_DIV(move, -up, 10);
 	if (BIT_GET(keys, FORWARD))
-		move.z += MOVE_AMOUNT;
+		VEC3_ADD_DIV(move, forward, 10);
 	if (BIT_GET(keys, BACK))
-		move.z -= MOVE_AMOUNT;
+		VEC3_ADD_DIV(move, -forward, 10);
 	if (BIT_GET(keys, PLUS))
 		move.w += MOVE_AMOUNT;
 	if (BIT_GET(keys, MOIN))
@@ -124,7 +133,6 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 {
 	float ratio;
 	int width, height;
-	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwGetFramebufferSize(win, &width, &height);
 	ratio = width / (float) height;
 	glViewport(0, 0, width, height);
@@ -137,7 +145,8 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 	glfwSwapBuffers(win);
-	glfwSetCursorPos(win, window.x / 2, window.y / 2);
+	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+		glfwSetCursorPos(win, window.x / 2, window.y / 2);
 	glfwPollEvents();
 }
 
@@ -148,7 +157,7 @@ GLint		*getUniformLocation(GLuint program)
 	unis[0] = glGetUniformLocation(program, "iGlobalTime");
 	unis[1] = glGetUniformLocation(program, "iFrame");
 	unis[2] = glGetUniformLocation(program, "iMouse");
-	unis[3] = glGetUniformLocation(program, "iRotation");
+	unis[3] = glGetUniformLocation(program, "iForward");
 	unis[4] = glGetUniformLocation(program, "iMoveAmount");
 	unis[5] = glGetUniformLocation(program, "iResolution");
 	unis[10] = glGetUniformLocation(program, "iChannel0");
