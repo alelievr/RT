@@ -21,9 +21,9 @@
 #include <string.h>
 
 vec4		mouse = {0, 0, 0, 0};
-vec2		scroll = {0, 0};
 vec4		move = {0, 0, 0, 0};
 vec2		window = {WIN_W, WIN_H};
+vec3		rotation = {0, 0, 1};
 int			keys = 0;
 int			input_pause = 0;
 long		lastModifiedFile[0xF0] = {0};
@@ -86,7 +86,7 @@ void		updateUniforms(GLint *unis, GLint *images)
 		glUniform1f(unis[0], (float)(time(NULL) - lTime) + (float)t.tv_usec / 1000000.0);
 	glUniform1i(unis[1], frames++);
 	glUniform4f(unis[2], mouse.x, WIN_H - mouse.y, mouse.y, mouse.y);
-	glUniform2f(unis[3], scroll.x, scroll.y);
+	glUniform3f(unis[3], rotation.x, rotation.y, rotation.z);
 	glUniform4f(unis[4], move.x, move.y, move.z, move.w);
 	glUniform2f(unis[5], window.x, window.y);
 
@@ -124,9 +124,7 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 {
 	float ratio;
 	int width, height;
-	glfwSetCursorPos(win, window.x / 2, window.y / 2);
-	//glfwSetInputMode(win, GLFW_CURSOR, GLFW_HAND_CURSOR);
-	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwGetFramebufferSize(win, &width, &height);
 	ratio = width / (float) height;
 	glViewport(0, 0, width, height);
@@ -139,6 +137,7 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 	glfwSwapBuffers(win);
+	glfwSetCursorPos(win, window.x / 2, window.y / 2);
 	glfwPollEvents();
 }
 
@@ -149,7 +148,7 @@ GLint		*getUniformLocation(GLuint program)
 	unis[0] = glGetUniformLocation(program, "iGlobalTime");
 	unis[1] = glGetUniformLocation(program, "iFrame");
 	unis[2] = glGetUniformLocation(program, "iMouse");
-	unis[3] = glGetUniformLocation(program, "iScrollAmount");
+	unis[3] = glGetUniformLocation(program, "iRotation");
 	unis[4] = glGetUniformLocation(program, "iMoveAmount");
 	unis[5] = glGetUniformLocation(program, "iResolution");
 	unis[10] = glGetUniformLocation(program, "iChannel0");

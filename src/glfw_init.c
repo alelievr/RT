@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "shaderpixel.h"
+#include <math.h>
 
 static void error_callback(int error, const char* description)
 {
@@ -46,9 +47,26 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 static void mouse_callback(GLFWwindow *win, double x, double y)
 {
+	float	tmp;
+
 	(void)win;
 	mouse.x = x;
-	mouse.y = window.y - y;
+	mouse.y = y;
+	vec2 move = {(mouse.x - (window.x / 2.f)) / 200.f, (mouse.y - (window.y / 2.f)) / 200.f};
+	if (move.x != 0)
+	{
+		//Y rotation:
+		float tmp = rotation.x * cos(-move.x) + rotation.z * sin(-move.x);
+		rotation.z = -rotation.x * sin(-move.x) + rotation.z * cos(-move.x);
+		rotation.x = tmp;
+	}
+	if (move.y != 0)
+	{
+		//X rotation:
+		tmp = rotation.y * cos(move.y) - rotation.z * sin(move.y);
+		rotation.z = rotation.y * sin(move.y) + rotation.z * cos(move.y);
+		rotation.y = tmp;
+	}
 }
 
 static void mouse_click_callback(GLFWwindow *win, int button, int action, int mods)
@@ -61,13 +79,6 @@ static void mouse_click_callback(GLFWwindow *win, int button, int action, int mo
 		mouse.z = 1;
 	else
 		mouse.z = 0;
-}
-
-static void mouse_scroll_callback(GLFWwindow *win, double xOffset, double yOffset)
-{
-	(void)win;
-	scroll.x += xOffset;
-	scroll.y += yOffset;
 }
 
 static void resize_callback(GLFWwindow *win, int width, int height)
@@ -94,7 +105,6 @@ GLFWwindow	*init(char *name)
 	glfwSetKeyCallback(win, key_callback);
 	glfwSetCursorPosCallback(win, mouse_callback);
 	glfwSetMouseButtonCallback(win, mouse_click_callback);
-	glfwSetScrollCallback(win, mouse_scroll_callback);
 	glfwSetWindowSizeCallback(win, resize_callback);
 	glfwMakeContextCurrent (win);
 	glfwSwapInterval(1);

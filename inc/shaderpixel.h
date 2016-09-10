@@ -63,21 +63,6 @@ typedef struct s_dvec4
 	double w;
 }				dvec4;
 
-typedef struct	s_riff_header
-{
-	int			:32;				//0
-	int			chunk_size;			//4
-	char		format[4];			//8
-	int			:32;				//12
-	int			sub_chunk1_size;	//16
-	short		audio_format;		//20
-	short		num_channels;		//22
-	int			sample_rate;		//24
-	int			byte_rate;			//28
-	short		block_align;		//32
-	short		bit_per_sample;		//34
-}				riff_header;
-
 enum			KEY_BITS
 {
 	RIGHT,
@@ -104,7 +89,6 @@ typedef struct	s_sound
 	char			*image_buffer;
 	FMOD_SOUND		*sound;
 	enum SOUND_FORMAT	sound_format;
-	riff_header	riff;
 }				t_sound;
 
 #define BIT_SET(i, pos, v) (v) ? (i |= 1 << pos) : (i &= ~(1 << pos))
@@ -112,9 +96,9 @@ typedef struct	s_sound
 #define MOVE_AMOUNT 0.01f;
 
 extern vec4			mouse;
-extern vec2			scroll;
 extern vec4			move;
 extern vec2			window;
+extern vec3			rotation;
 extern int			keys;
 extern int			input_pause;
 extern long			lastModifiedFile[0xF0];
@@ -150,7 +134,7 @@ static const char* fragment_shader_text =
 "uniform float		iGlobalTime;\n"
 "uniform int		iFrame;\n"
 "uniform vec4		iMouse;\n"
-"uniform vec2		iScrollAmount;\n"
+"uniform vec3		iRotation;\n"
 "uniform vec4		iMoveAmount;\n"
 "uniform sampler2D	iChannel0;\n"
 "uniform sampler2D	iChannel1;\n"
