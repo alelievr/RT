@@ -8,9 +8,10 @@ float iSphere(in vec3 ro, in vec3 rd, in vec4 sph)
 
     vec3 oc = ro - sph.xyz;
     float b = 2.0 *dot(oc, rd);
-    float c = dot(oc,oc) - sph.w*sph.w;
+    float c = dot(oc, oc) - sph.w*sph.w;
     float h = b*b - 4.0 *c;
-    if(h < 0.0) return -1.0; //no intersection
+    if(h < 0.0)
+		return -1.0;
 
     //pick smaller one(i.e, close one)
     //not (-b+sqrt(h)) /2
@@ -25,7 +26,7 @@ void	mainImage(vec2 coord)
 	vec3	cameraDir = iForward;
 
 	//window ratio correciton:
-	uv *= iResolution.x / iResolution.y;
+	uv.x *= iResolution.x / iResolution.y;
 
 	//perspective view
 	float	fov = 1.5;
