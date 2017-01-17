@@ -161,6 +161,7 @@ static const char* fragment_shader_text =
 "void main()\n"
 "{\n"
 "	mainImage(gl_FragCoord.xy);\n"
-"}\n";
+"}\n"
+"#line 0\n";
 
 #endif

@@ -61,6 +61,11 @@ static void mouse_callback(GLFWwindow *win, double x, double y)
 	{
 		angleAmount.x += ((window.x / 2.) - mouse.x) / 200;
 		angleAmount.y += ((window.y / 2.) - mouse.y) / 200;
+
+		if (angleAmount.y > 1.5f)
+			angleAmount.y = 1.5f;
+		if (angleAmount.y < -1.5f)
+			angleAmount.y = -1.5f;
 		forward.x = cos(angleAmount.y) * sin(angleAmount.x);
 		forward.y = sin(angleAmount.y);
 		forward.z = cos(angleAmount.y) * cos(angleAmount.x);

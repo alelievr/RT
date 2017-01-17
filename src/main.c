@@ -19,6 +19,7 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <dirent.h>
 
 vec4		mouse = {0, 0, 0, 0};
 vec4		move = {0, 0, 0, 0};
@@ -106,11 +107,14 @@ vec3		vec3_cross(vec3 v1, vec3 v2)
 }
 
 #define VEC3_ADD_DIV(v1, v2, f) { v1.x += v2.x / f; v1.y += v2.y / f; v1.z += v2.z / f; }
+#define VEC3_UP ((vec3){0, 1, 0})
 void		update_keys(void)
 {
-	vec3	right = vec3_cross(forward, (vec3){0, 1, 0});
-	vec3	up = vec3_cross(forward, (vec3){1, 0, 0});
+	vec3	right;
+	vec3	up;
 
+	right = vec3_cross(forward, VEC3_UP);
+	up = vec3_cross(forward, right);
 	if (BIT_GET(keys, RIGHT))
 		VEC3_ADD_DIV(move, right, 10);
 	if (BIT_GET(keys, LEFT))
@@ -172,11 +176,33 @@ GLint		*getUniformLocation(GLuint program)
 }
 
 #define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
+char		**getSourceFiles(void)
+{
+	static char		*files[0xF00];
+	char			buff[0xF00];
+	int				i;
+	struct dirent	*d;
+	DIR				*dir;
+
+	i = 0;
+	if (!(dir = opendir("./shaders")))
+		perror("opendir"), exit(-1);
+	while ((d = readdir(dir)))
+	{
+		if (!FILE_CHECK_EXT(d->d_name, "fs"))
+			continue ;
+		ft_sprintf(buff, "./shaders/%s", d->d_name);
+		files[i++] = strdup(buff);
+	}
+	files[i] = NULL;
+	return files;
+}
+
 int			*getFilesFds(char **fnames)
 {
 	static int		fds[0xF0];
 	int				i;
-	struct stat	st;
+	struct stat		st;
 
 	i = 0;
 	fnames--;
@@ -275,13 +301,14 @@ void		display_window_fps(void)
 
 int			main(int ac, char **av)
 {
-	if (ac < 2)
+	if (ac < 1)
 		usage(*av);
 
-	const int	*fds = getFilesFds(av + 1);
+	char		**srcs = getSourceFiles();
+	const int	*fds = getFilesFds(srcs);
 	double		t1;
 
-	GLFWwindow *win = init(av[1]);
+	GLFWwindow *win = init("Re Tweet");
 
 	GLuint		program = create_program((int *)fds, true);
 	GLuint		vbo = createVBO();
@@ -292,7 +319,7 @@ int			main(int ac, char **av)
 	printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
-		checkFileChanged(&program, av + 1, (int *)fds);
+		checkFileChanged(&program, srcs, (int *)fds);
 		loop(win, program, vao, unis, images);
 		display_window_fps();
 	}

@@ -6,7 +6,7 @@
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2016/09/09 14:26:37 by alelievr         ###   ########.fr        #
+#    Updated: 2017/01/17 20:17:16 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,8 +51,8 @@ WERROR		=	-Werror
 CFLAGS		=	-Wall -Wextra -pedantic -ferror-limit=999
 CPROTECTION	=	-z execstack -fno-stack-protector
 
-DEBUGFLAGS1	=	-ggdb -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -O0
-DEBUGFLAGS2	=	-fsanitize-memory-track-origins=2
+DEBUGFLAGS1	=	-ggdb -O0
+DEBUGFLAGS2	=	 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 OPTFLAGS1	=	-funroll-loops -O2
 OPTFLAGS2	=	-pipe -funroll-loops -Ofast
 
@@ -132,7 +132,7 @@ endif
 ifneq ($(filter 2,$(strip $(DEBUGLEVEL)) ${DEBUG}),)
 	OPTLEVEL = 0
 	OPTI = 0
-	DEBUGFLAGS += $(DEBUGFLAGS1)
+	DEBUGFLAGS += $(DEBUGFLAGS1) $(DEBUGFLAGS2)
 	LINKDEBUG += $(DEBUGFLAGS1) $(DEBUGFLAGS2)
 	export ASAN_OPTIONS=check_initialization_order=1
 endif
@@ -162,7 +162,7 @@ ifeq "$(strip $(LIBFT))" "2"
 ifneq ($(wildcard ./libft),)
 	LIBDIRS += "libft"
 	LDLIBS += "-lft"
-	INCDIRS += "libft"
+	INCDIRS += "libft/include"
 endif
 endif
 
