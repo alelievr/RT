@@ -27,7 +27,7 @@ vec2		window = {WIN_W, WIN_H};
 vec3		forward = {0, 0, 1};
 int			keys = 0;
 int			input_pause = 0;
-long		lastModifiedFile[0xF0] = {0};
+long		lastModifiedFile[0xF00] = {0};
 
 float points[] = {
    	-1.0f,  -1.0f,
@@ -176,67 +176,50 @@ GLint		*getUniformLocation(GLuint program)
 }
 
 #define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
-char		**getSourceFiles(void)
+
+void		initSourceFiles(t_file *files, size_t max, size_t *num)
 {
-	static char		*files[0xF00];
-	char			buff[0xF00];
-	int				i;
 	struct dirent	*d;
 	DIR				*dir;
+	struct stat		st;
 
-	i = 0;
+	*num = 0;
 	if (!(dir = opendir("./shaders")))
 		perror("opendir"), exit(-1);
 	while ((d = readdir(dir)))
 	{
 		if (!FILE_CHECK_EXT(d->d_name, "fs"))
 			continue ;
-		ft_sprintf(buff, "./shaders/%s", d->d_name);
-		files[i++] = strdup(buff);
+		if (*num >= max)
+			break ;
+		ft_sprintf(files[*num].path, "./shaders/%s", d->d_name);
+		files[*num].fd = open(files[*num].path, O_RDONLY);
+		fstat(files[*num].fd, &st);
+		lastModifiedFile[files[*num].fd] = st.st_mtime;
+		if (files[*num].fd == -1 || !S_ISREG(st.st_mode))
+			printf("not a valid file: %s\n", files[*num].path), exit(-1);
+		else
+			(*num)++;
 	}
-	files[i] = NULL;
-	return files;
 }
 
-int			*getFilesFds(char **fnames)
+void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 {
-	static int		fds[0xF0];
-	int				i;
 	struct stat		st;
+	size_t			i;
 
 	i = 0;
-	fnames--;
-	while (*++fnames)
+	while (i < num)
 	{
-		if (!FILE_CHECK_EXT(*fnames, "fs"))
+		if (!FILE_CHECK_EXT(files[i].path, "fs"))
 			continue ;
-		fds[i] = open(*fnames, O_RDONLY);
-		fstat(fds[i], &st);
-		lastModifiedFile[i] = st.st_mtime;
-		if (fds[i] == -1 || !S_ISREG(st.st_mode))
-			printf("not a valid file: %s\n", *fnames), exit(-1);
-		i++;
-	}
-	return fds;
-}
-
-void		checkFileChanged(GLuint *program, char **files, int *fds)
-{
-	struct stat		st;
-	const int		*fd_start = fds;
-
-	fds--;
-	while (*++fds)
-	{
-		if (!FILE_CHECK_EXT(*files, "fs"))
-			continue ;
-		stat(*files, &st);
-		if (lastModifiedFile[fds - fd_start] != st.st_mtime)
+		stat(files[i].path, &st);
+		if (lastModifiedFile[files[i].fd] != st.st_mtime)
 		{
-			lastModifiedFile[fds - fd_start] = st.st_mtime;
-			close(*fds);
-			*fds = open(*files, O_RDONLY);
-			GLint new_program = create_program((int *)fd_start, false);
+			lastModifiedFile[files[i].fd] = st.st_mtime;
+			close(files[i].fd);
+			files[i].fd = open(files[i].path, O_RDONLY);
+			GLint new_program = create_program(files, num, false);
 			if (new_program != 0)
 			{
 				glDeleteProgram(*program);
@@ -245,7 +228,7 @@ void		checkFileChanged(GLuint *program, char **files, int *fds)
 				getUniformLocation(*program);
 			}
 		}
-		files++;
+		i++;
 	}
 }
 
@@ -301,29 +284,29 @@ void		display_window_fps(void)
 
 int			main(int ac, char **av)
 {
+	static t_file	sources[0xF00];
+	size_t			num;
+	double			t1;
 	if (ac < 1)
 		usage(*av);
-
-	char		**srcs = getSourceFiles();
-	const int	*fds = getFilesFds(srcs);
-	double		t1;
+	
+	initSourceFiles(sources, 0xF00, &num);
 
 	GLFWwindow *win = init("Re Tweet");
 
-	GLuint		program = create_program((int *)fds, true);
+	GLuint		program = create_program(sources, num, true);
 	GLuint		vbo = createVBO();
 	GLuint		vao = createVAO(vbo, program);
 	GLint		*unis = getUniformLocation(program);
-	GLint		*images = loadImages(av + 2);
+	GLint		*images = loadImages(av + 1);
 
-	printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+	ft_printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
-		checkFileChanged(&program, srcs, (int *)fds);
+		checkFileChanged(&program, sources, num);
 		loop(win, program, vao, unis, images);
 		display_window_fps();
 	}
-	close(*fds);
 	glfwTerminate();
 	return (0);
 }
