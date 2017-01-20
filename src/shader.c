@@ -13,6 +13,7 @@
 #include "shaderpixel.h"
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 static void		check_compilation(GLuint shader, bool fatal)
 {
@@ -62,20 +63,25 @@ static void		check_link(GLuint program, bool fatal)
 
 static char		*get_file_source(int fd)
 {
-	struct stat	st;
-	char		*ret;
+	struct stat		st;
+	int				ret;
+	static char		buff[0xF0000];
+	static char		*loadedFiles[0xF00];
 
 	if (fstat(fd, &st) == -1 || st.st_size == 0)
 		return (NULL);
-	ret = mmap(NULL, st.st_size + 1, PROT_READ | PROT_WRITE,
-			MAP_PRIVATE, fd, 0);
-	if (ret == MAP_FAILED)
+	if ((ret = read(fd, buff, sizeof(buff))) == -1)
 	{
-		perror("mmap");
+		perror("read");
 		return (NULL);
 	}
-	ret[st.st_size] = 0;
-	return (ret);
+	if (loadedFiles[fd] != NULL && ret == 0)
+		return loadedFiles[fd];
+	else if (ret != 0)
+		free(loadedFiles[fd]);
+	buff[ret] = 0;
+	loadedFiles[fd] = strdup(buff);
+	return (loadedFiles[fd]);
 }
 
 static char		**get_shader_fragment_sources(t_file *files, size_t num, bool fatal)
@@ -87,8 +93,11 @@ static char		**get_shader_fragment_sources(t_file *files, size_t num, bool fatal
 	ret[0] = (char *)fragment_shader_text;
 	i = 0;
 	while (i++ < num)
-		if (!(ret[i] = get_file_source(files[i - 1].fd)) && fatal)
-			ft_printf("failed to stat file/empty file: %s\n", files[i - 1].path), exit(-1);
+		if (!(ret[i] = get_file_source(files[i - 1].fd)))
+			if (fatal)
+				ft_printf("failed to stat file/empty file: %s\n", files[i - 1].path), exit(-1);
+			else
+				return (NULL);
 		else if (fatal)
 			ft_printf("loaded shader file: %s\n", files[i - 1].path);
 	ret[i] = NULL;
@@ -100,8 +109,7 @@ static GLuint		compile_shader_fragments(t_file *files, size_t num, bool fatal)
 	GLuint		ret;
 	char		**srcs;
 
-	srcs = get_shader_fragment_sources(files, num, fatal);
-	if (srcs[1] == NULL)
+	if (!(srcs = get_shader_fragment_sources(files, num, fatal)) || srcs[1] == NULL)
 		return (0);
 	ret = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(ret, num + 1, (const char * const *)srcs, NULL);

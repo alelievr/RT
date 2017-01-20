@@ -1,4 +1,4 @@
 vec3	raycast(vec3 ro, vec3 rd)
 {
-	return (vec3(ro.x, rd.y, 1));
+	return (vec3(ro.y, rd.y, 1));
 }

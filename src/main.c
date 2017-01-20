@@ -207,6 +207,7 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 {
 	struct stat		st;
 	size_t			i;
+	int				fd;
 
 	i = 0;
 	while (i < num)
@@ -216,9 +217,13 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 		stat(files[i].path, &st);
 		if (lastModifiedFile[files[i].fd] != st.st_mtime)
 		{
+			printf("file modified: %s\n", files[i].path);
 			lastModifiedFile[files[i].fd] = st.st_mtime;
 			close(files[i].fd);
-			files[i].fd = open(files[i].path, O_RDONLY);
+			if ((fd = open(files[i].path, O_RDONLY)) != -1)
+				files[i].fd = fd;
+			else
+				break ;
 			GLint new_program = create_program(files, num, false);
 			if (new_program != 0)
 			{
