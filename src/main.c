@@ -22,12 +22,13 @@
 #include <dirent.h>
 
 vec4		mouse = {0, 0, 0, 0};
-vec4		move = {0, 0, 0, 0};
+vec4		move = {0, 0, 0, 1};
 vec2		window = {WIN_W, WIN_H};
 vec3		forward = {0, 0, 1};
 int			keys = 0;
 int			input_pause = 0;
 long		lastModifiedFile[0xF00] = {0};
+float		pausedTime = 0;
 
 float points[] = {
    	-1.0f,  -1.0f,
@@ -72,19 +73,25 @@ GLuint		createVAO(GLuint vbo, int program)
 	return vao;
 }
 
-void		updateUniforms(GLint *unis, GLint *images)
+float		getCurrentTime(void)
 {
 	struct timeval	t;
-	static int		frames = 0;
 	static time_t	lTime = 0;
-	static int		glTextures[] = {GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8};
-
+	
 	if (lTime == 0)
 		lTime = time(NULL);
 	gettimeofday(&t, NULL);
 
-	if (!input_pause)
-		glUniform1f(unis[0], (float)(time(NULL) - lTime) + (float)t.tv_usec / 1000000.0);
+	return (float)(time(NULL) - lTime) + (float)t.tv_usec / 1000000.0 - pausedTime;
+}
+
+void		updateUniforms(GLint *unis, GLint *images)
+{
+	static int		frames = 0;
+	static int		glTextures[] = {GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8};
+
+	float ti = getCurrentTime();
+	glUniform1f(unis[0], ti);
 	glUniform1i(unis[1], frames++);
 	glUniform4f(unis[2], mouse.x, WIN_H - mouse.y, mouse.y, mouse.y);
 	glUniform3f(unis[3], forward.x, forward.y, forward.z);
@@ -106,7 +113,7 @@ vec3		vec3_cross(vec3 v1, vec3 v2)
 	return (vec3){v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x};
 }
 
-#define VEC3_ADD_DIV(v1, v2, f) { v1.x += v2.x / f; v1.y += v2.y / f; v1.z += v2.z / f; }
+#define VEC3_ADD_DIV(v1, v2, f) { v1.x += v2.x / (f); v1.y += v2.y / (f); v1.z += v2.z / (f); }
 #define VEC3_UP ((vec3){0, 1, 0})
 void		update_keys(void)
 {
@@ -116,21 +123,21 @@ void		update_keys(void)
 	right = vec3_cross(forward, VEC3_UP);
 	up = vec3_cross(forward, right);
 	if (BIT_GET(keys, RIGHT))
-		VEC3_ADD_DIV(move, right, 10);
+		VEC3_ADD_DIV(move, right, 10 / move.w);
 	if (BIT_GET(keys, LEFT))
-		VEC3_ADD_DIV(move, -right, 10);
+		VEC3_ADD_DIV(move, -right, 10 / move.w);
 	if (BIT_GET(keys, UP))
-		VEC3_ADD_DIV(move, up, 10);
+		VEC3_ADD_DIV(move, up, 10 / move.w);
 	if (BIT_GET(keys, DOWN))
-		VEC3_ADD_DIV(move, -up, 10);
+		VEC3_ADD_DIV(move, -up, 10 / move.w);
 	if (BIT_GET(keys, FORWARD))
-		VEC3_ADD_DIV(move, forward, 10);
+		VEC3_ADD_DIV(move, forward, 10 / move.w);
 	if (BIT_GET(keys, BACK))
-		VEC3_ADD_DIV(move, -forward, 10);
+		VEC3_ADD_DIV(move, -forward, 10 / move.w);
 	if (BIT_GET(keys, PLUS))
-		move.w += MOVE_AMOUNT;
+		move.w *= 1 + MOVE_AMOUNT;
 	if (BIT_GET(keys, MOIN))
-		move.w -= MOVE_AMOUNT;
+		move.w *= 1 - MOVE_AMOUNT;
 }
 
 void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *images)
@@ -188,7 +195,7 @@ void		initSourceFiles(t_file *files, size_t max, size_t *num)
 		perror("opendir"), exit(-1);
 	while ((d = readdir(dir)))
 	{
-		if (!FILE_CHECK_EXT(d->d_name, "fs"))
+		if (!FILE_CHECK_EXT(d->d_name, "glsl"))
 			continue ;
 		if (*num >= max)
 			break ;
@@ -212,7 +219,7 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 	i = 0;
 	while (i < num)
 	{
-		if (!FILE_CHECK_EXT(files[i].path, "fs"))
+		if (!FILE_CHECK_EXT(files[i].path, "glsl"))
 			continue ;
 		stat(files[i].path, &st);
 		if (lastModifiedFile[files[i].fd] != st.st_mtime)

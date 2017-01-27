@@ -108,10 +108,12 @@ extern vec2			window;
 extern vec3			forward;
 extern int			keys;
 extern int			input_pause;
+extern float		pausedTime;
 extern long			lastModifiedFile[0xF00];
 
 GLFWwindow		*init(char *fname);
 GLuint			create_program(t_file *fd, size_t num, bool fatal);
+float			getCurrentTime(void);
 
 static const char* vertex_shader_text =
 "#version 330\n"

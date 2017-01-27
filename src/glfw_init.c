@@ -15,6 +15,7 @@
 
 static vec2	angleAmount;
 static int	cursor_mode;
+static float lastPausedTime;
 
 static void error_callback(int error, const char* description)
 {
@@ -45,7 +46,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_KP_SUBTRACT || key == GLFW_KEY_MINUS)
 		BIT_SET(keys, MOIN, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_SPACE)
-		input_pause ^= action == GLFW_PRESS;
+	{
+		input_pause ^= action;
+		if (input_pause)
+			lastPausedTime = getCurrentTime();
+		else
+			pausedTime += getCurrentTime() - lastPausedTime;
+	}
 	if (key == GLFW_KEY_C)
 		cursor_mode ^= action == GLFW_PRESS;
 	glfwSetInputMode(window, GLFW_CURSOR, (cursor_mode) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);

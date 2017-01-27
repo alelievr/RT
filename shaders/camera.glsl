@@ -3,7 +3,7 @@ vec3 raycast(vec3 r0, vec3 rd);
 void		mainImage(vec2 coord)
 {
 	vec2	uv = (coord / iResolution) * 2 - 1;
-	vec3	cameraPos = iMoveAmount.xyz;
+	vec3	cameraPos = iMoveAmount.xyz + vec3(0, 0, -2);
 	vec3	cameraDir = iForward;
 	vec3	col;
 
