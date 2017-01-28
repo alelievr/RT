@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 17:03:04 by alelievr          #+#    #+#             */
-/*   Updated: 2017/01/28 02:42:52 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/01/28 02:51:45 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 static FT_Library	g_library;
 static GLuint		g_vbo;
 static GLuint		g_tex;
+static GLuint		g_color_uniform;
 
 static char	*foreach_font_file(void)
 {
@@ -90,44 +91,12 @@ void		load_fonts(GLuint font_program)
 	glGenTextures(1, &g_tex);
 	glBindTexture(GL_TEXTURE_2D, g_tex);
 	glUniform1i(uniform_tex, 0);
+
+	g_color_uniform = glGetUniformLocation(font_program, "color");
+	GLfloat black[4] = {0, 0, 0, 1};
+	glUniform4fv(g_color_uniform, 1, black);
 }
 
-/*void		draw_text(int x, int y, const int fontIndex, const char *txt)
-{
-	FT_Face			*face;
-	FT_GlyphSlot	slot;
-	int				error;
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	face = get_face_data(fontIndex);
-	if (face == NONE || !*face)
-		ft_printf("font not found at intdex: %i\n", fontIndex), exit(-1);
-	slot = (*face)->glyph;
-	while (*txt)
-	{
-		FT_UInt  glyph_index;
-		glyph_index = FT_Get_Char_Index(*face, *txt);
-		error = FT_Load_Glyph(*face, glyph_index, FT_LOAD_DEFAULT);
-		if (error)
-			continue ;
-		error = FT_Render_Glyph((*face)->glyph, FT_RENDER_MODE_NORMAL);
-		if (error)
-			continue;
-
-  		my_draw_bitmap(&slot->bitmap,
-                x + slot->bitmap_left,
-                y - slot->bitmap_top,
-				slot,
-				16);
-
-		x += slot->advance.x >> 6;
-		y += slot->advance.y >> 6;
-
-		txt++;
-	}
-}*/
 void	draw_text(const char *text, float x, float y, float sx, float sy)
 {
   	const char		*p;
@@ -143,7 +112,6 @@ void	draw_text(const char *text, float x, float y, float sx, float sy)
 		FT_GlyphSlot g = (*face)->glyph;
 		if (error)
 			continue ;
-
 
     	glTexImage2D(
       			GL_TEXTURE_2D,

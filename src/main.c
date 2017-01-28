@@ -186,7 +186,7 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	float sx = 2.f / window.x;
 	float sy = 2.f / window.y;
 	draw_text("The Quick Brown Fox Jumps Over The Lazy Dog",
-			-1 + 8 * sx,   1 - 50 * sy,    sx, sy);
+			-1 + 8 * sx, 1 - 50 * sy, sx, sy);
 
 	glFlush();
 

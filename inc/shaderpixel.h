@@ -124,6 +124,7 @@ static const char	*vertex_shader_font =
 "\n"
 "in vec4	coord;\n"
 "out vec2	texcoord;\n"
+"out vec4	outColor;\n"
 "\n"
 "void main(void)\n"
 "{\n"
@@ -199,6 +200,6 @@ static const char	*fragment_shader_text =
 "{\n"
 "	mainImage(gl_FragCoord.xy);\n"
 "}\n"
-"#line 0\n";
+"#line 1\n";
 
 #endif
