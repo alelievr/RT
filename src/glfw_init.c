@@ -15,12 +15,19 @@
 
 static vec2	angleAmount;
 static int	cursor_mode;
-static float lastPausedTime;
+static float last_paused_time;
 
 static void error_callback(int error, const char* description)
 {
 	(void)error;
 	fprintf(stderr, "Error: %s\n", description);
+}
+
+static void	focus_callback(GLFWwindow *win, int focused)
+{
+	(void)win;
+	printf("focus: %i\n", focus);
+	focus = focused;
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -49,9 +56,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	{
 		input_pause ^= action;
 		if (input_pause)
-			lastPausedTime = getCurrentTime();
+			last_paused_time = get_current_time();
 		else
-			pausedTime += getCurrentTime() - lastPausedTime;
+			paused_time += get_current_time() - last_paused_time;
 	}
 	if (key == GLFW_KEY_C)
 		cursor_mode ^= action == GLFW_PRESS;
@@ -116,9 +123,13 @@ GLFWwindow	*init(char *name)
 	glfwSetCursorPosCallback(win, mouse_callback);
 	glfwSetMouseButtonCallback(win, mouse_click_callback);
 	glfwSetWindowSizeCallback(win, resize_callback);
+	glfwSetWindowFocusCallback(win, focus_callback);
 	glfwMakeContextCurrent (win);
 	glfwSwapInterval(1);
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	return (win);
 }

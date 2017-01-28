@@ -108,14 +108,43 @@ extern vec2			window;
 extern vec3			forward;
 extern int			keys;
 extern int			input_pause;
-extern float		pausedTime;
-extern long			lastModifiedFile[0xF00];
+extern float		paused_time;
+extern bool			focus;
+extern long			last_modified_file[0xF00];
 
 GLFWwindow		*init(char *fname);
 GLuint			create_program(t_file *fd, size_t num, bool fatal);
-float			getCurrentTime(void);
+float			get_current_time(void);
+void			load_fonts(GLuint font_program);
+void			draw_text(const char *txt, float x, float y, float sx, float sy);
+GLuint			create_font_program(void);
 
-static const char* vertex_shader_text =
+static const char	*vertex_shader_font = 
+"#version 330\n"
+"\n"
+"in vec4	coord;\n"
+"out vec2	texcoord;\n"
+"\n"
+"void main(void)\n"
+"{\n"
+"	gl_Position = vec4(coord.xy, 0, 0);\n"
+"	texcoord = coord.zw;\n"
+"}\n";
+
+static const char	*fragment_shader_font = 
+"#version 330\n"
+"out vec2 texcoord;\n"
+"uniform sampler2D tex;\n"
+"uniform vec4 color;\n"
+"in vec4 outColor;\n"
+"out vec4 fragColor;\n"
+"\n"
+"void main(void)\n"
+"{\n"
+"	fragColor = vec4(1, 1, 1, texture(tex, texcoord).r) * color;\n"
+"}\n";
+
+static const char	*vertex_shader_text =
 "#version 330\n"
 //"in vec2		iResolutionIn;\n"
 //"out vec2		iResolution;\n"
@@ -127,14 +156,14 @@ static const char* vertex_shader_text =
 "	gl_Position = vec4(fragPosition, 0.0, 1.0);\n"
 "}\n";
 
-static const char* fragment_shader_image_text = 
+static const char	*fragment_shader_image_text = 
 "void mainImage(vec2 fragCoord)\n"
 "{\n"
 "	vec2 uv = fragCoord.xy / iResolution.xy;\n"
 "	fragColor = vec4(uv, 0.5 + 0.5 * sin(iGlobalTime), 1.0);\n"
 "}\n";
 
-static const char* fragment_shader_text =
+static const char	*fragment_shader_text =
 "#version 330\n"
 "in vec4 outColor;\n"
 "out vec4 fragColor;\n"

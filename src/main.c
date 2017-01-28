@@ -21,14 +21,17 @@
 #include <string.h>
 #include <dirent.h>
 
+#define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
+
 vec4		mouse = {0, 0, 0, 0};
 vec4		move = {0, 0, 0, 1};
 vec2		window = {WIN_W, WIN_H};
 vec3		forward = {0, 0, 1};
 int			keys = 0;
 int			input_pause = 0;
-long		lastModifiedFile[0xF00] = {0};
-float		pausedTime = 0;
+bool		focus = true;
+long		last_modified_file[0xF00] = {0};
+float		paused_time = 0;
 
 float points[] = {
    	-1.0f,  -1.0f,
@@ -47,7 +50,7 @@ static void		usage(const char *n)
 }
 
 
-GLuint		createVBO(void)
+GLuint		create_vbo(void)
 {
 	GLuint vbo = 0;
 	glGenBuffers (1, &vbo);
@@ -56,7 +59,7 @@ GLuint		createVBO(void)
 	return vbo;
 }
 
-GLuint		createVAO(GLuint vbo, int program)
+GLuint		create_vao(GLuint vbo, int program)
 {
 	GLint		fragPos;
 	GLuint		vao = 0;
@@ -73,7 +76,7 @@ GLuint		createVAO(GLuint vbo, int program)
 	return vao;
 }
 
-float		getCurrentTime(void)
+float		get_current_time(void)
 {
 	struct timeval	t;
 	static time_t	lTime = 0;
@@ -82,15 +85,15 @@ float		getCurrentTime(void)
 		lTime = time(NULL);
 	gettimeofday(&t, NULL);
 
-	return (float)(time(NULL) - lTime) + (float)t.tv_usec / 1000000.0 - pausedTime;
+	return (float)(time(NULL) - lTime) + (float)t.tv_usec / 1000000.0 - paused_time;
 }
 
-void		updateUniforms(GLint *unis, GLint *images)
+void		update_uniforms(GLint *unis, GLint *images)
 {
 	static int		frames = 0;
 	static int		glTextures[] = {GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8};
 
-	float ti = getCurrentTime();
+	float ti = get_current_time();
 	glUniform1f(unis[0], ti);
 	glUniform1i(unis[1], frames++);
 	glUniform4f(unis[2], mouse.x, WIN_H - mouse.y, mouse.y, mouse.y);
@@ -118,18 +121,16 @@ vec3		vec3_cross(vec3 v1, vec3 v2)
 void		update_keys(void)
 {
 	vec3	right;
-	vec3	up;
 
 	right = vec3_cross(forward, VEC3_UP);
-	up = vec3_cross(forward, right);
 	if (BIT_GET(keys, RIGHT))
 		VEC3_ADD_DIV(move, right, 10 / move.w);
 	if (BIT_GET(keys, LEFT))
 		VEC3_ADD_DIV(move, -right, 10 / move.w);
 	if (BIT_GET(keys, UP))
-		VEC3_ADD_DIV(move, up, 10 / move.w);
+		VEC3_ADD_DIV(move, VEC3_UP, 10 / move.w);
 	if (BIT_GET(keys, DOWN))
-		VEC3_ADD_DIV(move, -up, 10 / move.w);
+		VEC3_ADD_DIV(move, -VEC3_UP, 10 / move.w);
 	if (BIT_GET(keys, FORWARD))
 		VEC3_ADD_DIV(move, forward, 10 / move.w);
 	if (BIT_GET(keys, BACK))
@@ -140,28 +141,61 @@ void		update_keys(void)
 		move.w *= 1 - MOVE_AMOUNT;
 }
 
+static void		display_window_fps(void)
+{
+	static int		frames = 0;
+	static double	last_time = 0;
+	double			current_time = glfwGetTime();
+
+	frames++;
+	if (current_time - last_time >= 1.0)
+	{
+		printf("%sfps:%.3f%s", "\x1b\x37", 1.0 / (1000.0 / (float)frames) * 1000.0, "\x1b\x38");
+		frames = 0;
+		fflush(stdout);
+		last_time++;
+	}
+}
+
 void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *images)
 {
-	float ratio;
-	int width, height;
+	float	ratio;
+	int		width, height;
+
 	glfwGetFramebufferSize(win, &width, &height);
 	ratio = width / (float) height;
+
+	glClearColor(1, 0, 0, .5f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glViewport(0, 0, width, height);
-	glClear(GL_COLOR_BUFFER_BIT);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_COLOR);
+
 	update_keys();
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_TEXTURE_2D);
-	updateUniforms(unis, images);
+	update_uniforms(unis, images);
 	glUseProgram(program);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
+	display_window_fps();
+	float sx = 2.f / window.x;
+	float sy = 2.f / window.y;
+	draw_text("The Quick Brown Fox Jumps Over The Lazy Dog",
+			-1 + 8 * sx,   1 - 50 * sy,    sx, sy);
+
+	glFlush();
+
 	glfwSwapBuffers(win);
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
 		glfwSetCursorPos(win, window.x / 2, window.y / 2);
-	glfwPollEvents();
 }
 
-GLint		*getUniformLocation(GLuint program)
+GLint		*get_uniform_locations(GLuint program)
 {
 	static GLint unis[0xF0];
 
@@ -182,9 +216,7 @@ GLint		*getUniformLocation(GLuint program)
 	return unis;
 }
 
-#define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
-
-void		initSourceFiles(t_file *files, size_t max, size_t *num)
+void		init_source_files(t_file *files, size_t max, size_t *num)
 {
 	struct dirent	*d;
 	DIR				*dir;
@@ -202,7 +234,7 @@ void		initSourceFiles(t_file *files, size_t max, size_t *num)
 		ft_sprintf(files[*num].path, "./shaders/%s", d->d_name);
 		files[*num].fd = open(files[*num].path, O_RDONLY);
 		fstat(files[*num].fd, &st);
-		lastModifiedFile[files[*num].fd] = st.st_mtime;
+		last_modified_file[files[*num].fd] = st.st_mtime;
 		if (files[*num].fd == -1 || !S_ISREG(st.st_mode))
 			printf("not a valid file: %s\n", files[*num].path), exit(-1);
 		else
@@ -210,7 +242,7 @@ void		initSourceFiles(t_file *files, size_t max, size_t *num)
 	}
 }
 
-void		checkFileChanged(GLuint *program, t_file *files, size_t num)
+void		check_file_changed(GLuint *program, t_file *files, size_t num)
 {
 	struct stat		st;
 	size_t			i;
@@ -222,10 +254,10 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 		if (!FILE_CHECK_EXT(files[i].path, "glsl"))
 			continue ;
 		stat(files[i].path, &st);
-		if (lastModifiedFile[files[i].fd] != st.st_mtime)
+		if (last_modified_file[files[i].fd] != st.st_mtime)
 		{
 			printf("file modified: %s\n", files[i].path);
-			lastModifiedFile[files[i].fd] = st.st_mtime;
+			last_modified_file[files[i].fd] = st.st_mtime;
 			close(files[i].fd);
 			if ((fd = open(files[i].path, O_RDONLY)) != -1)
 				files[i].fd = fd;
@@ -237,14 +269,14 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 				glDeleteProgram(*program);
 				*program = new_program;
 				printf("shader reloaded !\n");
-				getUniformLocation(*program);
+				get_uniform_locations(*program);
 			}
 		}
 		i++;
 	}
 }
 
-int			checkFileExtention(char *file, char **exts)
+int			check_file_extensions(char *file, char **exts)
 {
 	char	*ext = file + strlen(file) - 1;
 
@@ -260,14 +292,14 @@ int			checkFileExtention(char *file, char **exts)
 	return (0);
 }
 
-GLint		*loadImages(char **av)
+GLint		*load_images(char **av)
 {
 	static GLint	texts[0xF0];
 	int				k = 0;
 
 	for (int i = 0; av[i]; i++)
 	{
-		if (!checkFileExtention(av[i], (char *[]){"png", "jpg", "tiff", "jpeg", "tga", NULL}))
+		if (!check_file_extensions(av[i], (char *[]){"png", "jpg", "tiff", "jpeg", "tga", NULL}))
 			continue ;
 		texts[k] = SOIL_load_OGL_texture(av[i], SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
 				SOIL_FLAG_MIPMAPS | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT | SOIL_FLAG_TEXTURE_REPEATS);
@@ -278,22 +310,6 @@ GLint		*loadImages(char **av)
 	return texts;
 }
 
-void		display_window_fps(void)
-{
-	static int		frames = 0;
-	static double	last_time = 0;
-	double			current_time = glfwGetTime();
-
-	frames++;
-	if (current_time - last_time >= 1.0)
-	{
-		printf("%sfps:%.3f%s", "\x1b\x37", 1.0 / (1000.0 / (float)frames) * 1000.0, "\x1b\x38");
-		frames = 0;
-		fflush(stdout);
-		last_time++;
-	}
-}
-
 int			main(int ac, char **av)
 {
 	static t_file	sources[0xF00];
@@ -302,22 +318,28 @@ int			main(int ac, char **av)
 	if (ac < 1)
 		usage(*av);
 	
-	initSourceFiles(sources, 0xF00, &num);
+	init_source_files(sources, 0xF00, &num);
 
 	GLFWwindow *win = init("Re Tweet");
 
+	GLuint		font_program = create_font_program();
+
+	load_fonts(font_program);
+
 	GLuint		program = create_program(sources, num, true);
-	GLuint		vbo = createVBO();
-	GLuint		vao = createVAO(vbo, program);
-	GLint		*unis = getUniformLocation(program);
-	GLint		*images = loadImages(av + 1);
+	GLuint		vbo = create_vbo();
+	GLuint		vao = create_vao(vbo, program);
+	GLint		*unis = get_uniform_locations(program);
+	GLint		*images = load_images(av + 1);
 
 	ft_printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
-		checkFileChanged(&program, sources, num);
+		glfwPollEvents();
+		if (!focus && !usleep(16000))
+			continue ;
+//		check_file_changed(&program, sources, num);
 		loop(win, program, vao, unis, images);
-		display_window_fps();
 	}
 	glfwTerminate();
 	return (0);

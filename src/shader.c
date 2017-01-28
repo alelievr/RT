@@ -118,12 +118,12 @@ static GLuint		compile_shader_fragments(t_file *files, size_t num, bool fatal)
 	return (ret);
 }
 
-static GLuint		compile_shader_vertex(bool fatal)
+static GLuint		compile_shader_vertex(const char *src, bool fatal)
 {
 	GLuint		ret;
 
 	ret = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(ret, 1, &vertex_shader_text, NULL);
+	glShaderSource(ret, 1, &src, NULL);
 	glCompileShader(ret);
 	check_compilation(ret, fatal);
 	return (ret);
@@ -132,7 +132,7 @@ static GLuint		compile_shader_vertex(bool fatal)
 GLuint				create_program(t_file *files, size_t num, bool fatal)
 {
 	GLuint				program;
-	const GLuint		shader_vertex = compile_shader_vertex(fatal);
+	const GLuint		shader_vertex = compile_shader_vertex(vertex_shader_text, fatal);
 	const GLuint		shader_fragment = compile_shader_fragments(files, num, fatal);
 
 	if (shader_vertex == 0 || shader_fragment == 0)
@@ -142,5 +142,27 @@ GLuint				create_program(t_file *files, size_t num, bool fatal)
 	glAttachShader(program, shader_fragment);
 	glLinkProgram(program);
 	check_link(program, fatal);
+	return (program);
+}
+
+GLuint				create_font_program()
+{
+	GLuint			program;
+	const GLuint	shader_vertex = compile_shader_vertex(vertex_shader_font, true);
+	GLuint			shader_fragment;
+	GLuint			ret;
+
+	ret = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(ret, 1, &fragment_shader_font, NULL);
+	glCompileShader(ret);
+	check_compilation(ret, true);
+	shader_fragment = ret;
+	if (shader_vertex == 0 || shader_fragment == 0)
+		ft_printf("can't compile font shaders\n"), exit(-1);
+	program = glCreateProgram();
+	glAttachShader(program, shader_vertex);
+	glAttachShader(program, shader_fragment);
+	glLinkProgram(program);
+	check_link(program, true);
 	return (program);
 }
