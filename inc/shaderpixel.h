@@ -116,7 +116,7 @@ GLFWwindow		*init(char *fname);
 GLuint			create_program(t_file *fd, size_t num, bool fatal);
 float			get_current_time(void);
 void			load_fonts(GLuint font_program);
-void			draw_text(const char *txt, float x, float y, float sx, float sy);
+void			draw_text(const char *txt, float x, float y);
 GLuint			create_font_program(void);
 
 static const char	*vertex_shader_font = 
@@ -141,7 +141,7 @@ static const char	*fragment_shader_font =
 "\n"
 "void main(void)\n"
 "{\n"
-"	color = vec4(1, 1, 1, texture(tex, TexCoords).r);\n"
+"	color = vec4(1, 1, 1, texture(tex, TexCoords).r) * textColor;\n"
 "}\n";
 
 static const char	*vertex_shader_text =

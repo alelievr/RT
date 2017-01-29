@@ -128,9 +128,5 @@ GLFWwindow	*init(char *name)
 	glfwSwapInterval(1);
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
 	return (win);
 }

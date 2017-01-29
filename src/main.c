@@ -168,19 +168,19 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glfwGetFramebufferSize(win, &width, &height);
 	ratio = width / (float) height;
 
-	glClearColor(1, 1, 1, 1);
+	glClearColor(0, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, width, height);
 
-	update_keys();
+/*	update_keys();
 	glUseProgram(program);
 	update_uniforms(unis, images);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 	display_window_fps();
-
-	draw_text("AAAAAAAAAAAAAAAA", 0, 0, 0, 0);
+*/
+	draw_text("AAAAAAAAAAAAAAAA", 0, 0);
 
 	glfwSwapBuffers(win);
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
