@@ -113,10 +113,11 @@ GLFWwindow	*init(char *name)
 	glfwSetErrorCallback(error_callback);
 	if (!glfwInit())
 		printf("glfwInit error !\n"), exit(-1);
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
- 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
- 	glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
- 	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+ 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+ 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+ 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	if (!(win = glfwCreateWindow(WIN_W, WIN_H, name, NULL, NULL)))
 		printf("failed to create window !\n"), exit(-1);
 	glfwSetKeyCallback(win, key_callback);
@@ -130,6 +131,7 @@ GLFWwindow	*init(char *name)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
 	return (win);
 }

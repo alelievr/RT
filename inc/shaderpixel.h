@@ -122,49 +122,38 @@ GLuint			create_font_program(void);
 static const char	*vertex_shader_font = 
 "#version 330\n"
 "\n"
-"in vec4	coord;\n"
-"out vec2	texcoord;\n"
-"out vec4	outColor;\n"
+"layout (location = 0) in vec4	vertex;\n"
+"out vec2	TexCoords;\n"
 "\n"
 "void main(void)\n"
 "{\n"
-"	gl_Position = vec4(coord.xy, 0, 0);\n"
-"	texcoord = coord.zw;\n"
+"	gl_Position = vec4(vertex.xy, 0, 1);\n"
+"	TexCoords = vertex.zw;\n"
 "}\n";
 
 static const char	*fragment_shader_font = 
 "#version 330\n"
-"out vec2 texcoord;\n"
-"uniform sampler2D tex;\n"
-"uniform vec4 color;\n"
-"in vec4 outColor;\n"
-"out vec4 fragColor;\n"
+"in vec2			TexCoords;\n"
+"out vec4			color;\n"
+"\n"
+"uniform sampler2D	tex;\n"
+"uniform vec4		textColor;\n"
 "\n"
 "void main(void)\n"
 "{\n"
-"	fragColor = vec4(1, 1, 1, texture(tex, texcoord).r) * color;\n"
+"	color = vec4(1, 1, 1, texture(tex, TexCoords).r);\n"
 "}\n";
 
 static const char	*vertex_shader_text =
 "#version 330\n"
-//"in vec2		iResolutionIn;\n"
-//"out vec2		iResolution;\n"
 "in vec2		fragPosition;\n"
 "out vec4		outColor;\n"
 "void main()\n"
 "{\n"
-//"	iResolution = iResolutionIn;\n"
 "	gl_Position = vec4(fragPosition, 0.0, 1.0);\n"
 "}\n";
 
-static const char	*fragment_shader_image_text = 
-"void mainImage(vec2 fragCoord)\n"
-"{\n"
-"	vec2 uv = fragCoord.xy / iResolution.xy;\n"
-"	fragColor = vec4(uv, 0.5 + 0.5 * sin(iGlobalTime), 1.0);\n"
-"}\n";
-
-static const char	*fragment_shader_text =
+	static const char	*fragment_shader_text =
 "#version 330\n"
 "in vec4 outColor;\n"
 "out vec4 fragColor;\n"

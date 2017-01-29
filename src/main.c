@@ -73,6 +73,9 @@ GLuint		create_vao(GLuint vbo, int program)
 	glEnableVertexAttribArray(fragPos);
 	glVertexAttribPointer(fragPos, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*) 0);
 
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+
 	return vao;
 }
 
@@ -183,12 +186,11 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 	display_window_fps();
-	float sx = 2.f / window.x;
-	float sy = 2.f / window.y;
-	draw_text("The Quick Brown Fox Jumps Over The Lazy Dog",
-			-1 + 8 * sx, 1 - 50 * sy, sx, sy);
 
-	glFlush();
+//	draw_text("T", 0, 0, 0, 0);
+
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glfwSwapBuffers(win);
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
@@ -256,7 +258,7 @@ void		check_file_changed(GLuint *program, t_file *files, size_t num)
 		stat(files[i].path, &st);
 		if (last_modified_file[files[i].fd] != st.st_mtime)
 		{
-			printf("file modified: %s\n", files[i].path);
+//			printf("file modified: %s\n", files[i].path);
 			last_modified_file[files[i].fd] = st.st_mtime;
 			close(files[i].fd);
 			if ((fd = open(files[i].path, O_RDONLY)) != -1)
@@ -268,7 +270,7 @@ void		check_file_changed(GLuint *program, t_file *files, size_t num)
 			{
 				glDeleteProgram(*program);
 				*program = new_program;
-				printf("shader reloaded !\n");
+				printf("shader program updated !\n");
 				get_uniform_locations(*program);
 			}
 		}
@@ -336,9 +338,9 @@ int			main(int ac, char **av)
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
 		glfwPollEvents();
+		check_file_changed(&program, sources, num);
 		if (!focus && !usleep(16000))
 			continue ;
-//		check_file_changed(&program, sources, num);
 		loop(win, program, vao, unis, images);
 	}
 	glfwTerminate();
