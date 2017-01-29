@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 17:03:04 by alelievr          #+#    #+#             */
-/*   Updated: 2017/01/29 03:43:22 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/01/29 05:16:08 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,14 @@ void		load_fonts(GLuint font_program)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-/*	GLuint      uniform_tex = glGetUniformLocation(font_program, "tex");
+	GLuint      uniform_tex = glGetUniformLocation(font_program, "tex");
 	glGenTextures(1, &g_tex);
 	glBindTexture(GL_TEXTURE_2D, g_tex);
-	glUniform1i(uniform_tex, 0);*/
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glUniform1i(uniform_tex, 0);
 
 	g_color_uniform = glGetUniformLocation(font_program, "textColor");
 	GLfloat black[4] = {0, 0, 0, 1};
@@ -116,7 +120,6 @@ void	draw_text(const char *text, float x, float y, float sx, float sy)
 	FT_Face			*face;
 	int				error;
 
-	printf("draw text: %s\n", text);
 	glUseProgram(g_font_program);
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(g_vao);
@@ -130,6 +133,10 @@ void	draw_text(const char *text, float x, float y, float sx, float sy)
 		FT_GlyphSlot g = (*face)->glyph;
 		if (error)
 			continue ;
+		if ((error = FT_Render_Glyph((*face)->glyph, FT_RENDER_MODE_NORMAL)))
+			continue;
+
+		glBindTexture(GL_TEXTURE_2D, g_tex);
 
     	glTexImage2D(
       			GL_TEXTURE_2D,
@@ -147,14 +154,14 @@ void	draw_text(const char *text, float x, float y, float sx, float sy)
     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
        	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
        	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         GLfloat xpos = x + g->bitmap_left * scale;
         GLfloat ypos = y - (g->bitmap.rows - g->bitmap_top) * scale;
 
         GLfloat w = g->bitmap.rows * scale;
         GLfloat h = g->bitmap.width * scale;
-		
+
 		GLfloat vertices[6][4] = {
             { xpos,     ypos + h,   0.0, 0.0 },            
             { xpos,     ypos,       0.0, 1.0 },
@@ -165,11 +172,8 @@ void	draw_text(const char *text, float x, float y, float sx, float sy)
             { xpos + w, ypos + h,   1.0, 0.0 }           
         };
 
-		glBindTexture(GL_TEXTURE_2D, g_tex);
 		glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 

@@ -26,7 +26,6 @@ static void error_callback(int error, const char* description)
 static void	focus_callback(GLFWwindow *win, int focused)
 {
 	(void)win;
-	printf("focus: %i\n", focus);
 	focus = focused;
 }
 
