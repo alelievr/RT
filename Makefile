@@ -6,7 +6,7 @@
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/01/27 19:29:14 by alelievr         ###   ########.fr        #
+#    Updated: 2017/01/30 13:04:41 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,7 +50,7 @@ NAME		=	RT
 
 #	Compiler
 WERROR		=	-Werror
-CFLAGS		=	-Wall -Wextra -pedantic -ferror-limit=999
+CFLAGS		=	-Wall -Wextra -ferror-limit=999
 CPROTECTION	=	-z execstack -fno-stack-protector
 
 DEBUGFLAGS1	=	-ggdb -O0
@@ -75,6 +75,9 @@ CCLEAN_T	=	$(CPREFIX)"9m"
 CCLEAN		=	$(CPREFIX)"166m"
 CRUN_T		=	$(CPREFIX)"198m"
 CRUN		=	$(CPREFIX)"163m"
+CDEPEND		=	$(CPREFIX)"231m"
+CDEPEND_T	=	$(CPREFIX)"231m"
+
 CNORM_T		=	"226m"
 CNORM_ERR	=	"196m"
 CNORM_WARN	=	"202m"
@@ -118,13 +121,18 @@ CPPFLAGS	=	$(addprefix -I,$(INCDIRS))
 LDFLAGS		=	$(addprefix -L,$(LIBDIRS))
 LINKER		=	clang
 
-disp_indent	=	for I in `seq 1 $(MAKELEVEL)`; do \
-					test "$(MAKELEVEL)" '!=' '0' && printf "\t"; \
+disp_indent	=	tabs=""; \
+				for I in `seq 1 $(MAKELEVEL)`; do \
+					test "$(MAKELEVEL)" '!=' '0' && tabs=$$tabs"\t"; \
 				done
+
 color_exec	=	$(call disp_indent); \
-				echo $(1)➤ $(3)$(2)"\n"$(strip $(4))$(CCLEAR);$(4)
+				echo $$tabs$(1)➤ $(3)$(2); \
+				echo $$tabs '$(strip $(4))' $(CCLEAR); \
+				$(4)
+
 color_exec_t=	$(call disp_indent); \
-				echo $(1)➤ $(strip $(3))$(2)$(CCLEAR);$(3)
+				echo $(1)➤ '$(strip $(3))'$(2);$(3);printf $(CCLEAR)
 
 ifneq ($(filter 1,$(strip $(DEBUGLEVEL)) ${DEBUG}),)
 	OPTLEVEL = 0
@@ -189,8 +197,9 @@ $(FREETYPELIB):
 
 #	Linking
 $(NAME): $(OBJ)
-	@$(if $(findstring lft,$(LDLIBS)),$(call color_exec_t,$(CCLEAR),$(CCLEAR),\
+	@$(if $(findstring lft,$(LDLIBS)),$(call color_exec_t,$(CDEPEND),$(CDEPEND_T),\
 		make -j 4 -C libft))
+	@$(call color_exec_t,$(CDEPEND),$(CDEPEND_T), make -j 4 -C SOIL2-clone)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(NAME):",\
 		$(LINKER) $(WERROR) $(CFLAGS) $(LDFLAGS) $(OPTFLAGS) $(DEBUGFLAGS) $(LINKDEBUG) $(VFRAME) -o $@ $^ $(LDLIBS))
 

@@ -173,18 +173,29 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 
 	glViewport(0, 0, width, height);
 
-/*	update_keys();
-	glUseProgram(program);
+	update_keys();
+/*	glUseProgram(program);
 	update_uniforms(unis, images);
+	glUniform2f(glGetUniformLocation(program, "iResolution"), window.x, window.y);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, 66);
+	glUniform1i(glGetUniformLocation(program, "tex"), 1);
+
 	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);*/
 	display_window_fps();
-*/
-	draw_text("AAAAAAAAAAAAAAAA", 0, 0);
+
+	draw_text("A", 0, 0);
 
 	glfwSwapBuffers(win);
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
 		glfwSetCursorPos(win, window.x / 2, window.y / 2);
+
+	(void)program;
+	(void)vao;
+	(void)unis;
+	(void)images;
 }
 
 GLint		*get_uniform_locations(GLuint program)

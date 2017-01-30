@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 17:03:04 by alelievr          #+#    #+#             */
-/*   Updated: 2017/01/30 00:25:32 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/01/30 13:27:29 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static GLuint		g_vbo;
 static GLuint		g_vao;
 static GLuint		g_color_uniform;
 static GLuint		g_font_program;
+static GLuint		g_text_uniform;
 
 static char	*foreach_font_file(void)
 {
@@ -101,7 +102,7 @@ void		load_fonts(GLuint font_program)
 	}
 
 	//opengl options
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -116,8 +117,26 @@ void		load_fonts(GLuint font_program)
 			continue ;
 		}
 
+		ALIAS(face->glyph->bitmap, bitmap);
+		for (unsigned x = 0; x < bitmap.width; x++)
+		{
+			for (unsigned y = 0; y < bitmap.rows; y++)
+			{
+				//flip y
+//				char top = bitmap.buffer[x * bitmap.width + y];
+//				bitmap.buffer[x * bitmap.width + y] = bitmap.buffer[(bitmap.width - x - 1) * bitmap.width + y];
+//				bitmap.buffer[(bitmap.width - x - 1) * bitmap.width + y] = top;
+				printf("\033[48;5;%im ", face->glyph->bitmap.buffer[x * face->glyph->bitmap.width + y]);
+			}
+			printf("\n");
+		}
+
 		GLuint	texture;
+
 		glGenTextures(1, &texture);
+		int error = glGetError();
+		if (error)
+			printf("ERR: %i\n", error);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexImage2D(
 				GL_TEXTURE_2D,
@@ -130,10 +149,13 @@ void		load_fonts(GLuint font_program)
 				GL_UNSIGNED_BYTE,
 				face->glyph->bitmap.buffer
 				);
+		if ((error = glGetError()))
+			printf("ERR: %i\n", error);
 	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		printf("OpenGL textue ID: %i\n", texture);
 		font[c] = (t_font){texture, {face->glyph->bitmap.width, face->glyph->bitmap.rows}, {face->glyph->bitmap_left, face->glyph->bitmap_top}, face->glyph->advance.x};
 	}
 	//unbind opengl texture
@@ -150,7 +172,7 @@ void		load_fonts(GLuint font_program)
 	//init render buffers
 	glBindVertexArray(g_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -160,6 +182,8 @@ void		load_fonts(GLuint font_program)
 	g_color_uniform = glGetUniformLocation(font_program, "textColor");
 	GLfloat black[4] = {0, 0, 0, 1};
 	glUniform4fv(g_color_uniform, 1, black);
+
+	g_text_uniform = glGetUniformLocation(font_program, "tex");
 
 	//unbind all
 	glBindVertexArray(0);
@@ -171,7 +195,7 @@ void	draw_text(const char *text, float x, float y)
 	t_font			*font;
 
 	glUseProgram(g_font_program);
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE1);
 	glBindVertexArray(g_vao);
 	float scale = 1;
 	font = get_font_data(0);
@@ -186,19 +210,21 @@ void	draw_text(const char *text, float x, float y)
 		GLfloat	h = c.size.y * scale;
 
 		GLfloat vertices[6][4] = {
-            { xpos,     ypos + h,   0.0, 0.0 },            
+            { xpos,     ypos + h,   0.0, 0.0 },
             { xpos,     ypos,       0.0, 1.0 },
             { xpos + w, ypos,       1.0, 1.0 },
 
             { xpos,     ypos + h,   0.0, 0.0 },
             { xpos + w, ypos,       1.0, 1.0 },
-            { xpos + w, ypos + h,   1.0, 0.0 }           
+            { xpos + w, ypos + h,   1.0, 0.0 }
         };
 
 //		printf("xpos: %f - ypos: %f - w: %f - h: %f\n", xpos, ypos, w, h);
 
 		//bind char texture
+		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, c.textureID);
+		glUniform1i(g_text_uniform, c.textureID);
 
 		//bind render zone
 		glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
