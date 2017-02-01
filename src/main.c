@@ -33,7 +33,7 @@ bool		focus = true;
 long		last_modified_file[0xF00] = {0};
 float		paused_time = 0;
 
-float points[] = {
+const static float points[] = {
    	-1.0f,  -1.0f,
     -1.0f, 1.0f,
 	1.0f, 1.0f,
@@ -179,7 +179,7 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glUniform2f(glGetUniformLocation(program, "iResolution"), window.x, window.y);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, 66);
+	glBindTexture(GL_TEXTURE_2D, 67);
 	glUniform1i(glGetUniformLocation(program, "tex"), 1);
 
 	glBindVertexArray(vao);
@@ -342,7 +342,7 @@ int			main(int ac, char **av)
 		check_file_changed(&program, sources, num);
 		if (!focus && !usleep(16000))
 			continue ;
-		loop(win, program, vao, unis, images);
+		loop(win, font_program, vao, unis, images);
 	}
 	glfwTerminate();
 	return (0);

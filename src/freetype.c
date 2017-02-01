@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 17:03:04 by alelievr          #+#    #+#             */
-/*   Updated: 2017/01/30 13:27:29 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/01/31 18:46:22 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,15 @@ static GLuint		g_vao;
 static GLuint		g_color_uniform;
 static GLuint		g_font_program;
 static GLuint		g_text_uniform;
+
+const static float points[] = {
+	-1.0f,  -1.0f,
+	-1.0f, 1.0f,
+	1.0f, 1.0f,
+	1.0f, 1.0f,
+	1.0f, -1.0f,
+	-1.0f,  -1.0f,
+};
 
 static char	*foreach_font_file(void)
 {
@@ -108,6 +117,8 @@ void		load_fonts(GLuint font_program)
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+	//TODO: create a temp buffer to flip bitmap
+
 	//load font's ascii table
 	for (GLubyte c = 0; c < 128; c++)
 	{
@@ -165,17 +176,18 @@ void		load_fonts(GLuint font_program)
 	FT_Done_Face(face);
 	FT_Done_FreeType(g_library);
 
-	//generate render buffers for fonts
-	glGenVertexArrays(1, &g_vao);
-	glGenBuffers(1, &g_vbo);
-
 	//init render buffers
-	glBindVertexArray(g_vao);
+	glGenBuffers(1, &g_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_STATIC_DRAW);
+//	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 12, NULL, GL_DYNAMIC_DRAW);
+
+	//init vao
+	glGenVertexArrays(1, &g_vao);
+	glBindVertexArray(g_vao);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, NULL);
 	glBindVertexArray(0);
 
 	//get texColor variable from shader for text color
@@ -188,6 +200,8 @@ void		load_fonts(GLuint font_program)
 	//unbind all
 	glBindVertexArray(0);
 	glUseProgram(0);
+
+	(void)points;
 }
 
 void	draw_text(const char *text, float x, float y)
@@ -195,49 +209,49 @@ void	draw_text(const char *text, float x, float y)
 	t_font			*font;
 
 	glUseProgram(g_font_program);
-	glActiveTexture(GL_TEXTURE1);
-	glBindVertexArray(g_vao);
-	float scale = 1;
+	float scale = 10;
 	font = get_font_data(0);
 	while (*text)
 	{
 		t_font c = font[(int)*text];
 
+		(void)y;
 		GLfloat	xpos = x + c.bearing.x * scale;
 		GLfloat	ypos = y - (c.size.y - c.bearing.y) * scale;
 
 		GLfloat	w = c.size.x * scale;
 		GLfloat	h = c.size.y * scale;
 
-		GLfloat vertices[6][4] = {
-            { xpos,     ypos + h,   0.0, 0.0 },
-            { xpos,     ypos,       0.0, 1.0 },
-            { xpos + w, ypos,       1.0, 1.0 },
+        GLfloat vertices[] = {
+			xpos,     ypos,
+			xpos,     ypos + h,
+			xpos + w, ypos + h,
 
-            { xpos,     ypos + h,   0.0, 0.0 },
-            { xpos + w, ypos,       1.0, 1.0 },
-            { xpos + w, ypos + h,   1.0, 0.0 }
-        };
+			xpos + w, ypos + h,
+			xpos + w, ypos,
+			xpos    , ypos
+		};
 
-//		printf("xpos: %f - ypos: %f - w: %f - h: %f\n", xpos, ypos, w, h);
+		glBindBuffer (GL_ARRAY_BUFFER, g_vbo);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glUniform2f(glGetUniformLocation(g_font_program, "iResolution"), window.x, window.y);
 
 		//bind char texture
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, c.textureID);
-		glUniform1i(g_text_uniform, c.textureID);
+		glUniform1i(g_text_uniform, 1);
 
-		//bind render zone
-		glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
+		glBindVertexArray(g_vao);
 
-		//unbind render zone
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
         // Render quad
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 
 		x += (c.advance >> 6) * scale;
 
 		text++;
+		(void)vertices;
   	}
 	//unbind render infos
     glBindVertexArray(0);

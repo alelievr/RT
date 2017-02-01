@@ -122,13 +122,11 @@ GLuint			create_font_program(void);
 static const char	*vertex_shader_font = 
 "#version 330\n"
 "\n"
-"layout (location = 0) in vec4	vertex;\n"
-"out vec2	TexCoords;\n"
+"layout (location = 0) in vec2	vertex;\n"
 "\n"
 "void main()\n"
 "{\n"
 "	gl_Position = vec4(vertex.xy, 0, 1);\n"
-"	TexCoords = vertex.zw;\n"
 "}\n";
 
 static const char	*fragment_shader_font = 
@@ -149,7 +147,6 @@ static const char	*fragment_shader_font =
 static const char	*vertex_shader_text =
 "#version 330\n"
 "in vec2		fragPosition;\n"
-"out vec4		outColor;\n"
 "\n"
 "void main()\n"
 "{\n"

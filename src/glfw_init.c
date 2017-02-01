@@ -102,6 +102,7 @@ static void resize_callback(GLFWwindow *win, int width, int height)
 	(void)win;
 	window.x = width;
 	window.y = height;
+	//loop(win, program, vao, unis, images);
 }
 
 GLFWwindow	*init(char *name)
