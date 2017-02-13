@@ -168,7 +168,7 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glfwGetFramebufferSize(win, &width, &height);
 	ratio = width / (float) height;
 
-	glClearColor(0, 1, 1, 1);
+	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, width, height);
@@ -186,7 +186,10 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);*/
 	display_window_fps();
 
-	draw_text("A", 0, 0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	draw_text("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", 23, 2);
 
 	glfwSwapBuffers(win);
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
@@ -323,7 +326,7 @@ int			main(int ac, char **av)
 	
 	init_source_files(sources, 0xF00, &num);
 
-	GLFWwindow *win = init("Re Tweet");
+	GLFWwindow *win = init("Russia Today");
 
 	GLuint		font_program = create_font_program();
 

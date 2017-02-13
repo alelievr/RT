@@ -6,7 +6,7 @@
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/01/30 13:04:41 by alelievr         ###   ########.fr        #
+#    Updated: 2017/02/12 17:59:44 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -89,10 +89,10 @@ CNORM_OK	=	"231m"
 
 OS			:=	$(shell uname -s)
 PROC		:=	$(shell uname -p)
-DEBUGFLAGS	=	""
-LINKDEBUG	=	""
-OPTFLAGS	=	""
-#COMPILATION	=	""
+DEBUGFLAGS	=	
+LINKDEBUG	=	
+OPTFLAGS	=	
+#COMPILATION	=	
 
 ifeq "$(OS)" "Windows_NT"
 endif
@@ -148,11 +148,11 @@ ifneq ($(filter 2,$(strip $(DEBUGLEVEL)) ${DEBUG}),)
 endif
 
 ifneq ($(filter 1,$(strip $(OPTLEVEL)) ${OPTI}),)
-	DEBUGFLAGS = ""
+	DEBUGFLAGS = 
 	OPTFLAGS = $(OPTFLAGS1)
 endif
 ifneq ($(filter 2,$(strip $(OPTLEVEL)) ${OPTI}),)
-	DEBUGFLAGS = ""
+	DEBUGFLAGS = 
 	OPTFLAGS = $(OPTFLAGS1) $(OPTFLAGS2)
 endif
 
@@ -165,7 +165,7 @@ ifneq ($(filter %.cpp,$(SRC)),)
 endif
 
 ifdef ${NOWERROR}
-	WERROR = ""
+	WERROR = 
 endif
 
 ifeq "$(strip $(LIBFT))" "2"

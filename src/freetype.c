@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 17:03:04 by alelievr          #+#    #+#             */
-/*   Updated: 2017/01/31 18:46:22 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/02/13 17:43:15 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,20 @@
 #include FT_FREETYPE_H
 #include <dirent.h>
 #include <stdbool.h>
+#include <math.h>
+#include <OpenGL/glext.h>
 
 #define FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
+#define MAXWIDTH 1024
+#define MAX(x, y) (x > y) ? (x) : (y)
 
 static FT_Library	g_library;
 static GLuint		g_vbo;
-static GLuint		g_vao;
-static GLuint		g_color_uniform;
-static GLuint		g_font_program;
-static GLuint		g_text_uniform;
-
+static GLint		g_color_uniform;
+static GLint		g_coord_attribute;
+static GLint		g_font_program;
+static GLint		g_tex_uniform;
+/*
 const static float points[] = {
 	-1.0f,  -1.0f,
 	-1.0f, 1.0f,
@@ -32,7 +36,41 @@ const static float points[] = {
 	1.0f, 1.0f,
 	1.0f, -1.0f,
 	-1.0f,  -1.0f,
-};
+};*/
+
+typedef struct	s_point {
+    GLfloat x;
+    GLfloat y;
+    GLfloat s;
+    GLfloat t;
+}				point;
+
+typedef struct s_atlas
+{
+	GLuint			tex;
+
+	unsigned int	w;
+	unsigned int	h;
+
+	struct {
+		//advance
+		float	ax;
+		float	ay;
+
+		//bitmap
+		float	bh;
+		float	bw;
+
+		//bitmap_left/top
+		float	bl;
+		float	bt;
+
+		//texture coords
+		float	tx;
+		float	ty;
+
+	} c[128];
+}				t_atlas;
 
 static char	*foreach_font_file(void)
 {
@@ -70,33 +108,41 @@ typedef struct	s_font
 	GLuint	advance;
 }				t_font;
 
-static t_font	*get_font_data(const int index)
+/*static t_font	*get_font_data(const int index)
 {
 	static t_font		fonts[0xF0][128];
 
 	if (index >= 0 && index < 0xF0)
 		return (fonts[index]);
 	return (NULL);
-}
+}*/
 
-void		load_fonts(GLuint font_program)
+static t_atlas	atlas;
+
+void		load_fonts()
 {
 	int		error;
-	char	*f;
-	t_font	*font;
 	FT_Face	face;
 	int		index;
 
-	//use and store font shader
-	g_font_program = font_program;
-	glUseProgram(font_program);
+
+	g_font_program = create_font_program();
+
+	g_coord_attribute = glGetAttribLocation(g_font_program, "coord");
+	g_tex_uniform = glGetUniformLocation(g_font_program, "tex");
+	g_color_uniform = glGetUniformLocation(g_font_program, "color");
+
+	if (g_coord_attribute == -1 || g_tex_uniform == -1 || g_color_uniform == -1)
+		puts("shader internal error"), exit(-1);
+
+	glGenBuffers(1, &g_vbo);
 
 	//fonts loading
 	index = 0;
 	error = FT_Init_FreeType(&g_library);
 	if (error)
 		ft_printf("can't initialize freetype\n"), exit(-1);
-	while ((f = foreach_font_file()))
+/*	while ((f = foreach_font_file())) //currently just load one font
 	{
 		if ((font = get_font_data(index++)) == NULL)
 		{
@@ -105,155 +151,157 @@ void		load_fonts(GLuint font_program)
 		}
 		if ((error = FT_New_Face(g_library, f, 0, &face)))
 			ft_printf("error while loading font file: %f\n", f);
-		FT_Set_Char_Size(face, 0, 48 * 64, window.x, window.y);
-		FT_Set_Pixel_Sizes(face, 0, 48);
+		FT_Set_Pixel_Sizes(face, 0, 24);
 		ft_printf("%s font loaded\n", f);
+	}*/
+
+	const char *file = foreach_font_file();
+	if (FT_New_Face(g_library, file, 0, &face))
+		fprintf(stderr, "error while loading font file: [%s]\n", file), exit(-1);
+
+	FT_GlyphSlot g = face->glyph;
+
+	FT_UInt  glyph_index;
+
+	unsigned int		rowh = 0;
+	unsigned int		roww = 0;
+
+	for (int i = 32; i < 128; i++) {
+		glyph_index = FT_Get_Char_Index(face, i);
+		error = FT_Load_Glyph( face, glyph_index, FT_LOAD_DEFAULT );
+		if (error)
+			continue;
+		error = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_NORMAL );
+		if (error)
+			continue;
+		if (roww + g->bitmap.width + 1 >= MAXWIDTH) {
+			atlas.w = MAX(atlas.w, roww);
+			atlas.h += rowh;
+			roww = 0;
+			rowh = 0;
+		}
+		roww += g->bitmap.width + 1;
+		rowh = MAX(rowh, g->bitmap.rows);
 	}
 
-	//opengl options
-	//glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	atlas.w = MAX(atlas.w, roww);
+	atlas.h += rowh;
+
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &atlas.tex);
+	glBindTexture(GL_TEXTURE_2D, atlas.tex);
+	glUniform1i(atlas.tex, 0);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, atlas.w, atlas.h, 0, GL_ALPHA, GL_UNSIGNED_BYTE, 0);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	//TODO: create a temp buffer to flip bitmap
+/* Clamping to edges is important to prevent artifacts when scaling */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	//load font's ascii table
-	for (GLubyte c = 0; c < 128; c++)
+	/* Linear filtering usually looks best for text */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int		ox = 0;
+	int		oy = 0;
+
+	rowh = 0;
+
+	for (int i = 32; i < 128; i++)
 	{
-		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-		{
-			printf("error while loading char: %c (0x%x)\n", c, c);
-			continue ;
-		}
-
-		ALIAS(face->glyph->bitmap, bitmap);
-		for (unsigned x = 0; x < bitmap.width; x++)
-		{
-			for (unsigned y = 0; y < bitmap.rows; y++)
-			{
-				//flip y
-//				char top = bitmap.buffer[x * bitmap.width + y];
-//				bitmap.buffer[x * bitmap.width + y] = bitmap.buffer[(bitmap.width - x - 1) * bitmap.width + y];
-//				bitmap.buffer[(bitmap.width - x - 1) * bitmap.width + y] = top;
-				printf("\033[48;5;%im ", face->glyph->bitmap.buffer[x * face->glyph->bitmap.width + y]);
-			}
-			printf("\n");
-		}
-
-		GLuint	texture;
-
-		glGenTextures(1, &texture);
-		int error = glGetError();
+		glyph_index = FT_Get_Char_Index( face, i );
+		error = FT_Load_Glyph( face, glyph_index, FT_LOAD_DEFAULT );
 		if (error)
-			printf("ERR: %i\n", error);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RED,
-				face->glyph->bitmap.width,
-				face->glyph->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				face->glyph->bitmap.buffer
-				);
-		if ((error = glGetError()))
-			printf("ERR: %i\n", error);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		printf("OpenGL textue ID: %i\n", texture);
-		font[c] = (t_font){texture, {face->glyph->bitmap.width, face->glyph->bitmap.rows}, {face->glyph->bitmap_left, face->glyph->bitmap_top}, face->glyph->advance.x};
+			continue;
+		error = FT_Render_Glyph( face->glyph, FT_RENDER_MODE_NORMAL );
+		if (error)
+			continue;
+		
+		if (ox + g->bitmap.width + 1 > MAXWIDTH) {
+			oy += rowh;
+			rowh = 0;
+			ox = 0;
+		}
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, g->bitmap.width, g->bitmap.rows, GL_ALPHA, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+		atlas.c[i].ax = g->advance.x >> 6;
+		atlas.c[i].ay = g->advance.y >> 6;
+
+		atlas.c[i].bw = g->bitmap.width;
+		atlas.c[i].bh = g->bitmap.rows;
+
+		atlas.c[i].bl = g->bitmap_left;
+		atlas.c[i].bt = g->bitmap_top;
+
+		atlas.c[i].tx = ox / (float)atlas.w;
+		atlas.c[i].bt = oy / (float)atlas.h;
+
+		rowh = MAX(rowh, g->bitmap.rows);
+		ox += g->bitmap.width + 1;
 	}
-	//unbind opengl texture
-	glBindTexture(GL_TEXTURE_2D, 0);
+}
 
-	//free font
-	FT_Done_Face(face);
-	FT_Done_FreeType(g_library);
-
-	//init render buffers
-	glGenBuffers(1, &g_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
-//	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 12, NULL, GL_DYNAMIC_DRAW);
-
-	//init vao
-	glGenVertexArrays(1, &g_vao);
-	glBindVertexArray(g_vao);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, NULL);
-	glBindVertexArray(0);
-
-	//get texColor variable from shader for text color
-	g_color_uniform = glGetUniformLocation(font_program, "textColor");
-	GLfloat black[4] = {0, 0, 0, 1};
-	glUniform4fv(g_color_uniform, 1, black);
-
-	g_text_uniform = glGetUniformLocation(font_program, "tex");
-
-	//unbind all
-	glBindVertexArray(0);
-	glUseProgram(0);
-
-	(void)points;
+void	deleteFonts(void)
+{
+	glDeleteTextures(1, &atlas.tex);
 }
 
 void	draw_text(const char *text, float x, float y)
 {
-	t_font			*font;
+	const uint8_t *p;
 
-	glUseProgram(g_font_program);
-	float scale = 10;
-	font = get_font_data(0);
-	while (*text)
-	{
-		t_font c = font[(int)*text];
+	/* Use the texture containing the atlas */
+	glBindTexture(GL_TEXTURE_2D, atlas.tex);
+	glUniform1i(g_tex_uniform, 0);
 
-		(void)y;
-		GLfloat	xpos = x + c.bearing.x * scale;
-		GLfloat	ypos = y - (c.size.y - c.bearing.y) * scale;
+	glUniform4f(g_color_uniform, 0, 0, 0, 1);
 
-		GLfloat	w = c.size.x * scale;
-		GLfloat	h = c.size.y * scale;
+	/* Set up the VBO for our vertex data */
+	glEnableVertexAttribArray(g_coord_attribute);
+	glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
+	glVertexAttribPointer(g_coord_attribute, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-        GLfloat vertices[] = {
-			xpos,     ypos,
-			xpos,     ypos + h,
-			xpos + w, ypos + h,
+	float sx = 2.f / window.x;
+	float sy = 2.f / window.y;
 
-			xpos + w, ypos + h,
-			xpos + w, ypos,
-			xpos    , ypos
-		};
+	point coords[6 * strlen(text)];
+	int c = 0;
 
-		glBindBuffer (GL_ARRAY_BUFFER, g_vbo);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	/* Loop through all c */
+	for (p = (const uint8_t *)text; *p; p++) {
+    	/* Calculate the vertex and texture coordinates */
+    	float x2 = x + atlas.c[*p].bl * sx;
+    	float y2 = -y - atlas.c[*p].bt * sy;
+    	float w = atlas.c[*p].bw * sx;
+    	float h = atlas.c[*p].bh * sy;
 
-		glUniform2f(glGetUniformLocation(g_font_program, "iResolution"), window.x, window.y);
+    	/* Advance the cursor to the start of the next character */
+    	x += atlas.c[*p].ax * sx;
+    	y += atlas.c[*p].ay * sy;
 
-		//bind char texture
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, c.textureID);
-		glUniform1i(g_text_uniform, 1);
+    	/* Skip glyphs that have no pixels */
+    	if (!w || !h)
+        	continue;
 
-		glBindVertexArray(g_vao);
+    	coords[c++] = (point) {
+    		x2, -y2, atlas.c[*p].tx, atlas.c[*p].ty};
+    	coords[c++] = (point) {
+    		x2 + w, -y2, atlas.c[*p].tx + atlas.c[*p].bw / atlas.w, atlas.c[*p].ty};
+    	coords[c++] = (point) {
+    		x2, -y2 - h, atlas.c[*p].tx, atlas.c[*p].ty + atlas.c[*p].bh / atlas.h};
+    	coords[c++] = (point) {
+    		x2 + w, -y2, atlas.c[*p].tx + atlas.c[*p].bw / atlas.w, atlas.c[*p].ty};
+    	coords[c++] = (point) {
+    		x2, -y2 - h, atlas.c[*p].tx, atlas.c[*p].ty + atlas.c[*p].bh / atlas.h};
+    	coords[c++] = (point) {
+    		x2 + w, -y2 - h, atlas.c[*p].tx + atlas.c[*p].bw / atlas.w, atlas.c[*p].ty + atlas.c[*p].bh / atlas.h};
+	}
 
-        // Render quad
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
+	/* Draw all the character on the screen in one go */
+	glBufferData(GL_ARRAY_BUFFER, sizeof coords, coords, GL_DYNAMIC_DRAW);
+	glDrawArrays(GL_TRIANGLES, 0, c);
 
-		x += (c.advance >> 6) * scale;
-
-		text++;
-		(void)vertices;
-  	}
-	//unbind render infos
-    glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisableVertexAttribArray(g_coord_attribute);
 }
