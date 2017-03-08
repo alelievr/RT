@@ -6,7 +6,7 @@
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/01/27 17:03:55 by alelievr         ###   ########.fr        #
+#    Updated: 2017/03/08 19:07:50 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,11 +38,11 @@ CPPVERSION	=	c++11
 INCDIRS		=	. glfw/include inc SOIL2-clone/SOIL2 fmod/inc freetype2/include
 
 #	Libraries
-LIBDIRS		=	glfw/src/ SOIL2-clone freetype2/./objs/.libs/
-LDLIBS		=	-lglfw3 -lSOIL2 -lfreetype
+LIBDIRS		=	glfw/src/ SOIL2-clone
+LDLIBS		=	-lglfw3 -lSOIL2
 GLFWLIB		=	glfw/src/libglfw3.a
 SOILLIB		=	SOIL2-clone/libSOIL2.a
-FREETYPELIB	=	freetype2/./objs/.libs/libfreetype.a
+FREETYPELIB	=	freetype2/objs/.libs/libfreetype.a
 
 #	Output
 NAME		=	RT
@@ -172,7 +172,7 @@ endif
 #################
 
 #	First target
-all: $(GLFWLIB) $(SOILLIB) $(NAME)
+all: $(GLFWLIB) $(SOILLIB) $(FREETYPELIB) $(NAME)
 
 $(SOILLIB):
 	cd SOIL2-clone && make
@@ -190,7 +190,7 @@ $(NAME): $(OBJ)
 	@$(if $(findstring lft,$(LDLIBS)),$(call color_exec_t,$(CCLEAR),$(CCLEAR),\
 		make -j 4 -C libft))
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(NAME):",\
-		$(LINKER) $(WERROR) $(CFLAGS) $(LDFLAGS) $(OPTFLAGS) $(DEBUGFLAGS) $(LINKDEBUG) $(VFRAME) -o $@ $^ $(LDLIBS))
+		$(LINKER) $(WERROR) $(CFLAGS) $(LDFLAGS) $(OPTFLAGS) $(DEBUGFLAGS) $(LINKDEBUG) $(VFRAME) -o $@ $^ $(LDLIBS) $(FREETYPELIB))
 
 $(OBJDIR)/%.o: %.cpp $(INCFILES)
 	@mkdir -p $(OBJDIR)
