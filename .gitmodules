@@ -1,9 +1,9 @@
 [submodule "glfw"]
 	path = glfw
 	url = https://github.com/glfw/glfw
-[submodule "SOIL2-clone"]
-	path = SOIL2-clone
-	url = https://github.com/alelievr/SOIL2-clone
 [submodule "freetype2"]
 	path = freetype2
 	url = git://git.sv.nongnu.org/freetype/freetype2.git
+[submodule "SOIL2-clone"]
+	path = SOIL2-clone
+	url = https://github.com/alelievr/SOIL2-clone

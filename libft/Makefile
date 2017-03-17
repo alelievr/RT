@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/04/04 19:22:36 by alelievr          #+#    #+#              #
-#    Updated: 2016/12/21 20:48:42 by alelievr         ###   ########.fr        #
+#    Updated: 2017/03/08 23:24:37 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -167,7 +167,7 @@ NAME		=	libft.a
 SONAME		=	libft.so
 
 #	Compiler
-CFLAGS		=	-ggdb -Werror -Wall -Wextra -funroll-loops -fno-strict-aliasing #-O2
+CFLAGS		=	-Werror -Wall -Wextra -funroll-loops -fno-strict-aliasing -O2 #-ggdb 
 CC			=	gcc
 
 
