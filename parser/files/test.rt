@@ -1,0 +1,59 @@
+lovely triangle:
+	type: triangle
+	pos: 900 520 20
+	dir: 0 0 0
+	color: 0xFF00FF
+	csg: XOR
+
+little sphere:
+	type: sphere
+	pos: 5 0 10
+	dir: 0 0 0
+	radius: 0.5
+	texture: yolol.png
+	emission color: 0 1 1
+	highlight color: 1 1 0
+	transparency: .5
+	reflection: .5
+	refraction: .5
+	bumpmap: olol.tga
+	slice: 0 1 0 .3
+	illum: AO | CS | RS
+
+plane:
+	type: plane
+	pos: 880 540 200
+	dir: 0 0 -1
+	size: 0 0 0
+		
+light 1:
+	type: point_light
+	pos: 100 100 100
+	
+sun:
+	type: directional_light
+	pos: 100 100 100
+	dir: 0 -1 0
+
+player:
+	pos: 12 12 12
+
+	head:
+		type: sphere
+		pos: 0 1 0
+		slice: 0 1 0 .5 | 0 1 0 .2
+
+	body:
+		type: cube
+
+	leg1:
+		type: mesh
+		size: .5 1 .5
+		pos: 0 -1 0
+		mesh: truc.obj
+		mtl: files/mtl_file.mtl
+
+	leg2:
+		type: cube
+		size: .5 1 .5
+		pos: 0 -1 0
