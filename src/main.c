@@ -77,7 +77,7 @@ float		getCurrentTime(void)
 {
 	struct timeval	t;
 	static time_t	lTime = 0;
-	
+
 	if (lTime == 0)
 		lTime = time(NULL);
 	gettimeofday(&t, NULL);
@@ -301,24 +301,25 @@ int			main(int ac, char **av)
 	double			t1;
 	if (ac < 1)
 		usage(*av);
-	
-	initSourceFiles(sources, 0xF00, &num);
+  if (parse(ac, av)){
+	   initSourceFiles(sources, 0xF00, &num);
 
-	GLFWwindow *win = init("Re Tweet");
+	    GLFWwindow *win = init("Re Tweet");
 
-	GLuint		program = create_program(sources, num, true);
-	GLuint		vbo = createVBO();
-	GLuint		vao = createVAO(vbo, program);
-	GLint		*unis = getUniformLocation(program);
-	GLint		*images = loadImages(av + 1);
+	    GLuint		program = create_program(sources, num, true);
+	    GLuint		vbo = createVBO();
+	    GLuint		vao = createVAO(vbo, program);
+      GLint		*unis = getUniformLocation(program);
+      GLint		*images = loadImages(av + 1);
 
-	ft_printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
-	{
-		checkFileChanged(&program, sources, num);
-		loop(win, program, vao, unis, images);
-		display_window_fps();
-	}
-	glfwTerminate();
-	return (0);
+	    ft_printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+	    while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
+	    {
+		    checkFileChanged(&program, sources, num);
+		    loop(win, program, vao, unis, images);
+		    display_window_fps();
+	    }
+	    glfwTerminate();
+	    return (0);
+    }
 }

@@ -22,6 +22,7 @@
 # include "SOIL2.h"
 # include "fmod.h"
 # include "libft.h"
+# include "parser.h"
 # undef PLUS
 
 # if __APPLE__
@@ -35,20 +36,20 @@
 # define SCALE 70
 //# define DOUBLE_PRECISION 1
 
-typedef struct s_vec2
+typedef struct s_vec22
 {
 	float x;
 	float y;
 }				vec2;
 
-typedef struct s_vec3
+typedef struct s_vec33
 {
 	float x;
 	float y;
 	float z;
 }				vec3;
 
-typedef struct s_vec4
+typedef struct s_vec44
 {
 	float x;
 	float y;
@@ -127,7 +128,7 @@ static const char* vertex_shader_text =
 "	gl_Position = vec4(fragPosition, 0.0, 1.0);\n"
 "}\n";
 
-static const char* fragment_shader_image_text = 
+static const char* fragment_shader_image_text =
 "void mainImage(vec2 fragCoord)\n"
 "{\n"
 "	vec2 uv = fragCoord.xy / iResolution.xy;\n"

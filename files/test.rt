@@ -1,0 +1,82 @@
+lovely triangle:
+	type: plane
+	pos: 900 520 20
+	color: 0xFF00FF
+	transparency: 1
+	fov: 70
+
+little sphere:
+	type: sphere
+	pos: 5 0 10
+	rot: 0 0 0
+	radius: 0.5
+	height: 0.8
+	texture: yolol.png
+	color: 12 25 35
+	emission color: 0xFFEF00
+	highlight color: 1 1 0
+	transparency: 0.5
+	reflection: 2.
+	refraction: .5
+	bumpmap: olol.tga
+	slice: 0 1 0 .3
+	illum: AMBIANT CAST_SHADOW
+	post_processing_mask: SEPIA CARTOON
+
+poulpe:
+	type: camera
+	post_processing_mask: SEPIA CARTOON
+
+
+plane:
+	type: plane
+	refraction map: refrac.png
+	emission map: olol.tga
+	highlight map: color.tga
+	transparency map: map.png
+	specular: 6.2
+	color: 5 98 12
+	specular map: sepc.png
+	pos: 880 540 200
+	rot: 0 0 -1
+	scale: 0 0 0
+
+light 1:
+	type: point_light
+	intensity: 3
+	height: 0.9
+	color: 5 98 12
+	pos: 100 100 100
+
+sun:
+	type: directional_light
+	intensity: 3
+	pos: 100 100 100
+	color: 5 98 12
+	rot: 0 -1 0
+
+	body:
+		type: cube
+
+player:
+	type: sphere
+	pos: 12 12 12
+
+	body:
+		type: cube
+
+	head:
+		type: sphere
+		pos: 0 1 0
+		slice: 0 1 0 .5
+
+	leg1:
+		type: plane
+		scale: .5 1 .5
+		pos: 0 -1 0
+		mesh: truc.obj
+
+	leg2:
+		type: cube
+		scale: .5 1 .5
+		pos: 0 -1 0

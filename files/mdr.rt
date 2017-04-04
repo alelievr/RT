@@ -1,0 +1,29 @@
+ambiance: 0xf452d6e 52
+object:
+simple_obj:
+name: 3d
+camera:
+pos: 900 520 20
+dir: 0 0 0
+type: triangle
+color: 0xaf5c30
+simple_obj:
+name: BLUE
+camera:
+pos: 875 530 10
+dir: 0 0 0
+type: sphere
+size: 7 0.0 0
+effect: 0 0 0 0
+color: 0x0000FF
+material: mtl_file.mtl
+simple_obj:
+name: plan
+camera:
+pos: 880 540 200
+dir: 0 0 -1
+type: plan
+size: 0 0 0
+effect: 0 0 0 0
+color: 0xFFFFFF
+

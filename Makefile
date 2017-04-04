@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/03/08 19:07:50 by alelievr         ###   ########.fr        #
+#    Updated: 2017/04/04 11:15:00 by avially          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,11 @@ SRCDIR		=	src
 SRC			=	main.c			\
 				glfw_init.c		\
 				shader.c		\
-#				fmod.c			\
+				parse_rt_file.c		\
+				utils.c				\
+				ft_sscanf.c			\
+				get_next_word.c  \
+				u.c			\
 
 #	Objects
 OBJDIR		=	obj
@@ -35,20 +39,20 @@ CPPVERSION	=	c++11
 #Example $> make DEBUG=2 will set debuglevel to 2
 
 #	Includes
-INCDIRS		=	. glfw/include inc SOIL2-clone/SOIL2 fmod/inc freetype2/include
+INCDIRS		=	. glfw/include inc SOIL2-clone/SOIL2 fmod/inc #freetype2/include
 
 #	Libraries
 LIBDIRS		=	glfw/src/ SOIL2-clone
 LDLIBS		=	-lglfw3 -lSOIL2
 GLFWLIB		=	glfw/src/libglfw3.a
 SOILLIB		=	SOIL2-clone/libSOIL2.a
-FREETYPELIB	=	freetype2/objs/.libs/libfreetype.a
+#FREETYPELIB	=	freetype2/objs/.libs/libfreetype.a
 
 #	Output
 NAME		=	RT
 
 #	Compiler
-WERROR		=	-Werror
+WERROR		=	#-Werror
 CFLAGS		=	-Wall -Wextra -pedantic -ferror-limit=999
 CPROTECTION	=	-z execstack -fno-stack-protector
 
@@ -58,7 +62,7 @@ OPTFLAGS1	=	-funroll-loops -O2
 OPTFLAGS2	=	-pipe -funroll-loops -Ofast
 
 #	Framework
-FRAMEWORK	=	
+FRAMEWORK	=
 
 #################
 ##  COLORS     ##
@@ -172,7 +176,7 @@ endif
 #################
 
 #	First target
-all: $(GLFWLIB) $(SOILLIB) $(FREETYPELIB) $(NAME)
+all: $(GLFWLIB) $(SOILLIB) $(NAME)#$(FREETYPELIB) $(NAME)
 
 $(SOILLIB):
 	cd SOIL2-clone && make
@@ -182,15 +186,15 @@ $(GLFWLIB):
 	git submodule update
 	cd glfw && cmake . && make
 
-$(FREETYPELIB):
-	cd freetype2 && ./autogen.sh && ./configure && make -j4
+#$(FREETYPELIB):
+#	cd freetype2 && ./autogen.sh && ./configure && make -j4
 
 #	Linking
 $(NAME): $(OBJ)
 	@$(if $(findstring lft,$(LDLIBS)),$(call color_exec_t,$(CCLEAR),$(CCLEAR),\
 		make -j 4 -C libft))
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(NAME):",\
-		$(LINKER) $(WERROR) $(CFLAGS) $(LDFLAGS) $(OPTFLAGS) $(DEBUGFLAGS) $(LINKDEBUG) $(VFRAME) -o $@ $^ $(LDLIBS) $(FREETYPELIB))
+		$(LINKER) $(WERROR) $(CFLAGS) $(LDFLAGS) $(OPTFLAGS) $(DEBUGFLAGS) $(LINKDEBUG) $(VFRAME) -o $@ $^ $(LDLIBS))
 
 $(OBJDIR)/%.o: %.cpp $(INCFILES)
 	@mkdir -p $(OBJDIR)
