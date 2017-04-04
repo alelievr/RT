@@ -10,16 +10,18 @@ little sphere:
 	pos: 5 0 10
 	rot: 0 0 0
 	radius: 0.5
+	slice: 0 5 0 .3 
 	height: 0.8
 	texture: yolol.png
 	color: 12 25 35
 	emission color: 0xFFEF00
 	highlight color: 1 1 0
+	slice: 4 5 8 5
+	slice: 0 1 0 .3 
 	transparency: 0.5
 	reflection: 2.
 	refraction: .5
-	bumpmap: olol.tga
-	slice: 0 1 0 .3
+	bumpmap: Map__6_Noise.tga 
 	illum: AMBIANT CAST_SHADOW
 	post_processing_mask: SEPIA CARTOON
 
@@ -38,7 +40,7 @@ plane:
 	color: 5 98 12
 	specular map: sepc.png
 	pos: 880 540 200
-	rot: 0 0 -1
+	rot: 0.1 0 -1
 	scale: 0 0 0
 
 light 1:
@@ -46,7 +48,6 @@ light 1:
 	intensity: 3
 	height: 0.9
 	color: 5 98 12
-	pos: 100 100 100
 
 sun:
 	type: directional_light
@@ -68,7 +69,7 @@ player:
 	head:
 		type: sphere
 		pos: 0 1 0
-		slice: 0 1 0 .5
+		slice: 5 1 0 .5
 
 	leg1:
 		type: plane
@@ -79,4 +80,4 @@ player:
 	leg2:
 		type: cube
 		scale: .5 1 .5
-		pos: 0 -1 0
+		pos:  0 0 3

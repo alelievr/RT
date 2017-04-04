@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/31 21:56:16 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/03 22:12:25 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/04 19:19:54 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ static int		convert_float(char **format, char **str, float *f)
 {
 	if (!(ft_isdigit(**str) || **str == '-' || **str == '.'))
 		return (0);
-	*f = (float)ft_atof(*str);
+	else
+		*f = (float)ft_atof(*str);
 	while (ft_isdigit(**str) || **str == '.' || **str == 'f' || **str == '-' || **str == '+')
 		(void)(*str)++;
 	(*format) += 2;

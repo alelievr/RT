@@ -6,10 +6,11 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/04 10:50:09 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/04 20:52:13 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "shaderpixel.h"
 #include "parser.h"
 #include <unistd.h>
 #include <stdlib.h>
@@ -98,9 +99,8 @@ void  		fill_prop_primitive(t_primitive *prim, char *line)
 	}
 	if (!prim->type)
 		ft_exit("mauvais type pour un objet\n");
-
-	ft_sscanf(LF_RT_SLICE, line, &prim->slice.x, &prim->slice.y, &prim->slice.z, &prim->slice.w);
-	//	prim->nb_slice++;
+	if( prim->nsl < 5 && !ft_sscanf(LF_RT_SLICE, line, &prim->slice[prim->nsl].x, &prim->slice[prim->nsl].y, &prim->slice[prim->nsl].z, &prim->slice[prim->nsl].w))
+		prim->nsl++;
 }
 
 void			fill_prop_light(t_light *light, char *line)
@@ -137,7 +137,7 @@ void  		fill_prop_material(t_material *mtl, char *line)
 	ft_sscanf(LF_RT_REFLECTION, line, &mtl->reflection);
 	ft_sscanf(LF_RT_REFRACTION, line, &mtl->refraction);
 
-	/*if (FOR(i = 0, i < 2, i++))
+	if (FOR(i = 0, i < 2, i++))
 	{
 		struct {char *fmt; t_image *img;} maps[8] ={
 			{LF_RT_BUMPMAP, &mtl->bumpmap},
@@ -150,18 +150,8 @@ void  		fill_prop_material(t_material *mtl, char *line)
 			{LF_RT_REFRACTION_MAP, &mtl->refraction_map},
 		};
 		if (ft_sscanf(maps[i].fmt, line, maps[i].img->file, 1024))
-			maps[i].img->opengl_id = SOIL_load_OGL_texture(maps[i].img->file, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-				SOIL_FLAG_MIPMAPS | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT | SOIL_FLAG_TEXTURE_REPEATS);
-	}*/
-	/*ft_sscanf(LF_RT_BUMPMAP, line, &mtl->bumpmap.file, sizeof(mtl->bumpmap.file));
-	ft_sscanf(LF_RT_TEXTURE, line, &mtl->texture.file, sizeof(mtl->texture.file));
-	ft_sscanf(LF_RT_EMISSION_MAP, line, &mtl->emission_map.file, sizeof(mtl->transparency_map.file));
-	ft_sscanf(LF_RT_HIGHLIGHT_MAP, line, &mtl->highlight_map.file, sizeof(mtl->highlight_map.file));
-	ft_sscanf(LF_RT_TRANSPARENCY_MAP, line, &mtl->transparency_map.file, sizeof(mtl->transparency_map.file));
-	ft_sscanf(LF_RT_SPECULAR_MAP, line, &mtl->specular_map.file, sizeof(mtl->specular_map.file));
-	ft_sscanf(LF_RT_REFLECTION_MAP, line, &mtl->reflection_map.file, sizeof(mtl->reflection_map.file));
-	ft_sscanf(LF_RT_REFRACTION_MAP, line, &mtl->refraction_map.file, sizeof(mtl->refraction_map.file));*/
-
+			maps[i].img->opengl_id = SOIL_load_OGL_texture(maps[i].img->file, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,SOIL_FLAG_MIPMAPS | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT | SOIL_FLAG_TEXTURE_REPEATS);
+	}
 	if (!ft_sscanf(LF_RT_ILLUM, line, str, 256))
 	{
 			while (get_next_word(&str, word))
@@ -180,30 +170,35 @@ void  		fill_prop_material(t_material *mtl, char *line)
 void   		affichage_test(t_scene *scene)
 {
 	t_object 	*lst_obj;
+	int i = -1;
 
 	lst_obj = scene->root_view;
 
 	while(scene->nb_object > 0){
-			printf("name: %s\n", lst_obj->name);
+			i = -1;
+			printf("\033[34;01mname: %s\033[00m\n", lst_obj->name);
 			//printf("transparency: %f\n", lst_obj->material.transparency);
-			//printf("reflection: %f\n", lst_obj->material.reflection);
-			//printf("refraction: %f\n", lst_obj->material.refraction);
+		//	printf("reflection: %f\n", lst_obj->material.reflection);
+		//	printf("refraction: %f\n", lst_obj->material.refraction);
 			//printf("specular: %f\n", lst_obj->material.specular);
 			//printf("light intensity: %f\n", lst_obj->light_prop.intensity);
 			//printf("FOV: %f\n", lst_obj->camera.fov);
 			//printf("primitive radius: %f\n", lst_obj->primitive.radius);
 			//printf("primitive height: %f\n", lst_obj->primitive.height);
 			//printf("primitive angle: %f\n", lst_obj->primitive.angle);
-			//printf("pos x : %f ,pos y : %f ,pos z : %f\n", lst_obj->transform.position.x,lst_obj->transform.position.y,lst_obj->transform.position.z);
+			printf("pos x : %f ,pos y : %f ,pos z : %f\n", lst_obj->transform.position.x,lst_obj->transform.position.y,lst_obj->transform.position.z);
 			//printf("rot x : %f ,rot y : %f ,rot z : %f\n", lst_obj->transform.rotation.x,lst_obj->transform.rotation.y,lst_obj->transform.rotation.z);
-			//printf("slice.x : %f ,slice.y : %f , slice.z : %f , slice.w : %f \n", lst_obj->primitive.slice.x, lst_obj->primitive.slice.y, lst_obj->primitive.slice.z, lst_obj->primitive.slice.w);
-			//printf("color : %f,%f,%f\n", lst_obj->material.color.x,lst_obj->material.color.y,lst_obj->material.color.z);
-			//printf("light_color : %f,%f,%f\n", lst_obj->light_prop.color.x, lst_obj->light_prop.color.y , lst_obj->light_prop.color.z);
-			//printf("emission_color : %f,%f,%f\n", lst_obj->material.emission_color.x,lst_obj->material.emission_color.y,lst_obj->material.emission_color.z);
-			//printf("highlight_color : %f,%f,%f\n", lst_obj->material.highlight_color.x,lst_obj->material.highlight_color.y,lst_obj->material.highlight_color.z);
-			//printf("mask: %d\n", lst_obj->camera.post_processing_mask);
+		//	while (++i < lst_obj->primitive.nsl)
+		//		printf("slice.x : %f ,slice.y : %f , slice.z : %f , slice.w : %f , nbsl : %d\n", lst_obj->primitive.slice[i].x, lst_obj->primitive.slice[i].y, lst_obj->primitive.slice[i].z, lst_obj->primitive.slice[i].w, lst_obj->primitive.nsl);
+		//	printf("color : %f,%f,%f\n", lst_obj->material.color.x,lst_obj->material.color.y,lst_obj->material.color.z);
+		//	printf("light_color : %f,%f,%f\n", lst_obj->light_prop.color.x, lst_obj->light_prop.color.y , lst_obj->light_prop.color.z);
+		//	printf("emission_color : %f,%f,%f\n", lst_obj->material.emission_color.x,lst_obj->material.emission_color.y,lst_obj->material.emission_color.z);
+	//	printf("highlight_color : %f,%f,%f\n", lst_obj->material.highlight_color.x,lst_obj->material.highlight_color.y,lst_obj->material.highlight_color.z);
+			//if (lst_obj->primitive.type == 6)
+			//	printf("mask: %d\n", lst_obj->camera.post_processing_mask);
 			//printf("illum: %d\n", lst_obj->material.illum);
 			//printf("type : %d\n", lst_obj->primitive.type);
+			//printf("fichier : %s, ID : %d\n", lst_obj->material.bumpmap.file, lst_obj->material.bumpmap.opengl_id);
 		scene->nb_object--;
 		if (lst_obj->children)
 			lst_obj = lst_obj->children;

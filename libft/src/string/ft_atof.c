@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/16 16:13:49 by alelievr          #+#    #+#             */
-/*   Updated: 2016/01/20 14:57:10 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/04 19:20:48 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ double			ft_atof(const char *str)
 		return (ret);
 	signe = 1;
 	while (*str == ' ' || *str == '\n' || *str == '\t' || *str == '\f'
-			|| *str == '\r' || *str == '\v' || *str == '0')
+			|| *str == '\r' || *str == '\v') //|| *str == '0')
 		str++;
 	if (*str == '-')
 		signe = -1;

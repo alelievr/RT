@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/04 11:09:17 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/04 19:41:45 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,8 +172,8 @@ typedef	struct  s_primitive
 		float			height;
 		float			angle;
 	};
-	t_vec4			slice;
-	int					nb_slice;
+	t_vec4			slice[5];
+	int					nsl;
 }				t_primitive;
 
 typedef struct			s_transform
@@ -235,7 +235,6 @@ typedef	struct			s_mesh
 typedef struct			s_camera
 {
 	float		fov;
-
 	int			post_processing_mask;
 }						t_camera;
 

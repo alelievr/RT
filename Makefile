@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/04 11:15:00 by avially          ###   ########.fr        #
+#    Updated: 2017/04/04 16:27:40 by pmartine         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,11 +19,11 @@ SRCDIR		=	src
 SRC			=	main.c			\
 				glfw_init.c		\
 				shader.c		\
-				parse_rt_file.c		\
-				utils.c				\
-				ft_sscanf.c			\
-				get_next_word.c  \
-				u.c			\
+				parser/parse_rt_file.c		\
+				parser/utils.c				\
+				parser/ft_sscanf.c			\
+				parser/get_next_word.c  \
+				parser/u.c			\
 
 #	Objects
 OBJDIR		=	obj
