@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/04 16:27:40 by pmartine         ###   ########.fr        #
+#    Updated: 2017/04/09 20:16:57 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,11 +19,12 @@ SRCDIR		=	src
 SRC			=	main.c			\
 				glfw_init.c		\
 				shader.c		\
+				build_shader.c	\
 				parser/parse_rt_file.c		\
 				parser/utils.c				\
 				parser/ft_sscanf.c			\
-				parser/get_next_word.c  \
-				parser/u.c			\
+				parser/get_next_word.c  	\
+				parser/u.c					\
 
 #	Objects
 OBJDIR		=	obj
@@ -53,7 +54,7 @@ NAME		=	RT
 
 #	Compiler
 WERROR		=	#-Werror
-CFLAGS		=	-Wall -Wextra -pedantic -ferror-limit=999
+CFLAGS		=	-Wall -Wextra -ferror-limit=999
 CPROTECTION	=	-z execstack -fno-stack-protector
 
 DEBUGFLAGS1	=	-ggdb -O0

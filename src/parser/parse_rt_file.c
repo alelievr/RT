@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/04 20:52:13 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/10 20:08:18 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "parser.h"
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include "keywords.h"
 
 #define NEW_OBJECT(var, n) var = (t_object *)malloc(sizeof(t_object)); if (!var) ft_exit("malloc error"); ft_strcpy(var->name, n);
@@ -170,11 +171,12 @@ void  		fill_prop_material(t_material *mtl, char *line)
 void   		affichage_test(t_scene *scene)
 {
 	t_object 	*lst_obj;
-	int i = -1;
+	int			i = -1;
+	int			obj_count = 0;
 
 	lst_obj = scene->root_view;
 
-	while(scene->nb_object > 0){
+	while(obj_count < scene->nb_object){
 			i = -1;
 			printf("\033[34;01mname: %s\033[00m\n", lst_obj->name);
 			//printf("transparency: %f\n", lst_obj->material.transparency);
@@ -199,13 +201,13 @@ void   		affichage_test(t_scene *scene)
 			//printf("illum: %d\n", lst_obj->material.illum);
 			//printf("type : %d\n", lst_obj->primitive.type);
 			//printf("fichier : %s, ID : %d\n", lst_obj->material.bumpmap.file, lst_obj->material.bumpmap.opengl_id);
-		scene->nb_object--;
 		if (lst_obj->children)
 			lst_obj = lst_obj->children;
 		else if (lst_obj->brother_of_children)
 			lst_obj = lst_obj->brother_of_children;
 		else
 			lst_obj = lst_obj->parent->brother_of_children;
+		obj_count++;
 	}
 }
 
@@ -220,11 +222,15 @@ void			parse_rt_file(char *file, t_scene *scene)
 	int			nb_object;
 	t_object	*current_object;
 	t_object	*old_object;
+	struct stat	st;
 
 	nb_object = 0;
 	INIT(int, line_count, 0);
 	if ((fd = open(file, O_RDONLY)) == -1)
 		ft_exit("Open Failed");
+	fstat(fd, &st);
+	if (!S_ISREG(st.st_mode))
+		ft_exit("bad file: %s\n", file);
 	while (gl(line, &fd))
 	{
 		SKIP_EMPTY_LINE(line);

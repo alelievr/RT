@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/04 19:41:45 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/10 20:54:33 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,7 +269,7 @@ typedef struct			s_object
 typedef struct			s_scene
 {
 	int					nb_object;
-	t_object		*root_view;
+	t_object			*root_view;
 }						t_scene;
 
 /*
@@ -296,5 +296,6 @@ void					parse_rt_file(char *file, t_scene *prim);
 void					parse_obj_file(char *file, t_mesh *mesh);
 int						get_next_word(char **str, char *res);
 int						parse(int ac, char **av);
+char					*build_shader(t_scene *scene);
 
 #endif

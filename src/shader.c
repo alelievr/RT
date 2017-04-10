@@ -61,58 +61,12 @@ static void		check_link(GLuint program, bool fatal)
 	}
 }
 
-static char		*get_file_source(int fd)
-{
-	struct stat		st;
-	int				ret;
-	static char		buff[0xF0000];
-	static char		*loadedFiles[0xF00];
-
-	if (fstat(fd, &st) == -1 || st.st_size == 0)
-		return (NULL);
-	if ((ret = read(fd, buff, sizeof(buff))) == -1)
-	{
-		perror("read");
-		return (NULL);
-	}
-	if (loadedFiles[fd] != NULL && ret == 0)
-		return loadedFiles[fd];
-	else if (ret != 0)
-		free(loadedFiles[fd]);
-	buff[ret] = 0;
-	loadedFiles[fd] = strdup(buff);
-	return (loadedFiles[fd]);
-}
-
-static char		**get_shader_fragment_sources(t_file *files, size_t num, bool fatal)
-{
-	char	**ret;
-	size_t	i;
-
-	ret = (char **)malloc(sizeof(char *) * (num + 2));
-	ret[0] = (char *)fragment_shader_text;
-	i = 0;
-	while (i++ < num)
-		if (!(ret[i] = get_file_source(files[i - 1].fd)))
-			if (fatal)
-				ft_printf("failed to stat file/empty file: %s\n", files[i - 1].path), exit(-1);
-			else
-				return (NULL);
-		else if (fatal)
-			ft_printf("loaded shader file: %s\n", files[i - 1].path);
-	ret[i] = NULL;
-	return (ret);
-}
-
-static GLuint		compile_shader_fragments(t_file *files, size_t num, bool fatal)
+static GLuint		compile_shader_fragments(char *file, bool fatal)
 {
 	GLuint		ret;
-	char		**srcs;
 
-	if (!(srcs = get_shader_fragment_sources(files, num, fatal)) || srcs[1] == NULL)
-		return (0);
 	ret = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(ret, num + 1, (const char * const *)srcs, NULL);
+	glShaderSource(ret, 1, (const GLchar * const *)&file, NULL);
 	glCompileShader(ret);
 	check_compilation(ret, fatal);
 	return (ret);
@@ -129,11 +83,11 @@ static GLuint		compile_shader_vertex(bool fatal)
 	return (ret);
 }
 
-GLuint				create_program(t_file *files, size_t num, bool fatal)
+GLuint				create_program(char *file, bool fatal)
 {
 	GLuint				program;
 	const GLuint		shader_vertex = compile_shader_vertex(fatal);
-	const GLuint		shader_fragment = compile_shader_fragments(files, num, fatal);
+	const GLuint		shader_fragment = compile_shader_fragments(file, fatal);
 
 	if (shader_vertex == 0 || shader_fragment == 0)
 		return (0);

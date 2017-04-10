@@ -113,7 +113,7 @@ extern float		pausedTime;
 extern long			lastModifiedFile[0xF00];
 
 GLFWwindow		*init(char *fname);
-GLuint			create_program(t_file *fd, size_t num, bool fatal);
+GLuint			create_program(char *file, bool fatal);
 float			getCurrentTime(void);
 
 static const char* vertex_shader_text =
@@ -172,5 +172,88 @@ static const char* fragment_shader_text =
 "	mainImage(gl_FragCoord.xy);\n"
 "}\n"
 "#line 0\n";
+
+static const char *main_image_start_text = 
+"void        mainImage(vec2 coord)\n"
+"{\n"
+"   vec2    uv = (coord / iResolution) * 2 - 1;\n"
+"   vec3    cameraPos = iMoveAmount.xyz + vec3(0, 0, -2);\n"
+"   vec3    cameraDir = iForward;\n"
+"   vec3    col;\n"
+"\n"
+"   //window ratio correciton:\n"
+"   uv.x *= iResolution.x / iResolution.y;\n"
+"\n"
+"   //perspective view\n"
+"   float   fov = 1.5;\n"
+"   vec3    forw = normalize(iForward);\n"
+"   vec3    right = normalize(cross(forw, vec3(0, 1, 0)));\n"
+"   vec3    up = normalize(cross(right, forw));\n"
+"   vec3    rd = normalize(uv.x * right + uv.y * up + fov * forw);\n"
+"	fragColor = vec4(raytrace(cameraPos, rd), 1);\n"
+"}\n";
+
+static const char *scene_start_text =
+"Hit     scene(Ray r)\n"
+"{\n"
+"    int i = -1;\n"
+"    Hit     hit;\n"
+"    hit.dist = 1e20;\n"
+"    hit.color = vec3(0,0,0);\n"
+"    hit.data = vec4(0,0,0,0);\n";
+
+static const char *scene_end_text =
+"    return hit;\n"
+"}\n";
+
+static const char *shader_header_text =
+"struct      Ray\n"
+"{\n"
+"    vec3    dir;\n"
+"    vec3    pos;\n"
+"};\n"
+"\n"
+"struct  Coupe\n"
+"{\n"
+"    vec3    pos;\n"
+"    vec3    rot;\n"
+"};\n"
+"\n"
+"struct  Material\n"
+"{\n"
+"	vec4		texture;\n"
+"	vec4		emission;\n"
+"	vec4		transparency;\n"
+"	vec4		specular;\n"
+"	vec4		reflection;\n"
+"	vec4		refraction;\n"
+"	vec4		bump;\n"
+"};\n"
+"\n"
+"struct      Hit\n"
+"{\n"
+"   float  		dist;\n"
+"   vec3    	norm;\n"
+"   vec3    	pos;\n"
+"	Material	mat;\n"
+"};\n"
+"\n"
+"Hit       scene(Ray r);\n";
+
+static const char *raytrace_start_text =
+"vec3    raytrace(vec3 ro, vec3 rd)\n"
+"{\n"
+"    Ray         r;\n"
+"    Hit         h;\n"
+"    vec3        color = vec3(0,0,0);\n"
+"    vec3        ambient;\n"
+"    r.dir = rd;\n"
+"    r.pos = ro;\n"
+"    h = scene(r);\n"
+"    ambient = h.color * AMBIENT;\n";
+
+static const char *raytrace_end_text =
+"	return (color / 2 + ambient);\n"
+"}\n";
 
 #endif

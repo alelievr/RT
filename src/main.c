@@ -184,6 +184,15 @@ GLint		*getUniformLocation(GLuint program)
 
 #define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
 
+static t_scene	*get_scene(t_scene *scene)
+{
+	static t_scene	*scn = NULL;
+
+	if (scene != NULL)
+		scn = scene;
+	return (scn);
+}
+
 void		initSourceFiles(t_file *files, size_t max, size_t *num)
 {
 	struct dirent	*d;
@@ -231,7 +240,8 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 				files[i].fd = fd;
 			else
 				break ;
-			GLint new_program = create_program(files, num, false);
+			char *file = build_shader(get_scene(NULL));
+			GLint new_program = create_program(file, false);
 			if (new_program != 0)
 			{
 				glDeleteProgram(*program);
@@ -278,18 +288,19 @@ GLint		*loadImages(char **av)
 	return texts;
 }
 
-void		display_window_fps(void)
+void		display_window_fps(GLFWwindow *win)
 {
 	static int		frames = 0;
 	static double	last_time = 0;
 	double			current_time = glfwGetTime();
+	char			fps[0xF00];
 
 	frames++;
 	if (current_time - last_time >= 1.0)
 	{
-		printf("%sfps:%.3f%s", "\x1b\x37", 1.0 / (1000.0 / (float)frames) * 1000.0, "\x1b\x38");
+		sprintf(fps, "Re Tweet - fps [%.3i ]", (int)(1.0 / (1000.0 / (float)frames) * 1000.0));
+		glfwSetWindowTitle(win, fps);
 		frames = 0;
-		fflush(stdout);
 		last_time++;
 	}
 }
@@ -299,27 +310,33 @@ int			main(int ac, char **av)
 	static t_file	sources[0xF00];
 	size_t			num;
 	double			t1;
+	t_scene			scene;
+	char			*program_source;
+
 	if (ac < 1)
 		usage(*av);
-  if (parse(ac, av)){
-	   initSourceFiles(sources, 0xF00, &num);
+  	parse_rt_file(av[1], &scene);
 
-	    GLFWwindow *win = init("Re Tweet");
+	get_scene(&scene);
+	initSourceFiles(sources, 0xF00, &num);
 
-	    GLuint		program = create_program(sources, num, true);
-	    GLuint		vbo = createVBO();
-	    GLuint		vao = createVAO(vbo, program);
-      GLint		*unis = getUniformLocation(program);
-      GLint		*images = loadImages(av + 1);
+	program_source = build_shader(&scene);
 
-	    ft_printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-	    while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
-	    {
-		    checkFileChanged(&program, sources, num);
-		    loop(win, program, vao, unis, images);
-		    display_window_fps();
-	    }
-	    glfwTerminate();
-	    return (0);
-    }
+	GLFWwindow *win = init("Re Tweet");
+
+	GLuint		program = create_program(program_source, true);
+	GLuint		vbo = createVBO();
+	GLuint		vao = createVAO(vbo, program);
+    GLint		*unis = getUniformLocation(program);
+    GLint		*images = loadImages(av + 1);
+
+	ft_printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
+	{
+		checkFileChanged(&program, sources, num);
+		loop(win, program, vao, unis, images);
+		display_window_fps(win);
+	}
+	glfwTerminate();
+	return (0);
 }
