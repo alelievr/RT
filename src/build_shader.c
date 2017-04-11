@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/10 20:54:42 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/11 02:59:12 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,14 @@ typedef struct
 
 #define MAX_TEXTURES	512
 
-static t_vec4		atlas_bounds[MAX_TEXTURES];
-
 #define NEW_LINE_LIST ({t_line_list *m; if (!(m = (t_line_list *)malloc(sizeof(t_line_list)))) ft_exit("malloc error !"); m->next = NULL; m->line = NULL; m;})
 #define LIST_INSERT(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp;}
 #define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp; l = tmp;}
 
 #define ISTYPE(x) (obj->primitive.type == x)
 #define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE))
+
+#define MAX(x, y) ((x > y) ? x : y)
 
 static void	init_shader_file(t_shader_file *shader_file)
 {
@@ -143,11 +143,11 @@ static char		*generate_scene_line(t_object *obj)
 	static char		line[0xF00];
 
 	if (ISTYPE(SPHERE))
-		sprintf(line, "\tsphere(%s_position, %f, vec4(0), Material(%s), r, hit);", obj->name, obj->primitive.radius, generate_material_line(obj));
-	else if (ISTYPE(PLANE))
-		sprintf(line, "\tplane(%s_rotation, %s_position, vec3(0, 1, 0), Material(%s), r, hit);", obj->name, obj->name, generate_material_line(obj));
+		sprintf(line, "\tsphere(%s_position, %f, Material(%s), r, hit);", obj->name, obj->primitive.radius, generate_material_line(obj));
+//	else if (ISTYPE(PLANE))
+//		sprintf(line, "\tplane(%s_rotation, %s_position, vec3(0, 1, 0), Material(%s), r, hit);", obj->name, obj->name, generate_material_line(obj));
 	else if (ISTYPE(CYLINDRE))
-		sprintf(line, "\tcyl(%s_position, %s_rotation, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(obj));
+		sprintf(line, "\tcyl(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_material_line(obj));
 	else if (ISTYPE(CONE))
 		sprintf(line, "\tsphere(%s_position, %s_rotation, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(obj));
 	else
@@ -168,7 +168,7 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 	}
 	else if (!ISTYPE(CAMERA)) //lighs
 	{
-		sprintf(line, "color += calc_light(vec3(%f, %f, %f), r, h);", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z);
+		sprintf(line, "\tcolor += calc_light(vec3(%f, %f, %f), r, h);", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z);
 		LIST_APPEND(shader_file->raytrace_lights, strdup(line));
 	}
 }
@@ -195,16 +195,58 @@ static void		tree_march(t_shader_file *shader_file, t_scene *scene)
 	}
 }
 
-static void		load_atlas(t_shader_file *shader_file, t_scene *scene)
+static unsigned char	*generate_image_from_data(float data, int *width, int *height) __attribute__((overloadable))
+{
+	unsigned char	*ret = (unsigned char *)malloc(sizeof(unsigned char) * 4);
+
+	memset(ret, (char)(data * 255), 4);
+	*width = 1;
+	*height = 1;
+	return ret;
+}
+
+static unsigned char	*generate_image_from_data(t_vec3 data, int *width, int *height) __attribute__((overloadable))
+{
+	unsigned char	*ret = (unsigned char *)malloc(sizeof(unsigned char) * 4);
+
+	printf("generated 1px texture from color: %f/%f/%f\n", data.x, data.y, data.z);
+	ret[0] = data.x;
+	ret[1] = data.y;
+	ret[2] = data.z;
+	ret[3] = 255;
+	*width = 1;
+	*height = 1;
+	return ret;
+}
+
+#define LOAD_TEXTURE(m, p, o) if (m->has_##p) m->p.data = SOIL_load_image(m->p.file, &m->p.width, &m->p.height, 0, SOIL_LOAD_RGBA); else m->p.data = generate_image_from_data(m->o, &m->texture.width, &m->texture.height);
+#define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
+
+static void		load_textures_if_exists(t_material *m, int *atlas_width, int *atlas_height)
+{
+	LOAD_TEXTURE_ATLAS(m, texture, color, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, bumpmap, bump, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, emission_map, emission_color, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, highlight_map, highlight_color, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, reflection_map, reflection, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, refraction_map, refraction, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, transparency_map, transparency, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
+}
+
+static void		load_atlas(t_scene *scene)
 {
 	int			obj_count = 0;
 	t_object	*obj;
+	int			atlas_width = 0;
+	int			atlas_height = 0;
 
 	obj = scene->root_view;
 	while (obj_count < scene->nb_object)
 	{
 		format_name(obj->name);
-		//TODO: check if material contains a texture and store its size.
+
+		load_textures_if_exists(&obj->material, &atlas_width, &atlas_height);
 
 		if (obj->children)
 			obj = obj->children;
@@ -223,7 +265,7 @@ char		*build_shader(t_scene *root)
 	init_shader_file(&shader_file);
 	load_essencial_files(&shader_file);
 
-	load_atlas(&shader_file, root);
+	load_atlas(root);
 
 	tree_march(&shader_file, root);
 

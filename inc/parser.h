@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/10 20:54:33 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/11 02:53:11 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,10 @@ typedef struct			s_transform
 typedef struct			s_image
 {
 	char			file[1024];
-	int				opengl_id;
+	unsigned char	*data;
+	int				width;
+	int				height;
+	t_vec4			atlas_uv;
 }						t_image;
 
 typedef	struct 			s_material
@@ -199,6 +202,7 @@ typedef	struct 			s_material
 	float				specular;
 	float				reflection;
 	float				refraction;
+	float				bump;
 	t_image				texture;
 	t_image				bumpmap;
 	t_image				emission_map;
@@ -207,6 +211,14 @@ typedef	struct 			s_material
 	t_image				refraction_map;
 	t_image				transparency_map;
 	t_image				specular_map;
+	bool				has_texture;
+	bool				has_bumpmap;
+	bool				has_emission_map;
+	bool				has_highlight_map;
+	bool				has_reflection_map;
+	bool				has_refraction_map;
+	bool				has_transparency_map;
+	bool				has_specular_map;
 }						t_material;
 
 typedef struct			s_submesh
@@ -253,7 +265,7 @@ typedef struct			s_object
 	t_transform	transform;
 	union {
 		t_light			light_prop;
-		t_material	material;
+		t_material		material;
 		t_camera		camera;
 	};
 	union {

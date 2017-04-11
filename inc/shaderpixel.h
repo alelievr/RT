@@ -176,31 +176,30 @@ static const char* fragment_shader_text =
 static const char *main_image_start_text = 
 "void        mainImage(vec2 coord)\n"
 "{\n"
-"   vec2    uv = (coord / iResolution) * 2 - 1;\n"
-"   vec3    cameraPos = iMoveAmount.xyz + vec3(0, 0, -2);\n"
-"   vec3    cameraDir = iForward;\n"
-"   vec3    col;\n"
+"	vec2    uv = (coord / iResolution) * 2 - 1;\n"
+"	vec3    cameraPos = iMoveAmount.xyz + vec3(0, 0, -2);\n"
+"	vec3    cameraDir = iForward;\n"
+"	vec3    col;\n"
 "\n"
-"   //window ratio correciton:\n"
-"   uv.x *= iResolution.x / iResolution.y;\n"
+"	//window ratio correciton:\n"
+"	uv.x *= iResolution.x / iResolution.y;\n"
 "\n"
-"   //perspective view\n"
-"   float   fov = 1.5;\n"
-"   vec3    forw = normalize(iForward);\n"
-"   vec3    right = normalize(cross(forw, vec3(0, 1, 0)));\n"
-"   vec3    up = normalize(cross(right, forw));\n"
-"   vec3    rd = normalize(uv.x * right + uv.y * up + fov * forw);\n"
+"	//perspective view\n"
+"	float   fov = 1.5;\n"
+"	vec3    forw = normalize(iForward);\n"
+"	vec3    right = normalize(cross(forw, vec3(0, 1, 0)));\n"
+"	vec3    up = normalize(cross(right, forw));\n"
+"	vec3    rd = normalize(uv.x * right + uv.y * up + fov * forw);\n"
 "	fragColor = vec4(raytrace(cameraPos, rd), 1);\n"
 "}\n";
 
 static const char *scene_start_text =
 "Hit     scene(Ray r)\n"
 "{\n"
-"    int i = -1;\n"
-"    Hit     hit;\n"
-"    hit.dist = 1e20;\n"
-"    hit.color = vec3(0,0,0);\n"
-"    hit.data = vec4(0,0,0,0);\n";
+"	int i = -1;\n"
+"	Hit     hit;\n"
+"	hit.dist = 1e20;\n"
+"	hit.mat.texture = vec4(0,0,0,0);\n";
 
 static const char *scene_end_text =
 "    return hit;\n"
@@ -238,7 +237,8 @@ static const char *shader_header_text =
 "	Material	mat;\n"
 "};\n"
 "\n"
-"Hit       scene(Ray r);\n";
+"Hit       scene(Ray r);\n"
+"vec3    raytrace(vec3 ro, vec3 rd);\n";
 
 static const char *raytrace_start_text =
 "vec3    raytrace(vec3 ro, vec3 rd)\n"
@@ -249,11 +249,10 @@ static const char *raytrace_start_text =
 "    vec3        ambient;\n"
 "    r.dir = rd;\n"
 "    r.pos = ro;\n"
-"    h = scene(r);\n"
-"    ambient = h.color * AMBIENT;\n";
+"    h = scene(r);\n";
 
 static const char *raytrace_end_text =
-"	return (color / 2 + ambient);\n"
+"	return (color / 2);\n"
 "}\n";
 
 #endif

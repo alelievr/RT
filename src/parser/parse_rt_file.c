@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/10 20:08:18 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/11 01:31:35 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <sys/stat.h>
 #include "keywords.h"
 
-#define NEW_OBJECT(var, n) var = (t_object *)malloc(sizeof(t_object)); if (!var) ft_exit("malloc error"); ft_strcpy(var->name, n);
+#define NEW_OBJECT(var, n) var = (t_object *)malloc(sizeof(t_object)); if (!var) ft_exit("malloc error"); bzero(var, sizeof(t_object)); init_default_material(&var->material); strcpy(var->name, n);
 #define SS(t) while(*t&&ft_isspace(*t))t++;
 #define SKIP_EMPTY_LINE(l) {char*t=l;SS(t);if (*t==0)continue;}
 
@@ -55,6 +55,12 @@ bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 	}
 	else
 		return false;
+}
+
+static void init_default_material(t_material *o)
+{
+	o->color = (t_vec3){1, 0, 1};
+	o->specular = .5f;
 }
 
 void 			fill_prop_camera(t_camera *cam, char *line)
@@ -140,18 +146,18 @@ void  		fill_prop_material(t_material *mtl, char *line)
 
 	if (FOR(i = 0, i < 2, i++))
 	{
-		struct {char *fmt; t_image *img;} maps[8] ={
-			{LF_RT_BUMPMAP, &mtl->bumpmap},
-			{LF_RT_TEXTURE, &mtl->texture},
-			{LF_RT_EMISSION_MAP, &mtl->texture},
-			{LF_RT_HIGHLIGHT_MAP, &mtl->emission_map},
-			{LF_RT_TRANSPARENCY_MAP, &mtl->transparency_map},
-			{LF_RT_SPECULAR_MAP, &mtl->specular_map},
-			{LF_RT_REFLECTION_MAP, &mtl->reflection_map},
-			{LF_RT_REFRACTION_MAP, &mtl->refraction_map},
+		struct {char *fmt; t_image *img; bool *active;} maps[8] ={
+			{LF_RT_BUMPMAP, &mtl->bumpmap, &mtl->has_bumpmap},
+			{LF_RT_TEXTURE, &mtl->texture, &mtl->has_texture},
+			{LF_RT_EMISSION_MAP, &mtl->texture, &mtl->has_emission_map},
+			{LF_RT_HIGHLIGHT_MAP, &mtl->emission_map, &mtl->has_highlight_map},
+			{LF_RT_TRANSPARENCY_MAP, &mtl->transparency_map, &mtl->has_transparency_map},
+			{LF_RT_SPECULAR_MAP, &mtl->specular_map, &mtl->has_specular_map},
+			{LF_RT_REFLECTION_MAP, &mtl->reflection_map, &mtl->has_reflection_map},
+			{LF_RT_REFRACTION_MAP, &mtl->refraction_map, &mtl->has_refraction_map},
 		};
 		if (ft_sscanf(maps[i].fmt, line, maps[i].img->file, 1024))
-			maps[i].img->opengl_id = SOIL_load_OGL_texture(maps[i].img->file, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,SOIL_FLAG_MIPMAPS | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT | SOIL_FLAG_TEXTURE_REPEATS);
+			*(maps[i].active) = true;
 	}
 	if (!ft_sscanf(LF_RT_ILLUM, line, str, 256))
 	{
