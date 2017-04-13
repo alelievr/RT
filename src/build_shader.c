@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/11 02:59:12 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/13 20:27:50 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <unistd.h>
+#include <OpenGL/GL.h>
 
 typedef struct	s_line_list
 {
@@ -234,19 +235,17 @@ static void		load_textures_if_exists(t_material *m, int *atlas_width, int *atlas
 	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
 }
 
-static void		load_atlas(t_scene *scene)
+static void		load_atlas(t_scene *scene, int *atlas_width, int *atlas_height)
 {
 	int			obj_count = 0;
 	t_object	*obj;
-	int			atlas_width = 0;
-	int			atlas_height = 0;
 
 	obj = scene->root_view;
 	while (obj_count < scene->nb_object)
 	{
 		format_name(obj->name);
 
-		load_textures_if_exists(&obj->material, &atlas_width, &atlas_height);
+		load_textures_if_exists(&obj->material, atlas_width, atlas_height);
 
 		if (obj->children)
 			obj = obj->children;
@@ -258,14 +257,64 @@ static void		load_atlas(t_scene *scene)
 	}
 }
 
+#define ADD_TEXTURE_ATLAS(m, p) glTextureSubImage2D(atlas_id, *offset_x, *offset_y, m->p.width, m->p.height, GL_RGBA, GL_UNSIGNED_BYTE, m->p.data); *offset_x += m->p.width;
+
+static void		add_object_textures_to_atlas(t_material *mat, int atlas_id, int *offset_x, int *offset_y)
+{
+	ADD_TEXTURE_ATLAS(mat, texture);
+	ADD_TEXTURE_ATLAS(mat, bumpmap);
+	ADD_TEXTURE_ATLAS(mat, emission_map);
+	ADD_TEXTURE_ATLAS(mat, highlight_map);
+	ADD_TEXTURE_ATLAS(mat, reflection_map);
+	ADD_TEXTURE_ATLAS(mat, refraction_map);
+	ADD_TEXTURE_ATLAS(mat, transparency_map);
+	ADD_TEXTURE_ATLAS(mat, specular_map);
+}
+
+static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_height)
+{
+	int				obj_count = 0;
+	t_object		*obj;
+	unsigned int	atlas_id;
+	int				offset_x = 0;
+	int				offset_y = 0;
+
+	glGenTextures(1, &atlas_id);
+	glTextureStorage2D(atlas_id, 1, GL_RGBA8, atlas_width, atlas_height);
+	obj = scene->root_view;
+	while (obj_count < scene->nb_object)
+	{
+		add_object_textures_to_atlas(&obj->material, atlas_id, &offset_x, &offset_y);
+
+		if (obj->children)
+			obj = obj->children;
+		else if (obj->brother_of_children)
+			obj = obj->brother_of_children;
+		else
+			obj = obj->parent->brother_of_children;
+		obj_count++;
+	}
+	return atlas_id;
+}
+
 char		*build_shader(t_scene *root)
 {
 	t_shader_file		shader_file;
+	int					atlas_width = 0;
+	int					atlas_height = 0;
+	unsigned int		atlas_id;
 
 	init_shader_file(&shader_file);
 	load_essencial_files(&shader_file);
 
-	load_atlas(root);
+	load_atlas(root, &atlas_width, &atlas_height);
+	atlas_id = build_atlas(root, atlas_width, atlas_height);
+
+	unsigned char *datas = malloc(sizeof(char) * 4 * atlas_width * atlas_height);
+
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas);
+
+	SOIL_save_image("img.bmp", SOIL_SAVE_TYPE_BMP, atlas_width, atlas_height, 1, datas);
 
 	tree_march(&shader_file, root);
 
