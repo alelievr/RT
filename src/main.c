@@ -193,6 +193,15 @@ static t_scene	*get_scene(t_scene *scene)
 	return (scn);
 }
 
+static char		*get_scene_directory(char *scene_dir)
+{
+	static char		*scene_directory = NULL;
+
+	if (scene_dir)
+		scene_directory = scene_dir;
+	return scene_directory;
+}
+
 void		initSourceFiles(t_file *files, size_t max, size_t *num)
 {
 	struct dirent	*d;
@@ -240,7 +249,7 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 				files[i].fd = fd;
 			else
 				break ;
-			char *file = build_shader(get_scene(NULL));
+			char *file = build_shader(get_scene(NULL), get_scene_directory(NULL));
 			GLint new_program = create_program(file, false);
 			if (new_program != 0)
 			{
@@ -305,6 +314,22 @@ void		display_window_fps(GLFWwindow *win)
 	}
 }
 
+static void load_scene_directory(char *scene_file)
+{
+	static char		path[1024];
+	char			*off;
+
+	if ((off = strrchr(scene_file, '/')))
+	{
+		strncpy(path, scene_file, off - scene_file);
+		path[off - scene_file] = 0;
+	}
+	else
+		strcpy(path, ".");
+	strcat(path, "/");
+	get_scene_directory(path);
+}
+
 int			main(int ac, char **av)
 {
 	static t_file	sources[0xF00];
@@ -316,13 +341,14 @@ int			main(int ac, char **av)
 	if (ac < 1)
 		usage(*av);
   	parse_rt_file(av[1], &scene);
+	load_scene_directory(av[1]);
 
 	get_scene(&scene);
 	initSourceFiles(sources, 0xF00, &num);
 
-	program_source = build_shader(&scene);
-
 	GLFWwindow *win = init("Re Tweet");
+
+	program_source = build_shader(&scene, get_scene_directory(NULL));
 
 	GLuint		program = create_program(program_source, true);
 	GLuint		vbo = createVBO();

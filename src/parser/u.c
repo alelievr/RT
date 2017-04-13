@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/22 14:41:52 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/09 20:36:17 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/13 21:09:01 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ int				parse(int ac, char **av)
 				|| !is_regular_file(av[1]))
 			ft_exit("Invalid file: %s\n", av[1]);
 		parse_rt_file(av[1], &scene);
-		build_shader(&scene);
 	}
 	else
 		ft_exit("No file given, exiting.");

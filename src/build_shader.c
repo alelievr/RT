@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/13 20:27:50 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/13 20:56:02 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <unistd.h>
-#include <OpenGL/GL.h>
 
 typedef struct	s_line_list
 {
@@ -200,6 +199,7 @@ static unsigned char	*generate_image_from_data(float data, int *width, int *heig
 {
 	unsigned char	*ret = (unsigned char *)malloc(sizeof(unsigned char) * 4);
 
+	printf("generated 1px texture from float: %f\n", data);
 	memset(ret, (char)(data * 255), 4);
 	*width = 1;
 	*height = 1;
@@ -220,8 +220,8 @@ static unsigned char	*generate_image_from_data(t_vec3 data, int *width, int *hei
 	return ret;
 }
 
-#define LOAD_TEXTURE(m, p, o) if (m->has_##p) m->p.data = SOIL_load_image(m->p.file, &m->p.width, &m->p.height, 0, SOIL_LOAD_RGBA); else m->p.data = generate_image_from_data(m->o, &m->texture.width, &m->texture.height);
-#define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
+#define LOAD_TEXTURE(m, p, o) if (m->has_##p) m->p.data = SOIL_load_image(m->p.file, &m->p.width, &m->p.height, 0, SOIL_LOAD_RGBA); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
+#define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height); printf("aw: %i, added: %i\n", *aw, m->p.width);
 
 static void		load_textures_if_exists(t_material *m, int *atlas_width, int *atlas_height)
 {
@@ -257,7 +257,7 @@ static void		load_atlas(t_scene *scene, int *atlas_width, int *atlas_height)
 	}
 }
 
-#define ADD_TEXTURE_ATLAS(m, p) glTextureSubImage2D(atlas_id, *offset_x, *offset_y, m->p.width, m->p.height, GL_RGBA, GL_UNSIGNED_BYTE, m->p.data); *offset_x += m->p.width;
+#define ADD_TEXTURE_ATLAS(m, p) glTexSubImage2D(atlas_id, 0, *offset_x, *offset_y, m->p.width, m->p.height, GL_RGBA, GL_UNSIGNED_BYTE, m->p.data); *offset_x += m->p.width;
 
 static void		add_object_textures_to_atlas(t_material *mat, int atlas_id, int *offset_x, int *offset_y)
 {
@@ -275,12 +275,15 @@ static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_heigh
 {
 	int				obj_count = 0;
 	t_object		*obj;
-	unsigned int	atlas_id;
+	GLuint			atlas_id;
 	int				offset_x = 0;
 	int				offset_y = 0;
 
 	glGenTextures(1, &atlas_id);
-	glTextureStorage2D(atlas_id, 1, GL_RGBA8, atlas_width, atlas_height);
+	glBindTexture(GL_TEXTURE_2D, atlas_id);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, atlas_width, atlas_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, 0);
+	printf("atlas size: %i/%i\n", atlas_width, atlas_height);
 	obj = scene->root_view;
 	while (obj_count < scene->nb_object)
 	{
@@ -297,7 +300,7 @@ static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_heigh
 	return atlas_id;
 }
 
-char		*build_shader(t_scene *root)
+char		*build_shader(t_scene *root, char *scene_directory)
 {
 	t_shader_file		shader_file;
 	int					atlas_width = 0;
@@ -314,7 +317,7 @@ char		*build_shader(t_scene *root)
 
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas);
 
-	SOIL_save_image("img.bmp", SOIL_SAVE_TYPE_BMP, atlas_width, atlas_height, 1, datas);
+	SOIL_save_image("img.bmp", SOIL_SAVE_TYPE_BMP, atlas_width, atlas_height, 4, datas);
 
 	tree_march(&shader_file, root);
 
