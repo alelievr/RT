@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/13 23:38:16 by alelievr         ###   ########.fr        #
+#    Updated: 2017/04/14 19:08:51 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,13 +41,13 @@ CPPVERSION	=	c++11
 #Example $> make DEBUG=2 will set debuglevel to 2
 
 #	Includes
-INCDIRS		=	. glfw/include inc SOIL2-clone/SOIL2 fmod/inc #freetype2/include
+INCDIRS		=	. glfw/include inc SOIL2/incs fmod/inc #freetype2/include
 
 #	Libraries
-LIBDIRS		=	glfw/src/ SOIL2-clone
+LIBDIRS		=	glfw/src/ SOIL2
 LDLIBS		=	-lglfw3 -lSOIL2
 GLFWLIB		=	glfw/src/libglfw3.a
-SOILLIB		=	SOIL2-clone/libSOIL2.a
+SOILLIB		=	SOIL2/libSOIL2.a
 #FREETYPELIB	=	freetype2/objs/.libs/libfreetype.a
 
 #	Output
@@ -181,7 +181,7 @@ endif
 all: $(GLFWLIB) $(SOILLIB) $(NAME)#$(FREETYPELIB) $(NAME)
 
 $(SOILLIB):
-	cd SOIL2-clone && make
+	cd SOIL2 && make
 
 $(GLFWLIB):
 	git submodule init
