@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/09 20:16:57 by alelievr         ###   ########.fr        #
+#    Updated: 2017/04/13 23:38:16 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,10 +16,11 @@
 
 #	Sources
 SRCDIR		=	src
-SRC			=	main.c			\
-				glfw_init.c		\
-				shader.c		\
-				build_shader.c	\
+SRC			=	main.c						\
+				glfw_init.c					\
+				shader.c					\
+				build_shader.c				\
+				file.c						\
 				parser/parse_rt_file.c		\
 				parser/utils.c				\
 				parser/ft_sscanf.c			\

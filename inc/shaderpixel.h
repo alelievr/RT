@@ -115,6 +115,8 @@ extern long			lastModifiedFile[0xF00];
 GLFWwindow		*init(char *fname);
 GLuint			create_program(char *file, bool fatal);
 float			getCurrentTime(void);
+bool			file_is_regular(int fd) __attribute__((overloadable));
+bool			file_is_regular(char *fd) __attribute__((overloadable));
 
 static const char* vertex_shader_text =
 "#version 330\n"
@@ -146,14 +148,6 @@ static const char* fragment_shader_text =
 "uniform vec4		iMouse;\n"
 "uniform vec3		iForward;\n"
 "uniform vec4		iMoveAmount;\n"
-"uniform sampler2D	iChannel0;\n"
-"uniform sampler2D	iChannel1;\n"
-"uniform sampler2D	iChannel2;\n"
-"uniform sampler2D	iChannel3;\n"
-"uniform sampler2D	iChannel4;\n"
-"uniform sampler2D	iChannel5;\n"
-"uniform sampler2D	iChannel6;\n"
-"uniform sampler2D	iChannel7;\n"
 "\n"
 "void mainImage(vec2 f);\n"
 "\n"
@@ -183,6 +177,8 @@ static const char *main_image_start_text =
 "\n"
 "	//window ratio correciton:\n"
 "	uv.x *= iResolution.x / iResolution.y;\n"
+"	fragColor = texture(atlas, coord / iResolution);\n"
+"	return ;"
 "\n"
 "	//perspective view\n"
 "	float   fov = 1.5;\n"

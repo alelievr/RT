@@ -88,7 +88,6 @@ float		getCurrentTime(void)
 void		updateUniforms(GLint *unis, GLint *images)
 {
 	static int		frames = 0;
-	static int		glTextures[] = {GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8};
 
 	float ti = getCurrentTime();
 	glUniform1f(unis[0], ti);
@@ -98,14 +97,10 @@ void		updateUniforms(GLint *unis, GLint *images)
 	glUniform4f(unis[4], move.x, move.y, move.z, move.w);
 	glUniform2f(unis[5], window.x, window.y);
 
-	int		i = 0;
-	for (int j = 0; j < 8; j++)
-		if (images[j] != 0)
-		{
-			glActiveTexture(glTextures[i++]);
-			glBindTexture(GL_TEXTURE_2D, images[j]);
-			glUniform1i(unis[10 + j], images[j]);
-		}
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, images[0]);
+	printf("uni: %i, img: %i\n", unis[9], images[0]);
+	glUniform1i(unis[9], images[0]);
 }
 
 vec3		vec3_cross(vec3 v1, vec3 v2)
@@ -171,18 +166,9 @@ GLint		*getUniformLocation(GLuint program)
 	unis[3] = glGetUniformLocation(program, "iForward");
 	unis[4] = glGetUniformLocation(program, "iMoveAmount");
 	unis[5] = glGetUniformLocation(program, "iResolution");
-	unis[10] = glGetUniformLocation(program, "iChannel0");
-	unis[11] = glGetUniformLocation(program, "iChannel1");
-	unis[12] = glGetUniformLocation(program, "iChannel2");
-	unis[13] = glGetUniformLocation(program, "iChannel3");
-	unis[14] = glGetUniformLocation(program, "iChannel4");
-	unis[15] = glGetUniformLocation(program, "iChannel5");
-	unis[16] = glGetUniformLocation(program, "iChannel6");
-	unis[17] = glGetUniformLocation(program, "iChannel7");
+	unis[9] = glGetUniformLocation(program, "atlas");
 	return unis;
 }
-
-#define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
 
 static t_scene	*get_scene(t_scene *scene)
 {
@@ -233,6 +219,7 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 	struct stat		st;
 	size_t			i;
 	int				fd;
+	int				atlas_id;
 
 	i = 0;
 	while (i < num)
@@ -249,7 +236,7 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 				files[i].fd = fd;
 			else
 				break ;
-			char *file = build_shader(get_scene(NULL), get_scene_directory(NULL));
+			char *file = build_shader(get_scene(NULL), get_scene_directory(NULL), &atlas_id);
 			GLint new_program = create_program(file, false);
 			if (new_program != 0)
 			{
@@ -337,6 +324,7 @@ int			main(int ac, char **av)
 	double			t1;
 	t_scene			scene;
 	char			*program_source;
+	int				atlas_id;
 
 	if (ac < 1)
 		usage(*av);
@@ -348,13 +336,13 @@ int			main(int ac, char **av)
 
 	GLFWwindow *win = init("Re Tweet");
 
-	program_source = build_shader(&scene, get_scene_directory(NULL));
+	program_source = build_shader(&scene, get_scene_directory(NULL), &atlas_id);
 
 	GLuint		program = create_program(program_source, true);
 	GLuint		vbo = createVBO();
 	GLuint		vao = createVAO(vbo, program);
     GLint		*unis = getUniformLocation(program);
-    GLint		*images = loadImages(av + 1);
+    GLint		*images = (int[]){atlas_id};
 
 	ft_printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))

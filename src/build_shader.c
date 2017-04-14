@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/13 20:56:02 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/14 02:49:34 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ static void	init_shader_file(t_shader_file *shader_file)
 static void	load_essencial_files(t_shader_file *shader_file)
 {
 	const char * const	*files = (const char * const[]){"shaders/new.glsl", NULL};
-	struct stat			st;
 	int					fd;
 	char				line[0xF000];
 
@@ -78,8 +77,7 @@ static void	load_essencial_files(t_shader_file *shader_file)
 	{
 		if ((fd = open(*files, O_RDONLY)) == -1)
 			perror("open"), exit(-1);
-		fstat(fd, &st);
-		if (!S_ISREG(st.st_mode))
+		if (!file_is_regular(fd))
 			ft_exit("bad file type: %s\n", *files);
 		while (gl(line, &fd))
 			LIST_APPEND(shader_file->function_begin, strdup(line));
@@ -220,10 +218,38 @@ static unsigned char	*generate_image_from_data(t_vec3 data, int *width, int *hei
 	return ret;
 }
 
-#define LOAD_TEXTURE(m, p, o) if (m->has_##p) m->p.data = SOIL_load_image(m->p.file, &m->p.width, &m->p.height, 0, SOIL_LOAD_RGBA); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
-#define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height); printf("aw: %i, added: %i\n", *aw, m->p.width);
+static char		*build_path(char *dir, char *file)
+{
+	static char		path[1024];
+	char			*f;
 
-static void		load_textures_if_exists(t_material *m, int *atlas_width, int *atlas_height)
+	//trim file:
+	f = file + strlen(file) - 1;
+	while (isspace(*f))
+		*f-- = 0;
+	f = file;
+	while (isspace(*f))
+		f++;
+	strcpy(path, dir);
+	strcat(path, file);
+	return path;
+}
+
+static unsigned char	*load_image(char *path, int *width, int *height)
+{
+	int		flag = 0;
+
+	if (FILE_CHECK_EXT(path, "tga"))
+		flag = SOIL_LOAD_L;
+	else
+		flag = SOIL_LOAD_RGBA;
+	return SOIL_load_image(path, width, height, 0, flag);
+}
+
+#define LOAD_TEXTURE(m, p, o) if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
+#define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
+
+static void		load_textures_if_exists(t_material *m, char *scene_directory, int *atlas_width, int *atlas_height)
 {
 	LOAD_TEXTURE_ATLAS(m, texture, color, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, bumpmap, bump, atlas_width, atlas_height);
@@ -235,7 +261,7 @@ static void		load_textures_if_exists(t_material *m, int *atlas_width, int *atlas
 	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
 }
 
-static void		load_atlas(t_scene *scene, int *atlas_width, int *atlas_height)
+static void		load_atlas(t_scene *scene, char *scene_directory, int *atlas_width, int *atlas_height)
 {
 	int			obj_count = 0;
 	t_object	*obj;
@@ -245,7 +271,8 @@ static void		load_atlas(t_scene *scene, int *atlas_width, int *atlas_height)
 	{
 		format_name(obj->name);
 
-		load_textures_if_exists(&obj->material, atlas_width, atlas_height);
+		printf("\033[38;5;42mobj: %s\033[0m\n", obj->name);
+		load_textures_if_exists(&obj->material, scene_directory, atlas_width, atlas_height);
 
 		if (obj->children)
 			obj = obj->children;
@@ -256,10 +283,10 @@ static void		load_atlas(t_scene *scene, int *atlas_width, int *atlas_height)
 		obj_count++;
 	}
 }
+#define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / (float)atlas_width, (float)*offset_y / (float)atlas_height, (float)(*offset_x + m->p.width) / (float)atlas_width, (float)(*offset_y + m->p.height) / (float)atlas_height}
+#define ADD_TEXTURE_ATLAS(m, p) glTexSubImage2D(atlas_id, 0, *offset_x, *offset_y, m->p.width, m->p.height, GL_RGBA, GL_UNSIGNED_BYTE, m->p.data); m->p.atlas_uv = COMPUTE_OFFSET(m, p); *offset_x += m->p.width; printf("uv: %f/%f - %f/%f\n", m->p.atlas_uv.x, m->p.atlas_uv.y, m->p.atlas_uv.z, m->p.atlas_uv.w)
 
-#define ADD_TEXTURE_ATLAS(m, p) glTexSubImage2D(atlas_id, 0, *offset_x, *offset_y, m->p.width, m->p.height, GL_RGBA, GL_UNSIGNED_BYTE, m->p.data); *offset_x += m->p.width;
-
-static void		add_object_textures_to_atlas(t_material *mat, int atlas_id, int *offset_x, int *offset_y)
+static void		add_object_textures_to_atlas(t_material *mat, int atlas_id, int *offset_x, int *offset_y, int atlas_width, int atlas_height)
 {
 	ADD_TEXTURE_ATLAS(mat, texture);
 	ADD_TEXTURE_ATLAS(mat, bumpmap);
@@ -282,12 +309,11 @@ static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_heigh
 	glGenTextures(1, &atlas_id);
 	glBindTexture(GL_TEXTURE_2D, atlas_id);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, atlas_width, atlas_height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, 0);
-	printf("atlas size: %i/%i\n", atlas_width, atlas_height);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	obj = scene->root_view;
 	while (obj_count < scene->nb_object)
 	{
-		add_object_textures_to_atlas(&obj->material, atlas_id, &offset_x, &offset_y);
+		add_object_textures_to_atlas(&obj->material, atlas_id, &offset_x, &offset_y, atlas_width, atlas_height);
 
 		if (obj->children)
 			obj = obj->children;
@@ -300,26 +326,27 @@ static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_heigh
 	return atlas_id;
 }
 
-char		*build_shader(t_scene *root, char *scene_directory)
+char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id)
 {
 	t_shader_file		shader_file;
 	int					atlas_width = 0;
 	int					atlas_height = 0;
-	unsigned int		atlas_id;
 
 	init_shader_file(&shader_file);
 	load_essencial_files(&shader_file);
 
-	load_atlas(root, &atlas_width, &atlas_height);
-	atlas_id = build_atlas(root, atlas_width, atlas_height);
+	load_atlas(root, scene_directory, &atlas_width, &atlas_height);
+	*atlas_id = build_atlas(root, atlas_width, atlas_height);
 
 	unsigned char *datas = malloc(sizeof(char) * 4 * atlas_width * atlas_height);
 
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas);
 
-	SOIL_save_image("img.bmp", SOIL_SAVE_TYPE_BMP, atlas_width, atlas_height, 4, datas);
-
+	LIST_APPEND(shader_file.uniform_begin, strdup("uniform sampler2D atlas;\n"));
+	
 	tree_march(&shader_file, root);
+
+	*atlas_id = SOIL_load_OGL_texture("textures/chess.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_COMPRESS_TO_DXT);
 
 	return concat_line_list(&shader_file);
 }

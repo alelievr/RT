@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/11 01:31:35 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/13 23:37:26 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,14 +228,13 @@ void			parse_rt_file(char *file, t_scene *scene)
 	int			nb_object;
 	t_object	*current_object;
 	t_object	*old_object;
-	struct stat	st;
 
 	nb_object = 0;
 	INIT(int, line_count, 0);
 	if ((fd = open(file, O_RDONLY)) == -1)
 		ft_exit("Open Failed");
-	fstat(fd, &st);
-	if (!S_ISREG(st.st_mode))
+
+	if (!file_is_regular(fd))
 		ft_exit("bad file: %s\n", file);
 	while (gl(line, &fd))
 	{

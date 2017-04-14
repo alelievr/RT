@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/13 20:56:29 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/14 00:43:21 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@
 # define LF_MAP_KA "\\smap_Ka\\s%w\\s"
 # define LF_MAP_KD "\\smap_Kd\\s%w\\s"
 # define LF_MAP_REFL "\\smap_refl\\s%w\\s"
+
+#define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
 
 /*
 	Other
@@ -308,6 +310,6 @@ void					parse_rt_file(char *file, t_scene *prim);
 void					parse_obj_file(char *file, t_mesh *mesh);
 int						get_next_word(char **str, char *res);
 int						parse(int ac, char **av);
-char					*build_shader(t_scene *scene, char *scene_directory);
+char					*build_shader(t_scene *scene, char *scene_directory, int *atlas_id);
 
 #endif
