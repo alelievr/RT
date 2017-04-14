@@ -165,10 +165,9 @@ static const char* fragment_shader_text =
 "void main()\n"
 "{\n"
 "	mainImage(gl_FragCoord.xy);\n"
-"}\n"
-"#line 0\n";
+"}\n";
 
-static const char *main_image_start_text = 
+static const char *main_image_start_text =
 "void        mainImage(vec2 coord)\n"
 "{\n"
 "	vec2    uv = (coord / iResolution) * 2 - 1;\n"
@@ -230,6 +229,7 @@ static const char *shader_header_text =
 "   vec3    	norm;\n"
 "   vec3    	pos;\n"
 "	Material	mat;\n"
+"	vec2		uv;\n"
 "};\n"
 "\n"
 "Hit       scene(Ray r);\n"
@@ -244,7 +244,9 @@ static const char *raytrace_start_text =
 "    vec3        ambient;\n"
 "    r.dir = rd;\n"
 "    r.pos = ro;\n"
-"    h = scene(r);\n";
+"    h = scene(r);\n"
+"	//if(h.dist < 1e20)\n"
+"	//	color = atlas_fetch(h.mat.texture, h.uv).xyz;\n";
 
 static const char *raytrace_end_text =
 "	return (color / 2);\n"

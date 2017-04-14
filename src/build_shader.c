@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_shader.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/14 18:49:06 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/14 22:42:40 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ typedef struct		s_atlas
 #define LIST_INSERT(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp;}
 #define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp; l = tmp;}
 
-#define ISTYPE(x) (obj->primitive.type == x)
+#define ISTYPE(x) (obj->primitive.type == x + 1)
 #define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE))
 
 #define MAX(x, y) ((x > y) ? x : y)
@@ -158,12 +158,12 @@ static char		*generate_scene_line(t_object *obj)
 
 	if (ISTYPE(SPHERE))
 		sprintf(line, "\tsphere(%s_position, %f, Material(%s), r, hit);", obj->name, obj->primitive.radius, generate_material_line(&obj->material));
-//	else if (ISTYPE(PLANE))
-//		sprintf(line, "\tplane(%s_rotation, %s_position, vec3(0, 1, 0), Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
+	else if (ISTYPE(PLANE))
+		sprintf(line, "\tplane(%s_rotation, %s_position, 0, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
 	else if (ISTYPE(CYLINDRE))
 		sprintf(line, "\tcyl(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_material_line(&obj->material));
-	else if (ISTYPE(CONE))
-		sprintf(line, "\tsphere(%s_position, %s_rotation, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
+	// else if (ISTYPE(CONE))
+		// sprintf(line, "\tsphere(%s_position, %s_rotation, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
 	else
 		return (NULL);
 	return (strdup(line));
@@ -175,9 +175,9 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 
 	if (ISPRIMITIVE)
 	{
-		sprintf(line, "uniform vec3 %s_position;", obj->name);
+		sprintf(line, "uniform vec3 %s_position = vec3(%f, %f, %f);", obj->name, obj->transform.position.x, obj->transform.position.y, obj->transform.position.z);
 		LIST_APPEND(shader_file->uniform_begin, strdup(line));
-		sprintf(line, "uniform vec3 %s_rotation;", obj->name);
+		sprintf(line, "uniform vec3 %s_rotation = vec3(%f, %f, %f);", obj->name, obj->transform.rotation.x, obj->transform.rotation.y, obj->transform.rotation.z);
 		LIST_APPEND(shader_file->uniform_begin, strdup(line));
 	}
 	else if (!ISTYPE(CAMERA)) //lighs
@@ -187,25 +187,17 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 	}
 }
 
-static void		tree_march(t_shader_file *shader_file, t_scene *scene)
+static void		tree_march(t_shader_file *shader_file, t_object *obj)
 {
-	int			obj_count = 0;
-	t_object	*obj;
-
-	obj = scene->root_view;
-	while (obj_count < scene->nb_object)
+	while (obj)
 	{
 		format_name(obj->name);
 		append_uniforms(shader_file, obj);
 		LIST_APPEND(shader_file->scene_begin, generate_scene_line(obj));
 
 		if (obj->children)
-			obj = obj->children;
-		else if (obj->brother_of_children)
-			obj = obj->brother_of_children;
-		else
-			obj = obj->parent->brother_of_children;
-		obj_count++;
+			tree_march(shader_file, obj->children);
+		obj = obj->brother_of_children;
 	}
 }
 
@@ -271,13 +263,9 @@ static void		load_textures_if_exists(t_material *m, char *scene_directory, int *
 	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
 }
 
-static void		load_atlas(t_scene *scene, char *scene_directory, int *atlas_width, int *atlas_height)
+static void		load_atlas(t_object *obj, char *scene_directory, int *atlas_width, int *atlas_height)
 {
-	int			obj_count = 0;
-	t_object	*obj;
-
-	obj = scene->root_view;
-	while (obj_count < scene->nb_object)
+	while (obj)
 	{
 		format_name(obj->name);
 
@@ -285,12 +273,8 @@ static void		load_atlas(t_scene *scene, char *scene_directory, int *atlas_width,
 		load_textures_if_exists(&obj->material, scene_directory, atlas_width, atlas_height);
 
 		if (obj->children)
-			obj = obj->children;
-		else if (obj->brother_of_children)
-			obj = obj->brother_of_children;
-		else
-			obj = obj->parent->brother_of_children;
-		obj_count++;
+			load_atlas(obj->children, scene_directory, atlas_width, atlas_height);
+		obj = obj->brother_of_children;
 	}
 }
 
@@ -299,7 +283,7 @@ static void		add_subimage(t_atlas *atlas, int offset_x, int offset_y, t_image *i
 	unsigned char	*begin;
 	unsigned char	*imgdata;
 	int				x, y;
-   
+
 	imgdata = img->data;
 	y = 0;
 	//printf("writing img at: %i/%i wh: %i/%i in atlas of size: %i/%i\n", offset_x, offset_y, img->width, img->height, atlas->width, atlas->height);
@@ -333,10 +317,8 @@ static void		add_object_textures_to_atlas(t_material *mat, t_atlas *atlas, int *
 	ADD_TEXTURE_ATLAS(mat, specular_map);
 }
 
-static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_height)
+static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height)
 {
-	int				obj_count = 0;
-	t_object		*obj;
 	t_atlas			atlas;
 	int				offset_x = 0;
 	int				offset_y = 0;
@@ -347,18 +329,13 @@ static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_heigh
 	memset(atlas.data, 0, sizeof(int) * atlas_width * atlas_height);
 
 	glGenTextures(1, &atlas.id);
-	obj = scene->root_view;
-	while (obj_count < scene->nb_object)
+	while (obj)
 	{
 		add_object_textures_to_atlas(&obj->material, &atlas, &offset_x, &offset_y);
 
 		if (obj->children)
-			obj = obj->children;
-		else if (obj->brother_of_children)
-			obj = obj->brother_of_children;
-		else
-			obj = obj->parent->brother_of_children;
-		obj_count++;
+			build_atlas(obj->children, atlas_width, atlas_height);
+		obj = obj->brother_of_children;
 	}
 	glBindTexture(GL_TEXTURE_2D, atlas.id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -376,10 +353,10 @@ char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id)
 	init_shader_file(&shader_file);
 	load_essencial_files(&shader_file);
 
-	load_atlas(root, scene_directory, &atlas_width, &atlas_height);
-	*atlas_id = build_atlas(root, atlas_width, atlas_height);
+	load_atlas(root->root_view, scene_directory, &atlas_width, &atlas_height);
+	*atlas_id = build_atlas(root->root_view, atlas_width, atlas_height);
 
-	tree_march(&shader_file, root);
+	tree_march(&shader_file, root->root_view);
 
 	return concat_line_list(&shader_file);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_rt_file.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/13 23:37:26 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/14 22:36:02 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,47 +174,39 @@ void  		fill_prop_material(t_material *mtl, char *line)
 
 }
 
-void   		affichage_test(t_scene *scene)
-{
-	t_object 	*lst_obj;
-	int			i = -1;
-	int			obj_count = 0;
+void display_objects(t_object *lst_obj) {
 
-	lst_obj = scene->root_view;
+	while (lst_obj)
+	{
+	printf("\033[34;01mname: %s\033[00m\n", lst_obj->name);
+	//printf("transparency: %f\n", lst_obj->material.transparency);
+//	printf("reflection: %f\n", lst_obj->material.reflection);
+//	printf("refraction: %f\n", lst_obj->material.refraction);
+	//printf("specular: %f\n", lst_obj->material.specular);
+	//printf("light intensity: %f\n", lst_obj->light_prop.intensity);
+	//printf("FOV: %f\n", lst_obj->camera.fov);
+	//printf("primitive radius: %f\n", lst_obj->primitive.radius);
+	//printf("primitive height: %f\n", lst_obj->primitive.height);
+	//printf("primitive angle: %f\n", lst_obj->primitive.angle);
+	printf("pos x : %f ,pos y : %f ,pos z : %f\n", lst_obj->transform.position.x,lst_obj->transform.position.y,lst_obj->transform.position.z);
+	//printf("rot x : %f ,rot y : %f ,rot z : %f\n", lst_obj->transform.rotation.x,lst_obj->transform.rotation.y,lst_obj->transform.rotation.z);
+//	while (++i < lst_obj->primitive.nsl)
+//		printf("slice.x : %f ,slice.y : %f , slice.z : %f , slice.w : %f , nbsl : %d\n", lst_obj->primitive.slice[i].x, lst_obj->primitive.slice[i].y, lst_obj->primitive.slice[i].z, lst_obj->primitive.slice[i].w, lst_obj->primitive.nsl);
+//	printf("color : %f,%f,%f\n", lst_obj->material.color.x,lst_obj->material.color.y,lst_obj->material.color.z);
+//	printf("light_color : %f,%f,%f\n", lst_obj->light_prop.color.x, lst_obj->light_prop.color.y , lst_obj->light_prop.color.z);
+//	printf("emission_color : %f,%f,%f\n", lst_obj->material.emission_color.x,lst_obj->material.emission_color.y,lst_obj->material.emission_color.z);
+//	printf("highlight_color : %f,%f,%f\n", lst_obj->material.highlight_color.x,lst_obj->material.highlight_color.y,lst_obj->material.highlight_color.z);
+	//if (lst_obj->primitive.type == 6)
+	//	printf("mask: %d\n", lst_obj->camera.post_processing_mask);
+	//printf("illum: %d\n", lst_obj->material.illum);
+	//printf("type : %d\n", lst_obj->primitive.type);
+	//printf("fichier : %s, ID : %d\n", lst_obj->material.bumpmap.file, lst_obj->material.bumpmap.opengl_id);
 
-	while(obj_count < scene->nb_object){
-			i = -1;
-			printf("\033[34;01mname: %s\033[00m\n", lst_obj->name);
-			//printf("transparency: %f\n", lst_obj->material.transparency);
-		//	printf("reflection: %f\n", lst_obj->material.reflection);
-		//	printf("refraction: %f\n", lst_obj->material.refraction);
-			//printf("specular: %f\n", lst_obj->material.specular);
-			//printf("light intensity: %f\n", lst_obj->light_prop.intensity);
-			//printf("FOV: %f\n", lst_obj->camera.fov);
-			//printf("primitive radius: %f\n", lst_obj->primitive.radius);
-			//printf("primitive height: %f\n", lst_obj->primitive.height);
-			//printf("primitive angle: %f\n", lst_obj->primitive.angle);
-			printf("pos x : %f ,pos y : %f ,pos z : %f\n", lst_obj->transform.position.x,lst_obj->transform.position.y,lst_obj->transform.position.z);
-			//printf("rot x : %f ,rot y : %f ,rot z : %f\n", lst_obj->transform.rotation.x,lst_obj->transform.rotation.y,lst_obj->transform.rotation.z);
-		//	while (++i < lst_obj->primitive.nsl)
-		//		printf("slice.x : %f ,slice.y : %f , slice.z : %f , slice.w : %f , nbsl : %d\n", lst_obj->primitive.slice[i].x, lst_obj->primitive.slice[i].y, lst_obj->primitive.slice[i].z, lst_obj->primitive.slice[i].w, lst_obj->primitive.nsl);
-		//	printf("color : %f,%f,%f\n", lst_obj->material.color.x,lst_obj->material.color.y,lst_obj->material.color.z);
-		//	printf("light_color : %f,%f,%f\n", lst_obj->light_prop.color.x, lst_obj->light_prop.color.y , lst_obj->light_prop.color.z);
-		//	printf("emission_color : %f,%f,%f\n", lst_obj->material.emission_color.x,lst_obj->material.emission_color.y,lst_obj->material.emission_color.z);
-	//	printf("highlight_color : %f,%f,%f\n", lst_obj->material.highlight_color.x,lst_obj->material.highlight_color.y,lst_obj->material.highlight_color.z);
-			//if (lst_obj->primitive.type == 6)
-			//	printf("mask: %d\n", lst_obj->camera.post_processing_mask);
-			//printf("illum: %d\n", lst_obj->material.illum);
-			//printf("type : %d\n", lst_obj->primitive.type);
-			//printf("fichier : %s, ID : %d\n", lst_obj->material.bumpmap.file, lst_obj->material.bumpmap.opengl_id);
-		if (lst_obj->children)
-			lst_obj = lst_obj->children;
-		else if (lst_obj->brother_of_children)
+
+			if (lst_obj->children)
+				display_objects(lst_obj->children);
 			lst_obj = lst_obj->brother_of_children;
-		else
-			lst_obj = lst_obj->parent->brother_of_children;
-		obj_count++;
-	}
+		}
 }
 
 #define FILL_PROP(X, line) _Generic((X), t_light *: fill_prop_light, t_transform *: fill_prop_transform, t_material *:fill_prop_material, t_camera *:fill_prop_camera, t_primitive *:fill_prop_primitive) (X, line)
@@ -255,7 +247,7 @@ void			parse_rt_file(char *file, t_scene *scene)
 			while(old_object->indent_level > current_object->indent_level){
 				old_object = old_object->parent;
 			}
-			if (old_object->indent_level == current_object->indent_level){
+			if (scene->nb_object != 1 && old_object->indent_level == current_object->indent_level){
 				old_object->brother_of_children = current_object;
 				current_object->parent = old_object->parent;
 			}
@@ -283,6 +275,7 @@ void			parse_rt_file(char *file, t_scene *scene)
 		else
 			ft_exit("bad indentation at line %i\n", line_count);
 	}
-	affichage_test(scene);
+
+	display_objects(scene->root_view);
 	close(fd);
 }

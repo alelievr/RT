@@ -1,3 +1,44 @@
+/* Generated uniforms */
+
+uniform vec3 olol_position;
+uniform vec3 olol_rotation;
+/* Static functions */
+
+struct      Ray
+{
+    vec3    dir;
+    vec3    pos;
+};
+
+struct  Coupe
+{
+    vec3    pos;
+    vec3    rot;
+};
+
+struct  Material
+{
+	vec4		texture;
+	vec4		emission;
+	vec4		transparency;
+	vec4		specular;
+	vec4		reflection;
+	vec4		refraction;
+	vec4		bump;
+};
+
+struct      Hit
+{
+   float  		dist;
+   vec3    	norm;
+   vec3    	pos;
+	Material	mat;
+	vec2		uv;
+};
+
+Hit       scene(Ray r);
+vec3    raytrace(vec3 ro, vec3 rd);
+
 #define M_PI 3.1415926535897932384626433832795
 #define EPSI 0.001f
 #define AMBIENT 0.2
@@ -19,8 +60,8 @@ vec3 rotate(vec3 point, vec3 rot, int t)
 
 vec4 atlas_fetch(vec4 coord, vec2 obj_uv)
 {
-    vec2 uv = vec2(coord.xy) + (vec2(coord.zw) - vec2(coord.xy)) * mod(obj_uv, 1 - EPSI);
-    return texture(atlas, uv);
+    vec2 uv = vec2(coord.xy) + (vec2(coord.zw) - vec2(coord.xy)) * obj_uv;
+    return texture(iChannel0, uv);
 }
 
 
@@ -40,7 +81,7 @@ void plane (vec3 norm, vec3 pos, float data, Material mat, Ray r, inout Hit h) {
 		h.pos = r.pos + r.dir * h.dist;
 		h.norm = faceforward(norm, norm, r.dir);
     h.mat = mat;
-		vec3	u = vec3(norm.y, norm.z, -1 * norm.x );
+		vec3	u = vec3(norm.y, norm.z, -1 * norm.x);
 		vec3	v = cross(u, norm);
 		h.uv = vec2(dot(h.pos, u), dot(h.pos, v));
 	  }
@@ -84,29 +125,30 @@ void sphere (vec3 pos, float data, Material mat, Ray r, inout Hit h) {
 
 void cyl (vec3 v, vec3 dir, float data, Material mat, Ray r, inout Hit h) {
 	vec3 d = r.pos - v;
+
 	dir = normalize(dir);
 	float a = dot(r.dir,r.dir) - pow(dot(r.dir, dir), 2);
 	float b = 2 * (dot(r.dir, d) - dot(r.dir, dir) * dot(d, dir));
 	float c = dot(d, d) - pow(dot(d, dir), 2) - data * data;
 	float g = b*b - 4*a*c;
 
-	if (g <= 0)
+	if (g < 0)
 		return;
 
 	float t1 = (-sqrt(g) - b) / (2*a);
 	//float t2 = (sqrt(g) - b) / (2*a);
 
-	if (t1 < EPSI)
+	if (t1 < 0)
 		return ;
 
 	if (t1 < h.dist){
-		h.dist = t1;
+		h.dist = t1 - EPSI;
 		h.pos = r.pos + r.dir * h.dist;
 		vec3 temp = dir * (dot(r.dir, dir) * h.dist + dot(r.pos - v, dir));
 		vec3 tmp = h.pos - v;
 		h.norm = tmp - temp;
 		h.mat = mat;
-		vec3	d = h.pos -dot( v, r.dir);
+		vec3	d = h.pos - (v * r.dir);
 		h.uv = vec2(-(0.5 + (atan(d.z, d.x) / (M_PI * 0.25))), -((d.y / M_PI) - floor(d.y / M_PI)));
 	}
 	/*else if (t2 >= 0 && t2 < h.dist){
@@ -219,7 +261,7 @@ vec3		calc_light(vec3 pos, Ray r, Hit h)
 	Hit	h2 = h;
 	Ray ref;
 	vec3 reflect = vec3(0,0,0);
-	//vec3 ambient = vec3(atlas_fetch(h.mat.texture, h.uv).xyz) * AMBIENT;
+	vec3 ambient = vec3(atlas_fetch(h.mat.texture, h.uv).xyz) * AMBIENT;
 	int		i = 0;
 	float on_off = 1;
 	vec3 lambert = light(pos, r, h);
@@ -233,4 +275,50 @@ vec3		calc_light(vec3 pos, Ray r, Hit h)
 	reflect += light(pos, ref, h2) * on_off;
 	}
 	return (lambert + reflect);
+}
+
+/* Static MainImage */
+
+void        mainImage(vec2 coord)
+{
+	vec2    uv = (coord / iResolution) * 2 - 1;
+	vec3    cameraPos = iMoveAmount.xyz + vec3(0, 0, -2);
+	vec3    cameraDir = iForward;
+	vec3    col;
+
+	//window ratio correciton:
+	uv.x *= iResolution.x / iResolution.y;
+
+	//perspective view
+	float   fov = 1.5;
+	vec3    forw = normalize(iForward);
+	vec3    right = normalize(cross(forw, vec3(0, 1, 0)));
+	vec3    up = normalize(cross(right, forw));
+	vec3    rd = normalize(uv.x * right + uv.y * up + fov * forw);
+	fragColor = vec4(raytrace(cameraPos, rd), 1);
+}
+
+Hit     scene(Ray r)
+{
+	int i = -1;
+	Hit     hit;
+	hit.dist = 1e20;
+	hit.mat.texture = vec4(0,0,0,0);
+
+/* Generated scene from parser */
+
+    return hit;
+}
+
+vec3    raytrace(vec3 ro, vec3 rd)
+{
+    Ray         r;
+    Hit         h;
+    vec3        color = vec3(0,0,0);
+    vec3        ambient;
+    r.dir = rd;
+    r.pos = ro;
+    h = scene(r);
+
+	return (color / 2);
 }

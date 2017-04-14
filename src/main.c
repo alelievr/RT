@@ -328,6 +328,7 @@ int			main(int ac, char **av)
 	if (ac < 1)
 		usage(*av);
   	parse_rt_file(av[1], &scene);
+	printf("test parse\n");
 	load_scene_directory(av[1]);
 
 	get_scene(&scene);

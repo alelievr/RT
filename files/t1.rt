@@ -1,3 +1,29 @@
-olol:
-	type: sphere
-	radius: 1
+plane1:
+    type: plane
+    pos: 5 6 9
+    rot: 0.5 0 0
+    color: 0xFF00FF
+    reflection: 1
+
+cylindre1:
+    type: cylindre
+    pos: 6 6 6
+    radius: 2
+    rot: 9 9 9
+    color: 0x00FF00
+
+camera:
+    type: camera
+    pos: 0 0 0
+    fov: 30
+
+light:
+    type: point_light
+    intensity: 2
+    pos: 10 10 100
+
+sphere1:
+    type: sphere
+    pos: 10 0 0
+    radius: 4
+    texture: ../textures/lava-rock-4k.jpg
