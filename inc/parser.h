@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/14 00:43:21 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/14 18:21:50 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,7 @@ typedef struct			s_image
 	unsigned char	*data;
 	int				width;
 	int				height;
+	int				channels;
 	t_vec4			atlas_uv;
 }						t_image;
 

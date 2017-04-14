@@ -99,7 +99,6 @@ void		updateUniforms(GLint *unis, GLint *images)
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, images[0]);
-	printf("uni: %i, img: %i\n", unis[9], images[0]);
 	glUniform1i(unis[9], images[0]);
 }
 
@@ -166,7 +165,7 @@ GLint		*getUniformLocation(GLuint program)
 	unis[3] = glGetUniformLocation(program, "iForward");
 	unis[4] = glGetUniformLocation(program, "iMoveAmount");
 	unis[5] = glGetUniformLocation(program, "iResolution");
-	unis[9] = glGetUniformLocation(program, "atlas");
+	unis[9] = 6;
 	return unis;
 }
 

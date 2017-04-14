@@ -148,6 +148,7 @@ static const char* fragment_shader_text =
 "uniform vec4		iMouse;\n"
 "uniform vec3		iForward;\n"
 "uniform vec4		iMoveAmount;\n"
+"uniform sampler2D	atlas;\n"
 "\n"
 "void mainImage(vec2 f);\n"
 "\n"

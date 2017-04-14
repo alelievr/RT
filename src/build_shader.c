@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/14 02:49:34 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/14 18:49:06 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,14 @@ typedef struct
 	t_line_list		*scene_begin;
 	t_line_list		*scene_end;
 }			t_shader_file;
+
+typedef struct		s_atlas
+{
+	unsigned char	*data;
+	GLuint			id;
+	int				width;
+	int				height;
+}					t_atlas;
 
 #define MAX_TEXTURES	512
 
@@ -128,11 +136,19 @@ static void		format_name(char *name)
 	}
 }
 
-static char		*generate_material_line(t_object *obj)
+#define GET_UVS(img) img.atlas_uv.x, img.atlas_uv.y, img.atlas_uv.z, img.atlas_uv.w
+static char		*generate_material_line(t_material *mat)
 {
 	static char		line[0xF00];
 
-	sprintf(line, "vec4(0, 0, 1, 1), vec4(0, 0, 1, 1), vec4(0, 0, 1, 1), vec4(0, 0, 1, 1), vec4(0, 0, 1, 1), vec4(0, 0, 1, 1), vec4(0, 0, 1, 1)");
+	sprintf(line, "vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f)",
+			GET_UVS(mat->texture),
+			GET_UVS(mat->emission_map),
+			GET_UVS(mat->transparency_map),
+			GET_UVS(mat->specular_map),
+			GET_UVS(mat->reflection_map),
+			GET_UVS(mat->refraction_map),
+			GET_UVS(mat->bumpmap));
 	return (line);
 }
 
@@ -141,13 +157,13 @@ static char		*generate_scene_line(t_object *obj)
 	static char		line[0xF00];
 
 	if (ISTYPE(SPHERE))
-		sprintf(line, "\tsphere(%s_position, %f, Material(%s), r, hit);", obj->name, obj->primitive.radius, generate_material_line(obj));
+		sprintf(line, "\tsphere(%s_position, %f, Material(%s), r, hit);", obj->name, obj->primitive.radius, generate_material_line(&obj->material));
 //	else if (ISTYPE(PLANE))
-//		sprintf(line, "\tplane(%s_rotation, %s_position, vec3(0, 1, 0), Material(%s), r, hit);", obj->name, obj->name, generate_material_line(obj));
+//		sprintf(line, "\tplane(%s_rotation, %s_position, vec3(0, 1, 0), Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
 	else if (ISTYPE(CYLINDRE))
-		sprintf(line, "\tcyl(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_material_line(obj));
+		sprintf(line, "\tcyl(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_material_line(&obj->material));
 	else if (ISTYPE(CONE))
-		sprintf(line, "\tsphere(%s_position, %s_rotation, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(obj));
+		sprintf(line, "\tsphere(%s_position, %s_rotation, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
 	else
 		return (NULL);
 	return (strdup(line));
@@ -235,18 +251,12 @@ static char		*build_path(char *dir, char *file)
 	return path;
 }
 
-static unsigned char	*load_image(char *path, int *width, int *height)
+static unsigned char	*load_image(char *path, int *width, int *height, int *channels)
 {
-	int		flag = 0;
-
-	if (FILE_CHECK_EXT(path, "tga"))
-		flag = SOIL_LOAD_L;
-	else
-		flag = SOIL_LOAD_RGBA;
-	return SOIL_load_image(path, width, height, 0, flag);
+	return SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO);
 }
 
-#define LOAD_TEXTURE(m, p, o) if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
+#define LOAD_TEXTURE(m, p, o) if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height, &m->p.channels); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
 #define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
 
 static void		load_textures_if_exists(t_material *m, char *scene_directory, int *atlas_width, int *atlas_height)
@@ -283,10 +293,35 @@ static void		load_atlas(t_scene *scene, char *scene_directory, int *atlas_width,
 		obj_count++;
 	}
 }
-#define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / (float)atlas_width, (float)*offset_y / (float)atlas_height, (float)(*offset_x + m->p.width) / (float)atlas_width, (float)(*offset_y + m->p.height) / (float)atlas_height}
-#define ADD_TEXTURE_ATLAS(m, p) glTexSubImage2D(atlas_id, 0, *offset_x, *offset_y, m->p.width, m->p.height, GL_RGBA, GL_UNSIGNED_BYTE, m->p.data); m->p.atlas_uv = COMPUTE_OFFSET(m, p); *offset_x += m->p.width; printf("uv: %f/%f - %f/%f\n", m->p.atlas_uv.x, m->p.atlas_uv.y, m->p.atlas_uv.z, m->p.atlas_uv.w)
 
-static void		add_object_textures_to_atlas(t_material *mat, int atlas_id, int *offset_x, int *offset_y, int atlas_width, int atlas_height)
+static void		add_subimage(t_atlas *atlas, int offset_x, int offset_y, t_image *img)
+{
+	unsigned char	*begin;
+	unsigned char	*imgdata;
+	int				x, y;
+   
+	imgdata = img->data;
+	y = 0;
+	//printf("writing img at: %i/%i wh: %i/%i in atlas of size: %i/%i\n", offset_x, offset_y, img->width, img->height, atlas->width, atlas->height);
+	while (y < img->height)
+	{
+		begin = atlas->data + (offset_x * 4) + ((offset_y + y) * atlas->width * 4);
+		x = 0;
+		while (x < img->width)
+		{
+			*(unsigned int *)begin = *(unsigned int *)imgdata;
+			begin += 4;
+			imgdata += img->channels;
+			x++;
+		}
+		y++;
+	}
+}
+
+#define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / (float)atlas->width, (float)*offset_y / (float)atlas->height, (float)(*offset_x + m->p.width) / (float)atlas->width, (float)(*offset_y + m->p.height) / (float)atlas->height}
+#define ADD_TEXTURE_ATLAS(m, p) add_subimage(atlas, *offset_x, *offset_y, &m->p); m->p.atlas_uv = COMPUTE_OFFSET(m, p); *offset_x += m->p.width; printf("uv: %f/%f - %f/%f\n", m->p.atlas_uv.x, m->p.atlas_uv.y, m->p.atlas_uv.z, m->p.atlas_uv.w)
+
+static void		add_object_textures_to_atlas(t_material *mat, t_atlas *atlas, int *offset_x, int *offset_y)
 {
 	ADD_TEXTURE_ATLAS(mat, texture);
 	ADD_TEXTURE_ATLAS(mat, bumpmap);
@@ -302,18 +337,20 @@ static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_heigh
 {
 	int				obj_count = 0;
 	t_object		*obj;
-	GLuint			atlas_id;
+	t_atlas			atlas;
 	int				offset_x = 0;
 	int				offset_y = 0;
 
-	glGenTextures(1, &atlas_id);
-	glBindTexture(GL_TEXTURE_2D, atlas_id);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	atlas.width = atlas_width;
+	atlas.height = atlas_height;
+	atlas.data = (unsigned char *)malloc(sizeof(int) * atlas_width * atlas_height);
+	memset(atlas.data, 0, sizeof(int) * atlas_width * atlas_height);
+
+	glGenTextures(1, &atlas.id);
 	obj = scene->root_view;
 	while (obj_count < scene->nb_object)
 	{
-		add_object_textures_to_atlas(&obj->material, atlas_id, &offset_x, &offset_y, atlas_width, atlas_height);
+		add_object_textures_to_atlas(&obj->material, &atlas, &offset_x, &offset_y);
 
 		if (obj->children)
 			obj = obj->children;
@@ -323,7 +360,11 @@ static unsigned int	build_atlas(t_scene *scene, int atlas_width, int atlas_heigh
 			obj = obj->parent->brother_of_children;
 		obj_count++;
 	}
-	return atlas_id;
+	glBindTexture(GL_TEXTURE_2D, atlas.id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.data);
+	return atlas.id;
 }
 
 char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id)
@@ -338,15 +379,7 @@ char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id)
 	load_atlas(root, scene_directory, &atlas_width, &atlas_height);
 	*atlas_id = build_atlas(root, atlas_width, atlas_height);
 
-	unsigned char *datas = malloc(sizeof(char) * 4 * atlas_width * atlas_height);
-
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas);
-
-	LIST_APPEND(shader_file.uniform_begin, strdup("uniform sampler2D atlas;\n"));
-	
 	tree_march(&shader_file, root);
-
-	*atlas_id = SOIL_load_OGL_texture("textures/chess.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_COMPRESS_TO_DXT);
 
 	return concat_line_list(&shader_file);
 }
