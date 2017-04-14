@@ -178,8 +178,6 @@ static const char *main_image_start_text =
 "\n"
 "	//window ratio correciton:\n"
 "	uv.x *= iResolution.x / iResolution.y;\n"
-"	fragColor = texture(atlas, coord / iResolution);\n"
-"	return ;"
 "\n"
 "	//perspective view\n"
 "	float   fov = 1.5;\n"
