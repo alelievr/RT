@@ -1,0 +1,23 @@
+camera:
+    type: camera
+    pos: 10 0 -10
+    fov: 1.2
+
+light:
+    type: point_light
+    intensity: 4
+    pos: 0 0 -9
+
+sphere2:
+    type: sphere
+    pos: 0 0 0
+    radius: 4
+	texture: ../textures/ice.jpg
+	transparency: 0.5
+    refraction: 1.9
+
+background:
+	type: plane
+	pos: 0 0 10
+	rot: 0 0 1
+	color: 0xFFFFFF
