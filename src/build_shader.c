@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/14 22:42:40 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/19 17:09:26 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ typedef struct		s_atlas
 #define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp; l = tmp;}
 
 #define ISTYPE(x) (obj->primitive.type == x + 1)
-#define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE))
+#define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE) || ISTYPE(CUBE))
+#define ISLIGHT (ISTYPE(POINT_LIGHT) || ISTYPE(DIRECTIONAL_LIGHT) || ISTYPE(SPOT_LIGHT))
 
 #define MAX(x, y) ((x > y) ? x : y)
 
@@ -77,7 +78,7 @@ static void	init_shader_file(t_shader_file *shader_file)
 
 static void	load_essencial_files(t_shader_file *shader_file)
 {
-	const char * const	*files = (const char * const[]){"shaders/new.glsl", NULL};
+	const char * const	*files = (const char * const[]){"shaders/tri/scene.glsl","shaders/tri/plane.glsl","shaders/tri/sphere.glsl","shaders/tri/cylinder.glsl","shaders/tri/cone.glsl","shaders/tri/cube.glsl","shaders/tri/light.glsl",NULL};
 	int					fd;
 	char				line[0xF000];
 
@@ -162,8 +163,10 @@ static char		*generate_scene_line(t_object *obj)
 		sprintf(line, "\tplane(%s_rotation, %s_position, 0, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
 	else if (ISTYPE(CYLINDRE))
 		sprintf(line, "\tcyl(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_material_line(&obj->material));
-	// else if (ISTYPE(CONE))
-		// sprintf(line, "\tsphere(%s_position, %s_rotation, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
+	else if (ISTYPE(CONE))
+		sprintf(line, "\tcone(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_material_line(&obj->material));
+	else if (ISTYPE(CUBE))
+		sprintf(line, "\tcube(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.height, generate_material_line(&obj->material));
 	else
 		return (NULL);
 	return (strdup(line));
@@ -180,10 +183,17 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 		sprintf(line, "uniform vec3 %s_rotation = vec3(%f, %f, %f);", obj->name, obj->transform.rotation.x, obj->transform.rotation.y, obj->transform.rotation.z);
 		LIST_APPEND(shader_file->uniform_begin, strdup(line));
 	}
-	else if (!ISTYPE(CAMERA)) //lighs
+	else if (ISLIGHT) //lighs
 	{
 		sprintf(line, "\tcolor += calc_light(vec3(%f, %f, %f), r, h);", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z);
 		LIST_APPEND(shader_file->raytrace_lights, strdup(line));
+	}
+	else if(ISTYPE(CAMERA))
+	{
+			move.x = obj->transform.position.x;
+			move.y = obj->transform.position.y;
+			move.z = obj->transform.position.z;
+			fov = obj->camera.fov;
 	}
 }
 

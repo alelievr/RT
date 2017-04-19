@@ -111,6 +111,7 @@ extern int			keys;
 extern int			input_pause;
 extern float		pausedTime;
 extern long			lastModifiedFile[0xF00];
+extern float		fov;
 
 GLFWwindow		*init(char *fname);
 GLuint			create_program(char *file, bool fatal);
@@ -149,6 +150,7 @@ static const char* fragment_shader_text =
 "uniform vec3		iForward;\n"
 "uniform vec4		iMoveAmount;\n"
 "uniform sampler2D	atlas;\n"
+"uniform float	iFov;"
 "\n"
 "void mainImage(vec2 f);\n"
 "\n"
@@ -171,7 +173,7 @@ static const char *main_image_start_text =
 "void        mainImage(vec2 coord)\n"
 "{\n"
 "	vec2    uv = (coord / iResolution) * 2 - 1;\n"
-"	vec3    cameraPos = iMoveAmount.xyz + vec3(0, 0, -2);\n"
+"	vec3    cameraPos = iMoveAmount.xyz;\n"
 "	vec3    cameraDir = iForward;\n"
 "	vec3    col;\n"
 "\n"
@@ -179,11 +181,10 @@ static const char *main_image_start_text =
 "	uv.x *= iResolution.x / iResolution.y;\n"
 "\n"
 "	//perspective view\n"
-"	float   fov = 1.5;\n"
 "	vec3    forw = normalize(iForward);\n"
 "	vec3    right = normalize(cross(forw, vec3(0, 1, 0)));\n"
 "	vec3    up = normalize(cross(right, forw));\n"
-"	vec3    rd = normalize(uv.x * right + uv.y * up + fov * forw);\n"
+"	vec3    rd = normalize(uv.x * right + uv.y * up + iFov * forw);\n"
 "	fragColor = vec4(raytrace(cameraPos, rd), 1);\n"
 "}\n";
 
@@ -208,7 +209,7 @@ static const char *shader_header_text =
 "\n"
 "struct  Coupe\n"
 "{\n"
-"    vec3    pos;\n"
+"    float    dist;\n"
 "    vec3    rot;\n"
 "};\n"
 "\n"

@@ -9,21 +9,41 @@ cylindre1:
     type: cylindre
     pos: 6 6 6
     radius: 2
-    rot: 9 9 9
+    rot: 0 45 0
+    color: 128 12 0
+
+cone1:
+    type: cone
+    pos: 10 -10 -10
+    angle: 5
+    rot: 45 0 0
     color: 0x00FF00
 
 camera:
     type: camera
-    pos: 0 0 0
+    pos: 10 0 -100
     fov: 30
 
 light:
     type: point_light
     intensity: 2
-    pos: 10 10 100
+    pos: 10 10 -9
 
 sphere1:
     type: sphere
     pos: 10 0 0
     radius: 4
     texture: ../textures/lava-rock-4k.jpg
+
+sphere2:
+    type: sphere
+    pos: 10 10 0
+    radius: 4
+    texture: ../textures/stone_wall.jpg
+
+cube1:
+    type: cube
+    pos: 10 20 -10
+    rot: 45 45 0
+    height: 4
+    texture: ../textures/wood.jpg

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/14 18:21:50 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/19 16:19:52 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,7 @@ enum		e_primitive_type
 	PLANE,
 	CYLINDRE,
 	CONE,
+	CUBE,
 	CAMERA,
 	POINT_LIGHT,
 	SPOT_LIGHT,
