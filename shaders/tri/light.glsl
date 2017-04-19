@@ -34,6 +34,30 @@ vec3		light(vec3 pos, Ray r, Hit h)
   return (color);
 }
 
+/* Fonction de calcul du vecteur de refraction */
+vec3		refraction(vec3 I, vec3 N, float n2)
+{
+	float	cosi = clamp(-1, 1, dot(I, N));
+	float	etai = 1;
+	float	etat = n2;
+	vec3	n = N;
+	if (cosi < 0)
+		cosi = -cosi;
+	else
+	{
+		float tmp = etat;
+		etat = etai;
+		etai = tmp;
+		n = N;
+	}
+		float	eta = etai / etat;
+		float	k = 1 - eta * eta * (1 - cosi * cosi);
+		if (k < 0)
+			return vec3(0);
+		else
+			return (eta * I + (eta * cosi - sqrt(k)) * n);
+}
+
 /* Définition de la light */
 vec3		calc_light(vec3 pos, Ray r, Hit h)
 {
@@ -45,7 +69,9 @@ vec3		calc_light(vec3 pos, Ray r, Hit h)
 	int		i = -1;
 	float on_off = 1;
 	vec3 lambert = light(pos, r, h);
-	while (++i < 3)
+	float	transparency = atlas_fetch(h.mat.transparency, h.uv).x;
+	float	refrac = atlas_fetch(h.mat.refraction, h.uv).x;
+	/*while (++i < 3)
 	{
 		//vec3 ambient = vec3(atlas_fetch(h.mat.texture, h.uv).xyz) * AMBIENT;
 	h = h2;
@@ -55,15 +81,15 @@ vec3		calc_light(vec3 pos, Ray r, Hit h)
 	reflection = atlas_fetch(h.mat.reflection, h.uv).x;
 	on_off = on_off * reflection;
 	reflect += light(pos, ref, h2) * on_off;
-	}
-	// if (atlas_fetch(h.mat.transparency, h.uv).x > EPSI)
-	// {
-	// 	h = h2;
-	// 	Ray trans;
-	// 	trans.pos = h.pos;
-	// 	trans.dir = r.dir;
-	// 	h2 = scene(trans);
-	// 	lambert = light(pos, trans, h2) + lambert * abs(atlas_fetch(h.mat.transparency, h.uv).x - 1);
-	// }
+	}*/
+	if (transparency > EPSI)
+	{
+		h = h2;
+		Ray trans;
+		trans.pos = h.pos;
+		trans.dir = refraction(r.dir, h.norm, refrac);//refraction(refraction(r.dir, h.norm, refrac), , refrac);
+		h2 = scene(trans);
+	 	lambert = light(pos, trans, h2) * transparency + lambert * (1 - transparency);
+	 }
 	return (lambert + reflect);
 }
