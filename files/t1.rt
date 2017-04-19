@@ -4,6 +4,7 @@ plane1:
     rot: 0.5 0 0
     color: 0xFF00FF
     reflection: 1
+    transparency: 0.5
 
 cylindre1:
     type: cylindre
@@ -22,7 +23,7 @@ cone1:
 camera:
     type: camera
     pos: 10 0 -100
-    fov: 30
+    fov: 1.2
 
 light:
     type: point_light
@@ -34,12 +35,13 @@ sphere1:
     pos: 10 0 0
     radius: 4
     texture: ../textures/lava-rock-4k.jpg
+    transparency: 0.4
 
 sphere2:
     type: sphere
     pos: 10 10 0
     radius: 4
-    texture: ../textures/stone_wall.jpg
+    texture: ../textures/stone-wall.jpg
 
 cube1:
     type: cube

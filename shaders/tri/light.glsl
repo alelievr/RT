@@ -40,27 +40,27 @@ vec3		calc_light(vec3 pos, Ray r, Hit h)
 	Hit	h2 = h;
 	Ray ref;
 	vec3 reflect = vec3(0,0,0);
-	vec3 ambient = vec3(atlas_fetch(h.mat.texture, h.uv).xyz) * AMBIENT;
+	//vec3 ambient = vec3(atlas_fetch(h.mat.texture, h.uv).xyz) * AMBIENT;
 	int		i = 0;
 	float on_off = 1;
 	vec3 lambert = light(pos, r, h);
-	/*while (++i < 5)
-	{
-	h = h2;
-	ref.dir = h.norm;
-	ref.pos = h.pos;
-	h2 = scene(ref);
-	on_off = on_off * atlas_fetch(h.mat.reflection, h.uv).x;
-	reflect += light(pos, ref, h2) * on_off;
-	}
-	if (atlas_fetch(h.mat.reflection, h.uv).x > 0)
+	// while (++i < 5)
+	// {
+	// h = h2;
+	// ref.dir = h.norm;
+	// ref.pos = h.pos;
+	// h2 = scene(ref);
+	// on_off = on_off * atlas_fetch(h.mat.reflection, h.uv).x;
+	// reflect += light(pos, ref, h2) * on_off;
+	// }
+	if (atlas_fetch(h.mat.transparency, h.uv).x > EPSI)
 	{
 		h = h2;
 		Ray trans;
 		trans.pos = h.pos;
 		trans.dir = r.dir;
 		h2 = scene(trans);
-		lambert = light(pos, trans, h2) + lambert * abs(atlas_fetch(h.mat.reflection, h.uv).x - 1);
-	}*/
+		lambert = light(pos, trans, h2) + lambert * abs(atlas_fetch(h.mat.transparency, h.uv).x - 1);
+	}
 	return (lambert + reflect);
 }

@@ -1,5 +1,6 @@
 #define M_PI 3.1415926535897932384626433832795
 #define EPSI 0.001f
+#define UV_EPSI 0.01f
 #define AMBIENT 0.2
 
 vec3 rotate(vec3 point, vec3 rot, int t)
@@ -17,7 +18,8 @@ vec3 rotate(vec3 point, vec3 rot, int t)
 
 vec4 atlas_fetch(vec4 coord, vec2 obj_uv)
 {
-    vec2 uv = vec2(coord.xy) + (vec2(coord.zw) - vec2(coord.xy)) * mod(obj_uv, 1 - EPSI);
+    vec2 uv = vec2(coord.xy) + (vec2(coord.zw) - vec2(coord.xy)) * (mod(obj_uv, 1 - (UV_EPSI * 2)) + UV_EPSI);
+
     return texture(atlas, uv);
 }
 
@@ -36,7 +38,7 @@ void disk (vec3 norm, vec3 pos, float data, Material mat, Ray r, inout Hit h) {
 		h.pos = r.pos + r.dir * h.dist;
 		h.norm = faceforward(norm, norm, r.dir);
     h.mat = mat;
-		vec3	u = vec3(norm.y, norm.z, -1 * norm.x );
+		vec3	u = vec3(norm.y, norm.z, -1 * norm.x);
 		vec3	v = cross(u, norm);
 		h.uv = vec2(dot(h.pos, u), dot(h.pos, v));
   }

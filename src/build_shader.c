@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/19 17:09:26 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/19 20:50:39 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,7 +258,7 @@ static unsigned char	*load_image(char *path, int *width, int *height, int *chann
 	return SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO);
 }
 
-#define LOAD_TEXTURE(m, p, o) if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height, &m->p.channels); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
+#define LOAD_TEXTURE(m, p, o) printf("texture: %s\n", #p); if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height, &m->p.channels); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
 #define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
 
 static void		load_textures_if_exists(t_material *m, char *scene_directory, int *atlas_width, int *atlas_height)
@@ -350,6 +350,8 @@ static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height
 	glBindTexture(GL_TEXTURE_2D, atlas.id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.data);
 	return atlas.id;
 }
