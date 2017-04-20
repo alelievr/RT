@@ -14,7 +14,7 @@ sphere2:
     radius: 4
 	texture: ../textures/ice.jpg
 	transparency: 0.5
-    refraction: 1.9
+    refraction: 1.0
 
 background:
 	type: plane
