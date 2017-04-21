@@ -1,13 +1,5 @@
-void sphere (vec3 pos, float data, Material mat, Ray r, inout Hit h){
+void sphere (vec3 pos, float data, Coupes coupe, Material mat, Ray r, inout Hit h){
 	vec3 d = r.pos - pos;
-
-	Coupe co;
-	co.rot = vec3(0,0,-1);
-	co.dist = 1;
-
-	Coupe co2;
-	co2.rot = vec3(0,1,-1);
-	co2.dist = 1;
 
 	float a = dot (r.dir, r.dir);
 	float b = dot (r.dir, d);
@@ -23,7 +15,7 @@ void sphere (vec3 pos, float data, Material mat, Ray r, inout Hit h){
 
 	vec3 inter = r.pos + r.dir * t;
 
-	if (t > 0 && t < h.dist && !decoupe(pos, inter, co, co2, data, mat, r, h)) {
+	if (t > 0 && t < h.dist && !decoupe(pos, inter, coupe)) {
 		h.dist = t + EPSI;
 		h.pos = r.pos + r.dir * h.dist;
 		h.norm = h.pos - pos;
@@ -35,7 +27,7 @@ void sphere (vec3 pos, float data, Material mat, Ray r, inout Hit h){
 
 	vec3 inter1 = r.pos + r.dir * t1;
 
-	if ((t < 0 || decoupe(pos, inter, co, co2, data, mat, r, h)) && !decoupe(pos, inter1, co, co2, data, mat, r, h)){
+	if ((t < 0 || decoupe(pos, inter, coupe)) && !decoupe(pos, inter1, coupe)){
 		if (t1 > 0 && t1 < h.dist){
 			h.dist = t1 + EPSI;
 			h.pos = r.pos + r.dir * h.dist;

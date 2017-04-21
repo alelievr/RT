@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/21 20:43:47 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/21 21:42:21 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct		s_atlas
 #define MAX(x, y) ((x > y) ? x : y)
 #define MAX_SHADER_FILE_SIZE	0xF000
 #define GET_UVS(img) img.atlas_uv.x, img.atlas_uv.y, img.atlas_uv.z, img.atlas_uv.w
+#define GET_VEC4(vec) vec.x, vec.y, vec.z, vec.w
 
 static void	init_shader_file(t_shader_file *shader_file)
 {
@@ -154,12 +155,26 @@ static char		*generate_material_line(t_material *mat)
 	return (line);
 }
 
+static char		*generate_coupes_line(t_primitive *prim)
+{
+	static char		line[0xF00];
+
+	sprintf(line, "vec4[5](vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f)), %d",
+		GET_VEC4(prim->slice[0]),
+		GET_VEC4(prim->slice[1]),
+		GET_VEC4(prim->slice[2]),
+		GET_VEC4(prim->slice[3]),
+		GET_VEC4(prim->slice[4]),
+		prim->nsl);
+	return (line);
+}
+
 static char		*generate_scene_line(t_object *obj)
 {
 	static char		line[0xF00];
 
 	if (ISTYPE(SPHERE))
-		sprintf(line, "\tsphere(%s_position, %f, Material(%s), r, hit);", obj->name, obj->primitive.radius, generate_material_line(&obj->material));
+		sprintf(line, "\tsphere(%s_position, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->primitive.radius,generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(PLANE))
 		sprintf(line, "\tplane(%s_rotation, %s_position, 0, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
 	else if (ISTYPE(CYLINDRE))
