@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/21 17:07:11 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 20:43:47 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ typedef struct	s_line_list
 	struct s_line_list	*next;
 }				t_line_list;
 
-typedef struct
+typedef struct	s_shader_file
 {
 	t_line_list		*begin;
 	t_line_list		*function_begin;
@@ -30,7 +30,7 @@ typedef struct
 	t_line_list		*raytrace_lights;
 	t_line_list		*scene_begin;
 	t_line_list		*scene_end;
-}			t_shader_file;
+}				t_shader_file;
 
 typedef struct		s_atlas
 {
@@ -41,16 +41,15 @@ typedef struct		s_atlas
 }					t_atlas;
 
 #define MAX_TEXTURES	512
-
 #define NEW_LINE_LIST ({t_line_list *m; if (!(m = (t_line_list *)malloc(sizeof(t_line_list)))) ft_exit("malloc error !"); m->next = NULL; m->line = NULL; m;})
 #define LIST_INSERT(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp;}
-#define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp; l = tmp;}
-
+#define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s;	tmp->next = l->next; l->next = tmp; l = tmp;}
 #define ISTYPE(x) (obj->primitive.type == x + 1)
 #define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE) || ISTYPE(CUBE))
 #define ISLIGHT (ISTYPE(POINT_LIGHT) || ISTYPE(DIRECTIONAL_LIGHT) || ISTYPE(SPOT_LIGHT))
-
 #define MAX(x, y) ((x > y) ? x : y)
+#define MAX_SHADER_FILE_SIZE	0xF000
+#define GET_UVS(img) img.atlas_uv.x, img.atlas_uv.y, img.atlas_uv.z, img.atlas_uv.w
 
 static void	init_shader_file(t_shader_file *shader_file)
 {
@@ -78,14 +77,17 @@ static void	init_shader_file(t_shader_file *shader_file)
 
 static void	load_essencial_files(t_shader_file *shader_file)
 {
-	const char * const	*files = (const char * const[]){"shaders/tri/scene.glsl","shaders/tri/plane.glsl","shaders/tri/sphere.glsl","shaders/tri/cylinder.glsl","shaders/tri/cone.glsl","shaders/tri/cube.glsl","shaders/tri/light1.glsl",NULL};
+	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/light1.glsl", NULL};
 	int					fd;
 	char				line[0xF000];
 
 	while (*files)
 	{
 		if ((fd = open(*files, O_RDONLY)) == -1)
-			perror("open"), exit(-1);
+		{
+			perror("open");
+			exit(-1);
+		}
 		if (!file_is_regular(fd))
 			ft_exit("bad file type: %s\n", *files);
 		while (gl(line, &fd))
@@ -94,15 +96,15 @@ static void	load_essencial_files(t_shader_file *shader_file)
 	}
 }
 
-#define MAX_SHADER_FILE_SIZE	0xF000
 static char	*concat_line_list(t_shader_file *shader_file)
 {
 	static char		buff[MAX_SHADER_FILE_SIZE + 1];
-	t_line_list		*line = shader_file->begin;
+	t_line_list		*line;
 	t_line_list		*prev;
 	int				index;
 
 	index = 0;
+	line = shader_file->begin;
 	while (line)
 	{
 		if (line->line == NULL)
@@ -119,7 +121,7 @@ static char	*concat_line_list(t_shader_file *shader_file)
 		free(prev);
 	}
 	write(1, buff, index);
-	return buff;
+	return (buff);
 }
 
 static void		format_name(char *name)
@@ -137,7 +139,6 @@ static void		format_name(char *name)
 	}
 }
 
-#define GET_UVS(img) img.atlas_uv.x, img.atlas_uv.y, img.atlas_uv.z, img.atlas_uv.w
 static char		*generate_material_line(t_material *mat)
 {
 	static char		line[0xF00];
@@ -183,18 +184,18 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 		sprintf(line, "uniform vec3 %s_rotation = vec3(%f, %f, %f);", obj->name, obj->transform.rotation.x, obj->transform.rotation.y, obj->transform.rotation.z);
 		LIST_APPEND(shader_file->uniform_begin, strdup(line));
 	}
-	else if (ISLIGHT) //lighs
+	else if (ISLIGHT)
 	{
 		sprintf(line, "\tcolor += calc_light(vec3(%f, %f, %f), r, h);", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z);
 		LIST_APPEND(shader_file->raytrace_lights, strdup(line));
 	}
-	else if(ISTYPE(CAMERA))
+	else if (ISTYPE(CAMERA))
 	{
-			move.x = obj->transform.position.x;
-			move.y = obj->transform.position.y;
-			move.z = obj->transform.position.z;
-			fov = obj->camera.fov;
-			ambient = obj->camera.ambient;
+		move.x = obj->transform.position.x;
+		move.y = obj->transform.position.y;
+		move.z = obj->transform.position.z;
+		fov = obj->camera.fov;
+		ambient = obj->camera.ambient;
 	}
 }
 
@@ -205,7 +206,6 @@ static void		tree_march(t_shader_file *shader_file, t_object *obj)
 		format_name(obj->name);
 		append_uniforms(shader_file, obj);
 		LIST_APPEND(shader_file->scene_begin, generate_scene_line(obj));
-
 		if (obj->children)
 			tree_march(shader_file, obj->children);
 		obj = obj->brother_of_children;
@@ -214,19 +214,21 @@ static void		tree_march(t_shader_file *shader_file, t_object *obj)
 
 static unsigned char	*generate_image_from_data(float data, int *width, int *height) __attribute__((overloadable))
 {
-	unsigned char	*ret = (unsigned char *)malloc(sizeof(unsigned char) * 4);
+	unsigned char	*ret;
 
+	ret = (unsigned char *)malloc(sizeof(unsigned char) * 4);
 	printf("generated 1px texture from float: %f\n", data);
 	memset(ret, (char)(data * 255), 4);
 	*width = 1;
 	*height = 1;
-	return ret;
+	return (ret);
 }
 
 static unsigned char	*generate_image_from_data(t_vec3 data, int *width, int *height) __attribute__((overloadable))
 {
-	unsigned char	*ret = (unsigned char *)malloc(sizeof(unsigned char) * 4);
+	unsigned char	*ret;
 
+	ret = (unsigned char *)malloc(sizeof(unsigned char) * 4);
 	printf("generated 1px texture from color: %f/%f/%f\n", data.x, data.y, data.z);
 	ret[0] = data.x;
 	ret[1] = data.y;
@@ -234,7 +236,7 @@ static unsigned char	*generate_image_from_data(t_vec3 data, int *width, int *hei
 	ret[3] = 255;
 	*width = 1;
 	*height = 1;
-	return ret;
+	return (ret);
 }
 
 static char		*build_path(char *dir, char *file)
@@ -242,7 +244,6 @@ static char		*build_path(char *dir, char *file)
 	static char		path[1024];
 	char			*f;
 
-	//trim file:
 	f = file + strlen(file) - 1;
 	while (isspace(*f))
 		*f-- = 0;
@@ -251,12 +252,12 @@ static char		*build_path(char *dir, char *file)
 		f++;
 	strcpy(path, dir);
 	strcat(path, file);
-	return path;
+	return (path);
 }
 
 static unsigned char	*load_image(char *path, int *width, int *height, int *channels)
 {
-	return SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO);
+	return (SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO));
 }
 
 #define LOAD_TEXTURE(m, p, o) printf("texture: %s\n", #p); if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height, &m->p.channels); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
@@ -279,10 +280,8 @@ static void		load_atlas(t_object *obj, char *scene_directory, int *atlas_width, 
 	while (obj)
 	{
 		format_name(obj->name);
-
 		printf("\033[38;5;42mobj: %s\033[0m\n", obj->name);
 		load_textures_if_exists(&obj->material, scene_directory, atlas_width, atlas_height);
-
 		if (obj->children)
 			load_atlas(obj->children, scene_directory, atlas_width, atlas_height);
 		obj = obj->brother_of_children;
@@ -293,11 +292,12 @@ static void		add_subimage(t_atlas *atlas, int offset_x, int offset_y, t_image *i
 {
 	unsigned char	*begin;
 	unsigned char	*imgdata;
-	int				x, y;
+	int				x;
+	int				y;
 
 	imgdata = img->data;
+	x = 0;
 	y = 0;
-	//printf("writing img at: %i/%i wh: %i/%i in atlas of size: %i/%i\n", offset_x, offset_y, img->width, img->height, atlas->width, atlas->height);
 	while (y < img->height)
 	{
 		begin = atlas->data + (offset_x * 4) + ((offset_y + y) * atlas->width * 4);
@@ -331,19 +331,19 @@ static void		add_object_textures_to_atlas(t_material *mat, t_atlas *atlas, int *
 static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height)
 {
 	t_atlas			atlas;
-	int				offset_x = 0;
-	int				offset_y = 0;
+	int				offset_x;
+	int				offset_y;
 
+	offset_x = 0;
+	offset_y = 0;
 	atlas.width = atlas_width;
 	atlas.height = atlas_height;
 	atlas.data = (unsigned char *)malloc(sizeof(int) * atlas_width * atlas_height);
 	memset(atlas.data, 0, sizeof(int) * atlas_width * atlas_height);
-
 	glGenTextures(1, &atlas.id);
 	while (obj)
 	{
 		add_object_textures_to_atlas(&obj->material, &atlas, &offset_x, &offset_y);
-
 		if (obj->children)
 			build_atlas(obj->children, atlas_width, atlas_height);
 		obj = obj->brother_of_children;
@@ -354,22 +354,21 @@ static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.data);
-	return atlas.id;
+	return (atlas.id);
 }
 
 char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id)
 {
 	t_shader_file		shader_file;
-	int					atlas_width = 0;
-	int					atlas_height = 0;
+	int					atlas_width;
+	int					atlas_height;
 
+	atlas_width = 0;
+	atlas_height = 0;
 	init_shader_file(&shader_file);
 	load_essencial_files(&shader_file);
-
 	load_atlas(root->root_view, scene_directory, &atlas_width, &atlas_height);
 	*atlas_id = build_atlas(root->root_view, atlas_width, atlas_height);
-
 	tree_march(&shader_file, root->root_view);
-
-	return concat_line_list(&shader_file);
+	return (concat_line_list(&shader_file));
 }

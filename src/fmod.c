@@ -29,7 +29,10 @@ void			fmod_init(void)
 {
 	fmod_handler = dlopen(FMOD_LIB, RTLD_LAZY);
 	if (!fmod_handler)
-		puts(dlerror()), exit(-1);
+	{
+		puts(dlerror());
+		exit(-1);
+	}
 	LOAD_SYM(FMOD_System_Create);
 	LOAD_SYM(FMOD_System_Init);
 	LOAD_SYM(FMOD_System_CreateSound);
@@ -37,7 +40,6 @@ void			fmod_init(void)
 	LOAD_SYM(FMOD_System_PlaySound);
 	LOAD_SYM(FMOD_System_Close);
 	LOAD_SYM(FMOD_System_Release);
-
 	FMOD_System_Create1(&fmod_system);
 	FMOD_System_Init1(fmod_system, 1, FMOD_INIT_NORMAL, NULL);
 }
@@ -46,10 +48,14 @@ FMOD_SOUND			*load_sound(char *fname)
 {
 	FMOD_SOUND *music;
 
-	if (FMOD_System_CreateSound1(fmod_system, fname, FMOD_2D | FMOD_CREATESTREAM, 0, &music) != FMOD_OK)
-		printf("unable to load %s\n", fname), exit(-1);
+	if (FMOD_System_CreateSound1(fmod_system, fname, FMOD_2D | \
+		FMOD_CREATESTREAM, 0, &music) != FMOD_OK)
+	{
+		printf("unable to load %s\n", fname);
+		exit(-1);
+	}
 	FMOD_Sound_SetLoopCount1(music, -1);
-	return music;
+	return (music);
 }
 
 void			play_sound(FMOD_SOUND *s)

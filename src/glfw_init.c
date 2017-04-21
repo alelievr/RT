@@ -17,16 +17,16 @@ static vec2	angleAmount;
 static int	cursor_mode;
 static float lastPausedTime;
 
-static void error_callback(int error, const char* description)
+static void		error_callback(int error, const char *description)
 {
 	(void)error;
 	fprintf(stderr, "Error: %s\n", description);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void		key_callback(GLFWwindow *window, int key,int scancode, int action, int mods)
 {
-	(void)scancode;
-	(void)mods;
+	(void) scancode;
+	(void) mods;
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
@@ -55,20 +55,19 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 	if (key == GLFW_KEY_C)
 		cursor_mode ^= action == GLFW_PRESS;
-	glfwSetInputMode(window, GLFW_CURSOR, (cursor_mode) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, (cursor_mode) ? GLFW_CURSOR_NORMAL \
+	: GLFW_CURSOR_DISABLED);
 }
 
-static void mouse_callback(GLFWwindow *win, double x, double y)
+static void		mouse_callback(GLFWwindow *win, double x, double y)
 {
 	(void)win;
 	mouse.x = x;
 	mouse.y = y;
-
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
 	{
 		angleAmount.x += ((window.x / 2.) - mouse.x) / 200;
 		angleAmount.y += ((window.y / 2.) - mouse.y) / 200;
-
 		if (angleAmount.y > 1.5f)
 			angleAmount.y = 1.5f;
 		if (angleAmount.y < -1.5f)
@@ -79,7 +78,8 @@ static void mouse_callback(GLFWwindow *win, double x, double y)
 	}
 }
 
-static void mouse_click_callback(GLFWwindow *win, int button, int action, int mods)
+static void		mouse_click_callback(GLFWwindow *win, int button, \
+	int action, int mods)
 {
 	(void)win;
 	(void)action;
@@ -91,34 +91,38 @@ static void mouse_click_callback(GLFWwindow *win, int button, int action, int mo
 		mouse.z = 0;
 }
 
-static void resize_callback(GLFWwindow *win, int width, int height)
+static void		resize_callback(GLFWwindow *win, int width, int height)
 {
 	(void)win;
 	window.x = width;
 	window.y = height;
 }
 
-GLFWwindow	*init(char *name)
+GLFWwindow		*init(char *name)
 {
 	GLFWwindow *win;
 
-	//GLFW
 	glfwSetErrorCallback(error_callback);
 	if (!glfwInit())
-		printf("glfwInit error !\n"), exit(-1);
-	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
- 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
- 	glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
- 	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	{
+		printf("glfwInit error !\n");
+		exit(-1);
+	}
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	if (!(win = glfwCreateWindow(WIN_W, WIN_H, name, NULL, NULL)))
-		printf("failed to create window !\n"), exit(-1);
+	{
+		printf("failed to create window !\n");
+		exit(-1);
+	}
 	glfwSetKeyCallback(win, key_callback);
 	glfwSetCursorPosCallback(win, mouse_callback);
 	glfwSetMouseButtonCallback(win, mouse_click_callback);
 	glfwSetWindowSizeCallback(win, resize_callback);
-	glfwMakeContextCurrent (win);
+	glfwMakeContextCurrent(win);
 	glfwSwapInterval(1);
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 	return (win);
 }

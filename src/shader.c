@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shader.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created  2016/09/08 21:25:14 by alelievr          #+#    #+#             */
-/*   Updated  2016/09/08 21:25:20 by alelievr         ###   ########.fr       */
+/*   Created: 2017/04/21 19:15:54 by pmartine          #+#    #+#             */
+/*   Updated: 2017/04/21 19:15:58 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 
 static void		check_compilation(GLuint shader, bool fatal)
 {
-	GLint	is_compiled;
-	GLint	max_length;
-	char	buff[0xF000];
+	GLint			is_compiled;
+	GLint			max_length;
+	char			buff[0xF000];
 
 	is_compiled = 0;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &is_compiled);
@@ -40,9 +40,9 @@ static void		check_compilation(GLuint shader, bool fatal)
 
 static void		check_link(GLuint program, bool fatal)
 {
-	GLint	is_linked;
-	GLint	max_length;
-	char	buff[0xF000];
+	GLint			is_linked;
+	GLint			max_length;
+	char			buff[0xF000];
 
 	is_linked = 0;
 	glGetProgramiv(program, GL_LINK_STATUS, (int *)&is_linked);
@@ -61,20 +61,20 @@ static void		check_link(GLuint program, bool fatal)
 	}
 }
 
-static GLuint		compile_shader_fragments(char *file, bool fatal)
+static GLuint	compile_shader_fragments(char *file, bool fatal)
 {
-	GLuint		ret;
+	GLuint			ret;
 
 	ret = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(ret, 1, (const GLchar * const *)&file, NULL);
+	glShaderSource(ret, 1, (const GLchar *const *)&file, NULL);
 	glCompileShader(ret);
 	check_compilation(ret, fatal);
 	return (ret);
 }
 
-static GLuint		compile_shader_vertex(bool fatal)
+static GLuint	compile_shader_vertex(bool fatal)
 {
-	GLuint		ret;
+	GLuint			ret;
 
 	ret = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(ret, 1, &vertex_shader_text, NULL);
@@ -83,11 +83,11 @@ static GLuint		compile_shader_vertex(bool fatal)
 	return (ret);
 }
 
-GLuint				create_program(char *file, bool fatal)
+GLuint			create_program(char *file, bool fatal)
 {
-	GLuint				program;
-	const GLuint		shader_vertex = compile_shader_vertex(fatal);
-	const GLuint		shader_fragment = compile_shader_fragments(file, fatal);
+	GLuint			program;
+	const GLuint	shader_vertex = compile_shader_vertex(fatal);
+	const GLuint	shader_fragment = compile_shader_fragments(file, fatal);
 
 	if (shader_vertex == 0 || shader_fragment == 0)
 		return (0);

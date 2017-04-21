@@ -21,14 +21,14 @@
 #include <string.h>
 #include <dirent.h>
 
-vec4		mouse = {0, 0, 0, 0};
-vec4		move = {0, 0, 0, 1};
-vec2		window = {WIN_W, WIN_H};
-vec3		forward = {0, 0, 1};
-int			keys = 0;
-int			input_pause = 0;
-long		lastModifiedFile[0xF00] = {0};
-float		pausedTime = 0;
+vec4	mouse = {0, 0, 0, 0};
+vec4	move = {0, 0, 0, 1};
+vec2	window = {WIN_W, WIN_H};
+vec3	forward = {0, 0, 1};
+int		keys = 0;
+int		input_pause = 0;
+long	lastModifiedFile[0xF00] = {0};
+float	pausedTime = 0;
 float   fov;
 float   ambient;
 
