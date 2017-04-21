@@ -26,7 +26,7 @@ sphere2:
     type: sphere
     pos: 20 10 0
     radius: 4
-    texture: ../textures/lava-rock-4k.jpg
+    texture: ../textures/stone-wall.jpg
     opacity: 0.6
     refraction: 1.9
 

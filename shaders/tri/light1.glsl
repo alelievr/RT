@@ -36,7 +36,7 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 	shadow.pos = pos;
 	shad = scene(shadow);
 
-	if (shad.dist < h.dist){
+	if (shad.dist < h.dist - EPSI){
 		return ((1 - atlas_fetch(shad.mat.opacity, shad.uv).x) * (1 - atlas_fetch(shad.mat.texture, shad.uv).w));
 	}
 	return (1);

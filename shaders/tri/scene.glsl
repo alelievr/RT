@@ -65,14 +65,5 @@ bool decoupe(vec3 centre, vec3 inter, Coupe c, Coupe c2,float data, Material m, 
 	bool t1 = (c.rot.x * inter.x + c.rot.y * inter.y + c.rot.z * inter.z + d < 0);
 	bool t2 = (c2.rot.x * inter.x + c2.rot.y * inter.y + c2.rot.z * inter.z + d2 < 0);
 
-	float v1 = c.rot.x * inter.x + c.rot.y * inter.y + c.rot.z * inter.z + d;
-	float v2 = c2.rot.x * inter.x + c2.rot.y * inter.y + c2.rot.z * inter.z + d2;
-
-	disk(c2.rot, pos2, 24, m, r, tmp);
-	disk(c.rot, pos, 24, m, r, tmp2);
-	if ( v1 < 0 || (tmp.dist > tmp2.dist))
-		h = tmp;
-	if ((v2 < 0) || (tmp2.dist > tmp.dist && v1 > 0) )
-		h = tmp2;
 	return !(t1 && t2);
 }
