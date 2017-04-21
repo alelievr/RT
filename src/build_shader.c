@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/19 20:50:39 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 14:38:53 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static void	init_shader_file(t_shader_file *shader_file)
 
 static void	load_essencial_files(t_shader_file *shader_file)
 {
-	const char * const	*files = (const char * const[]){"shaders/tri/scene.glsl","shaders/tri/plane.glsl","shaders/tri/sphere.glsl","shaders/tri/cylinder.glsl","shaders/tri/cone.glsl","shaders/tri/cube.glsl","shaders/tri/light.glsl",NULL};
+	const char * const	*files = (const char * const[]){"shaders/tri/scene.glsl","shaders/tri/plane.glsl","shaders/tri/sphere.glsl","shaders/tri/cylinder.glsl","shaders/tri/cone.glsl","shaders/tri/cube.glsl","shaders/tri/light1.glsl",NULL};
 	int					fd;
 	char				line[0xF000];
 

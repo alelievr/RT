@@ -15,7 +15,7 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 	if (shad.dist < h.dist){
 		vec3	col = atlas_fetch(shad.mat.texture, shad.uv).xyz;
 		float	t = (col.x + col.y + col.z) / 3;
-		return (atlas_fetch(shad.mat.transparency, shad.uv).x * t);
+		return (atlas_fetch(shad.mat.transparency, shad.uv).x);
 	}
 	return (1);
 }

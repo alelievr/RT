@@ -40,13 +40,16 @@ sphere2:
     pos: 10 10 0
     radius: 4
 	texture: ../textures/pic0047.png
-	bumpmap: ../textures/pic0060.png
+    transparency: 0.5
+    refraction: 1.9
 
 sphere3:
     type: sphere
     pos: 10 0 -10
     radius: 4
 	color: 100 100 200
+    bumpmap: ../textures/normal.jpg
+
 
 cube1:
     type: cube
