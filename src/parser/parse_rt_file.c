@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/21 15:42:12 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 17:11:44 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ static void init_default_material(t_material *o)
 {
 	o->color = (t_vec3){1, 0, 1};
 	o->specular = .5f;
+	o->opacity = 1;
 }
 
 void 			fill_prop_camera(t_camera *cam, char *line)
@@ -140,7 +141,7 @@ void  		fill_prop_material(t_material *mtl, char *line)
 	if (ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &mtl->highlight_color.x, &mtl->highlight_color.y, &mtl->highlight_color.z))
 		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &mtl->highlight_color.x, &mtl->highlight_color.y, &mtl->highlight_color.z);
 
-	ft_sscanf(LF_RT_TRANSPARENCY, line, &mtl->transparency);
+	ft_sscanf(LF_RT_OPACITY, line, &mtl->opacity);
 	ft_sscanf(LF_RT_SPECULAR, line, &mtl->specular);
 	ft_sscanf(LF_RT_REFLECTION, line, &mtl->reflection);
 	ft_sscanf(LF_RT_REFRACTION, line, &mtl->refraction);
@@ -152,7 +153,7 @@ void  		fill_prop_material(t_material *mtl, char *line)
 			{LF_RT_TEXTURE, &mtl->texture, &mtl->has_texture},
 			{LF_RT_EMISSION_MAP, &mtl->texture, &mtl->has_emission_map},
 			{LF_RT_HIGHLIGHT_MAP, &mtl->emission_map, &mtl->has_highlight_map},
-			{LF_RT_TRANSPARENCY_MAP, &mtl->transparency_map, &mtl->has_transparency_map},
+			{LF_RT_OPACITY_MAP, &mtl->opacity_map, &mtl->has_opacity_map},
 			{LF_RT_SPECULAR_MAP, &mtl->specular_map, &mtl->has_specular_map},
 			{LF_RT_REFLECTION_MAP, &mtl->reflection_map, &mtl->has_reflection_map},
 			{LF_RT_REFRACTION_MAP, &mtl->refraction_map, &mtl->has_refraction_map},

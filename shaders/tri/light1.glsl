@@ -37,7 +37,7 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 	shad = scene(shadow);
 
 	if (shad.dist < h.dist){
-		return (atlas_fetch(shad.mat.transparency, shad.uv).x);
+		return ((1 - atlas_fetch(shad.mat.opacity, shad.uv).x) * (1 - atlas_fetch(shad.mat.texture, shad.uv).w));
 	}
 	return (1);
 }
@@ -48,6 +48,8 @@ vec3		light(vec3 pos, Ray r, Hit h)
 	vec3 v1 = pos - h.pos;
 	vec3 v3 = v1 * v1;
 	vec3 d = normalize(v1);
+  vec3 v2 = v1 - h.norm * 2 * dot(h.norm, v1);
+  float spec = 0;
 
   vec3 col = atlas_fetch(h.mat.texture, h.uv).xyz;
 	vec3 color = vec3(0);
@@ -55,6 +57,8 @@ vec3		light(vec3 pos, Ray r, Hit h)
 	h.dist = sqrt(v3.x + v3.y + v3.z);
 	if (h.dist > 1e20)
 		return (color);
+  if (dot(v2, r.dir) > 0)
+    spec = pow(30, dot(v2, r.dir));
 	color = (limit(dot(h.norm, d), 0.0, 1.0)) * col;
 	return (color * shadows(h.pos, d, h) + ambient);
 }
@@ -81,14 +85,14 @@ vec3    freflection(vec3 pos, float reflection, Ray r, Hit h){
 }
 
 /*Definition de la transparence*/
-vec3    ftransparency(vec3 pos, float transparency, float refrac, Ray r, Hit h){
+vec3    fopacity(vec3 pos, float opacity, float refrac, Ray r, Hit h){
   vec3  color = vec3(0);
   Ray   trans;
 
 	 trans.pos = h.pos;
 	 trans.dir = refraction(r.dir, h.norm, refrac);
 	 h = scene(trans);
-	 color = light(pos, trans, h) * transparency;
+	 color = light(pos, trans, h) * (1 - opacity);
    return color;
 }
 
@@ -96,18 +100,19 @@ vec3    ftransparency(vec3 pos, float transparency, float refrac, Ray r, Hit h){
 vec3		calc_light(vec3 pos, Ray r, Hit h)
 {
   float reflection = atlas_fetch(h.mat.reflection, h.uv).x;
-	float	transparency = atlas_fetch(h.mat.transparency, h.uv).x;
+	float	opacity = atlas_fetch(h.mat.opacity, h.uv).x;
 	float	refrac = atlas_fetch(h.mat.refraction, h.uv).x;
   vec3 bump = atlas_fetch(h.mat.bump, h.uv).xyz;
 
   vec3  ref = vec3(0);
   vec3  tra = vec3(0);
+
 	if (bump != vec3(0))
 	 h.norm = normalize(bump + h.norm);
-  vec3 lambert = light(pos, r, h) * (1 - transparency);
+  vec3 lambert = light(pos, r, h) * opacity;
   if (reflection > EPSI)
     ref = freflection(pos, reflection, r, h);
-  if (transparency > EPSI)
-    tra = ftransparency(pos, transparency, refrac, r, h);
+  if (opacity < 1)
+    tra = fopacity(pos, opacity, refrac, r, h);
 	return (lambert + tra + ref);
 }

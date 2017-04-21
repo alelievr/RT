@@ -217,7 +217,7 @@ static const char *shader_header_text =
 "{\n"
 "	vec4		texture;\n"
 "	vec4		emission;\n"
-"	vec4		transparency;\n"
+"	vec4		opacity;\n"
 "	vec4		specular;\n"
 "	vec4		reflection;\n"
 "	vec4		refraction;\n"

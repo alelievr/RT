@@ -26,8 +26,8 @@ sphere2:
     type: sphere
     pos: 20 10 0
     radius: 4
-    texture: ../textures/pic0047.png
-    transparency: 0.5
+    texture: ../textures/lava-rock-4k.jpg
+    opacity: 0.6
     refraction: 1.9
 
 sphere3:
@@ -41,5 +41,5 @@ sphere4:
     type: sphere
     pos: 0 10 20
     radius: 6
-    color: 0 0 0
+    color: 255 255 255
     reflection: 1

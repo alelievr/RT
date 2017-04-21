@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 00:14:55 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/03 19:03:34 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 17:06:21 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 const char * g_restricted_keywords[] = {
 	"type:", "pos:", "rot:", "color:", "csg:", "radius:", "scale:", "slice:",
 	"mesh:", "filter:", "texture:", "emission color:",
-	"highlight color:", "transparency:", "reflection:", "refraction:",
+	"highlight color:", "opacity:", "reflection:", "refraction:",
 	"bumpmap:", "illum:", "emission color map:", "highlight color map:",
 	"refraction map:", "reflection map:", "ambiant color:", NULL
 };

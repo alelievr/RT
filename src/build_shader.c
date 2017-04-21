@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/21 15:39:57 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 17:07:11 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ static char		*generate_material_line(t_material *mat)
 	sprintf(line, "vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f)",
 			GET_UVS(mat->texture),
 			GET_UVS(mat->emission_map),
-			GET_UVS(mat->transparency_map),
+			GET_UVS(mat->opacity_map),
 			GET_UVS(mat->specular_map),
 			GET_UVS(mat->reflection_map),
 			GET_UVS(mat->refraction_map),
@@ -270,7 +270,7 @@ static void		load_textures_if_exists(t_material *m, char *scene_directory, int *
 	LOAD_TEXTURE_ATLAS(m, highlight_map, highlight_color, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, reflection_map, reflection, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, refraction_map, refraction, atlas_width, atlas_height);
-	LOAD_TEXTURE_ATLAS(m, transparency_map, transparency, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, opacity_map, opacity, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
 }
 
@@ -324,7 +324,7 @@ static void		add_object_textures_to_atlas(t_material *mat, t_atlas *atlas, int *
 	ADD_TEXTURE_ATLAS(mat, highlight_map);
 	ADD_TEXTURE_ATLAS(mat, reflection_map);
 	ADD_TEXTURE_ATLAS(mat, refraction_map);
-	ADD_TEXTURE_ATLAS(mat, transparency_map);
+	ADD_TEXTURE_ATLAS(mat, opacity_map);
 	ADD_TEXTURE_ATLAS(mat, specular_map);
 }
 

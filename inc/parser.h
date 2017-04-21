@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/21 15:45:26 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 17:05:24 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
 # define LF_RT_HIGHLIGHT_COLOR_F "\\shighlight color:\\s%f\\s%f\\s%f\\s"
 # define LF_RT_HIGHLIGHT_COLOR_V "\\shighlight color:\\s%z\\s"
 
-# define LF_RT_TRANSPARENCY "\\stransparency:\\s%f\\s"
+# define LF_RT_OPACITY "\\sopacity:\\s%f\\s"
 # define LF_RT_SPECULAR "\\sspecular:\\s%f\\s"
 # define LF_RT_REFLECTION "\\sreflection:\\s%f\\s"
 # define LF_RT_REFRACTION "\\srefraction:\\s%f\\s"
@@ -56,7 +56,7 @@
 # define LF_RT_EMISSION_MAP	"\\semission color map:\\s%s\\s"
 # define LF_RT_HIGHLIGHT_MAP "\\shighlight color map:\\s%s\\s"
 # define LF_RT_REFRACTION_MAP	"\\srefraction map:\\s%s\\s"
-# define LF_RT_TRANSPARENCY_MAP "\\stransparency map:\\s%s\\s"
+# define LF_RT_OPACITY_MAP "\\sopacity map:\\s%s\\s"
 # define LF_RT_SPECULAR_MAP "\\sspecular map:\\s%s\\s"
 # define LF_RT_REFLECTION_MAP "\\sreflection map map:\\s%s\\s"
 
@@ -202,7 +202,7 @@ typedef	struct 			s_material
 	t_vec3				color;
 	t_vec3				emission_color;
 	t_vec3				highlight_color;
-	float				transparency;
+	float				opacity;
 	float				specular;
 	float				reflection;
 	float				refraction;
@@ -213,7 +213,7 @@ typedef	struct 			s_material
 	t_image				highlight_map;
 	t_image				reflection_map;
 	t_image				refraction_map;
-	t_image				transparency_map;
+	t_image				opacity_map;
 	t_image				specular_map;
 	bool				has_texture;
 	bool				has_bumpmap;
@@ -221,7 +221,7 @@ typedef	struct 			s_material
 	bool				has_highlight_map;
 	bool				has_reflection_map;
 	bool				has_refraction_map;
-	bool				has_transparency_map;
+	bool				has_opacity_map;
 	bool				has_specular_map;
 }						t_material;
 
