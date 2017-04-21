@@ -11,6 +11,8 @@ cylindre1:
     radius: 2
     rot: 0 45 0
     color: 0 255 0
+    slice: 0 0 1 6
+    slice: 0 0 -1 -6
 
 cone1:
     type: cone

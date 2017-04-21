@@ -60,7 +60,7 @@ vec3		light(vec3 pos, Ray r, Hit h)
   if (dot(v2, r.dir) > 0)
     spec = pow(30, dot(v2, r.dir));
 	color = (limit(dot(h.norm, d), 0.0, 1.0)) * col;
-	return (color * shadows(h.pos, d, h) + ambient);
+	return (color * 0.5/*shadows(h.pos, d, h)*/ + ambient);
 }
 
 /*Definition de la reflection*/

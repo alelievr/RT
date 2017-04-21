@@ -1,4 +1,4 @@
-void cone(vec3 pos, vec3 rot, float data, Material mat, Ray r, inout Hit h)
+void cone(vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, inout Hit h)
 {
 	vec3 d = r.pos - pos;
 

@@ -1,4 +1,4 @@
-void plane (vec3 norm, vec3 pos, float data, Material mat, Ray r, inout Hit h) {
+void plane (vec3 norm, vec3 pos, float data, Coupes coupe, Material mat, Ray r, inout Hit h) {
 	norm = normalize(norm);
 	float t = (dot(norm,pos) - (dot (norm, r.pos))) / dot (norm, r.dir);
 	Hit tmp = h;

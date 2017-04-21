@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/21 21:42:21 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 21:56:38 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,13 +174,13 @@ static char		*generate_scene_line(t_object *obj)
 	static char		line[0xF00];
 
 	if (ISTYPE(SPHERE))
-		sprintf(line, "\tsphere(%s_position, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->primitive.radius,generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
+		sprintf(line, "\tsphere(%s_position, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->primitive.radius, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(PLANE))
-		sprintf(line, "\tplane(%s_rotation, %s_position, 0, Material(%s), r, hit);", obj->name, obj->name, generate_material_line(&obj->material));
+		sprintf(line, "\tplane(%s_rotation, %s_position, 0, Coupes(%s), Material(%s), r, hit);", obj->name, obj->name, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(CYLINDRE))
-		sprintf(line, "\tcyl(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_material_line(&obj->material));
+		sprintf(line, "\tcyl(%s_position, %s_rotation, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(CONE))
-		sprintf(line, "\tcone(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_material_line(&obj->material));
+		sprintf(line, "\tcone(%s_position, %s_rotation, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(CUBE))
 		sprintf(line, "\tcube(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.height, generate_material_line(&obj->material));
 	else
