@@ -112,6 +112,7 @@ extern int			input_pause;
 extern float		pausedTime;
 extern long			lastModifiedFile[0xF00];
 extern float		fov;
+extern float		ambient;
 
 GLFWwindow		*init(char *fname);
 GLuint			create_program(char *file, bool fatal);
@@ -151,6 +152,7 @@ static const char* fragment_shader_text =
 "uniform vec4		iMoveAmount;\n"
 "uniform sampler2D	atlas;\n"
 "uniform float	iFov;"
+"uniform float	iAmbient;"
 "\n"
 "void mainImage(vec2 f);\n"
 "\n"

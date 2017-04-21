@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/21 14:38:53 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 15:39:57 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,7 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 			move.y = obj->transform.position.y;
 			move.z = obj->transform.position.z;
 			fov = obj->camera.fov;
+			ambient = obj->camera.ambient;
 	}
 }
 

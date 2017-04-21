@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/19 16:19:52 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 15:45:26 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,9 @@
 # define LF_RT_ANGLE "\\sangle:\\s%f\\s"
 # define LF_RT_RADIUS "\\sradius:\\s%f\\s"
 # define LF_RT_HEIGHT "\\sheight:\\s%f\\s"
-# define LF_FT_FOV "\\sfov:\\s%f\\s"
+
+# define LF_RT_FOV "\\sfov:\\s%f\\s"
+# define LF_RT_AMBIENT "\\sambient:\\s%f\\s"
 
 # define LF_RT_SLICE "\\sslice:\\s%f\\s%f\\s%f\\s%f\\s"
 
@@ -62,8 +64,6 @@
 # define LF_RT_MASK "\\spost_processing_mask:\\s%s\\s"
 # define LF_RT_ILLUM "\\sillum:\\s%s\\s"
 # define LF_RT_TYPE "\\stype:\\s%s\\s"
-
-# define LF_RT_FOV  "\\sfov:\\s%f\\s"
 
 # define LF_RT_MTL			"\\smtl:\\sfiles/%w\\s"
 # define LF_RT_AMBIANCE	"\\sambiance:\\s%w\\s%f\\s"
@@ -251,6 +251,7 @@ typedef	struct			s_mesh
 typedef struct			s_camera
 {
 	float		fov;
+	float		ambient;
 	int			post_processing_mask;
 }						t_camera;
 

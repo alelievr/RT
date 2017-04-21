@@ -51,7 +51,7 @@ vec3		light(vec3 pos, Ray r, Hit h)
 
   vec3 col = atlas_fetch(h.mat.texture, h.uv).xyz;
 	vec3 color = vec3(0);
-	vec3 ambient = vec3(AMBIENT * col);
+	vec3 ambient = vec3(iAmbient * col);
 	h.dist = sqrt(v3.x + v3.y + v3.z);
 	if (h.dist > 1e20)
 		return (color);

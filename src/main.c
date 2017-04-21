@@ -30,6 +30,7 @@ int			input_pause = 0;
 long		lastModifiedFile[0xF00] = {0};
 float		pausedTime = 0;
 float   fov;
+float   ambient;
 
 float points[] = {
    	-1.0f,  -1.0f,
@@ -98,6 +99,7 @@ void		updateUniforms(GLint *unis, GLint *images)
 	glUniform4f(unis[4], move.x, move.y, move.z, move.w);
 	glUniform2f(unis[5], window.x, window.y);
   glUniform1f(unis[6], fov);
+  glUniform1f(unis[7], ambient);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, images[0]);
@@ -168,8 +170,9 @@ GLint		*getUniformLocation(GLuint program)
 	unis[4] = glGetUniformLocation(program, "iMoveAmount");
 	unis[5] = glGetUniformLocation(program, "iResolution");
   unis[6] = glGetUniformLocation(program, "iFov");
+  unis[7] = glGetUniformLocation(program, "iAmbient");
 
-	unis[9] = 7;
+	unis[9] = 8;
 	return unis;
 }
 

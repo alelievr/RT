@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/14 22:36:02 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/21 15:42:12 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void 			fill_prop_camera(t_camera *cam, char *line)
 
 	ret = 0;
 	ft_sscanf(LF_RT_FOV, line, &cam->fov);
+	ft_sscanf(LF_RT_AMBIENT, line, &cam->ambient);
 
 	if (!ft_sscanf(LF_RT_MASK, line, str, 256))
 	{
