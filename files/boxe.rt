@@ -26,7 +26,7 @@ sphere2:
     type: sphere
     pos: 20 10 0
     radius: 4
-    texture: ../textures/stone-wall.jpg
+    texture: ../textures/chess.jpg
     opacity: 0.6
     refraction: 1.9
 
@@ -41,5 +41,5 @@ sphere4:
     type: sphere
     pos: 0 10 20
     radius: 6
-    color: 255 255 255
+    color: 0 0b0
     reflection: 1

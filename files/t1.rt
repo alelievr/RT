@@ -25,6 +25,7 @@ camera:
     type: camera
     pos: 10 0 -100
     fov: 1.2
+    ambient: 0.2
 
 light:
     type: point_light

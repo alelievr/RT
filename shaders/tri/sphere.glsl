@@ -13,7 +13,11 @@ void sphere (vec3 pos, float data, Coupes coupe, Material mat, Ray r, inout Hit 
 	float t = (-sqrt (g) - b) / a;
 	float t1 = (sqrt (g) - b) / a;
 
+	if (t < 0 && t1 < 0)
+		return;
+
 	vec3 inter = r.pos + r.dir * t;
+	vec3 inter1 = r.pos + r.dir * t1;
 
 	if (t > 0 && t < h.dist && !decoupe(pos, inter, coupe)) {
 		h.dist = t + EPSI;
@@ -25,9 +29,7 @@ void sphere (vec3 pos, float data, Coupes coupe, Material mat, Ray r, inout Hit 
 		return;
 	}
 
-	vec3 inter1 = r.pos + r.dir * t1;
-
-	if ((t < 0 || decoupe(pos, inter, coupe)) && !decoupe(pos, inter1, coupe)){
+	if ((t < 0  || decoupe(pos, inter, coupe)) && !decoupe(pos, inter1, coupe)){
 		if (t1 > 0 && t1 < h.dist){
 			h.dist = t1 + EPSI;
 			h.pos = r.pos + r.dir * h.dist;

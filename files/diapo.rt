@@ -16,8 +16,7 @@ sphere2:
 	texture: ../textures/ice.jpg
 	opacity: 1
     refraction: 1.9
-    slice: 0 0 1 2
-    slice: 0 1 1 2
+    slice: 2 1 0 -2
 
 background:
 	type: plane
