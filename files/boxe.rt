@@ -41,9 +41,5 @@ sphere4:
     type: sphere
     pos: 0 10 20
     radius: 6
-<<<<<<< HEAD
     color: 0 0 0
-=======
-    color: 0 0b0
->>>>>>> 4682732237ceb1c95fb7dd7ed8f550e6ff3e79e6
     reflection: 1

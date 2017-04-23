@@ -17,11 +17,7 @@ void cone(vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 
 	vec3 inter = r.pos + r.dir * t;
 
-<<<<<<< HEAD
 	if (t > EPSI && t < h.dist && !decoupe(pos, inter, coupe)) {
-=======
-	if (t > 0 && t < h.dist && !decoupe(pos, inter, coupe)) {
->>>>>>> 4682732237ceb1c95fb7dd7ed8f550e6ff3e79e6
 		h.dist = t;
 		h.pos = r.pos + r.dir * h.dist;
 		vec3 temp = (dir * (dot(r.dir, dir) * h.dist + dot(r.pos - pos, dir))) * (1 + pow(tan(data * M_PI / 180), 2));
@@ -35,13 +31,8 @@ void cone(vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 
 	vec3 inter1 = r.pos + r.dir * t1;
 
-<<<<<<< HEAD
 	if ((t < EPSI || decoupe(pos, inter, coupe)) && !decoupe(pos, inter1, coupe)){
 		if (t1 > EPSI && t1 < h.dist){
-=======
-	if ((t < 0 || decoupe(pos, inter, coupe)) && !decoupe(pos, inter1, coupe)){
-		if (t1 > 0 && t1 < h.dist){
->>>>>>> 4682732237ceb1c95fb7dd7ed8f550e6ff3e79e6
 			h.dist = t1 ;
 			h.pos = r.pos + r.dir * h.dist;
 			vec3 temp = (dir * (dot(r.dir, dir) * h.dist + dot(r.pos - pos, dir))) * (1 + pow(tan(data * M_PI / 180), 2));

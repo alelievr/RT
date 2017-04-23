@@ -37,12 +37,7 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 	shad = scene(shadow);
 
 	if (shad.dist < h.dist + EPSI){
-<<<<<<< HEAD
 		return ((1 - atlas_fetch(shad.mat.opacity, shad.uv).x) * (1 - atlas_fetch(shad.mat.texture, shad.uv).w));
-=======
-
-		return (atlas_fetch(shad.mat.texture, shad.uv).w);
->>>>>>> 4682732237ceb1c95fb7dd7ed8f550e6ff3e79e6
 	}
 	return (1);
 }
@@ -96,7 +91,6 @@ vec3    fopacity(vec3 pos, float opacity, float refrac, Ray r, Hit h){
   float   on_off = 1;
 	Hit h2 = h;
 
-<<<<<<< HEAD
 	int i = -1;
 	while (++i < 2 && on_off > 0)
 	{
@@ -108,12 +102,6 @@ vec3    fopacity(vec3 pos, float opacity, float refrac, Ray r, Hit h){
 		on_off = on_off * (1 - opacity);
 		color += light(pos, trans, h2) * on_off;
 	}
-=======
-	 trans.dir = refraction(r.dir, h.norm, refrac);
-	 trans.pos = h.pos + normalize(trans.dir) * EPSI * 10;
-	 h = scene(trans);
-	 color = light(pos, trans, h) * (1 - opacity);
->>>>>>> 4682732237ceb1c95fb7dd7ed8f550e6ff3e79e6
    return color;
 }
 
