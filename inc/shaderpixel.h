@@ -174,7 +174,7 @@ static const char* fragment_shader_text =
 static const char *main_image_start_text =
 "void        mainImage(vec2 coord)\n"
 "{\n"
-"	vec2    uv = (coord / iResolution) * 2 - 1;\n"
+"	vec2    uv = (coord / iResolution);\n"
 "	vec3    cameraPos = iMoveAmount.xyz;\n"
 "	vec3    cameraDir = iForward;\n"
 "	vec3    col;\n"
@@ -194,7 +194,7 @@ static const char *scene_start_text =
 "Hit     scene(Ray r)\n"
 "{\n"
 "	int i = -1;\n"
-"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1)),vec2(0,0));\n";
+"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1)),vec2(0,0));\n";
 
 static const char *scene_end_text =
 "    return hit;\n"
@@ -217,7 +217,6 @@ static const char *shader_header_text =
 "{\n"
 "	vec4		texture;\n"
 "	vec4		emission;\n"
-"	vec4		opacity;\n"
 "	vec4		specular;\n"
 "	vec4		reflection;\n"
 "	vec4		refraction;\n"

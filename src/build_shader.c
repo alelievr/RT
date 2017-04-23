@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/21 21:56:38 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/23 00:16:42 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,10 +144,9 @@ static char		*generate_material_line(t_material *mat)
 {
 	static char		line[0xF00];
 
-	sprintf(line, "vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f)",
+	sprintf(line, "vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f)",
 			GET_UVS(mat->texture),
 			GET_UVS(mat->emission_map),
-			GET_UVS(mat->opacity_map),
 			GET_UVS(mat->specular_map),
 			GET_UVS(mat->reflection_map),
 			GET_UVS(mat->refraction_map),
@@ -272,11 +271,68 @@ static char		*build_path(char *dir, char *file)
 
 static unsigned char	*load_image(char *path, int *width, int *height, int *channels)
 {
-	return (SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO));
+	unsigned char *ret = SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO);
+
+	printf("image channels: %i\n", *channels);
+
+	return ret;
 }
 
 #define LOAD_TEXTURE(m, p, o) printf("texture: %s\n", #p); if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height, &m->p.channels); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
 #define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
+
+unsigned int		channelToMask(int chan)
+{
+	unsigned int		ret = 0;
+
+	if (chan == 0)
+		return -1;
+		while (chan--)
+			ret |= 255 << ((8 * chan));
+		return ret;
+}
+#define TEXTURE_REPEAT(tex, x, y) ({int _x = x % tex->width; int _y = y % tex->height; (*(unsigned int *)(tex->data + _y * tex->width * 4 + _x * 4)) & channelToMask(tex->channels);})
+
+#define MIN(x, y) ((x) < (y)) ? (x) : (y)
+
+#define OCTET(x, c) (((x) >> c) & 0xFF)
+#define FUSION_PIXEL_COMPONENT(p1, m1, p2, m2, c) (OCTET(p2 & m2, c) == 0xFF || OCTET(m2, c) == 0x00) ? OCTET(p1, c) << c : (0x00)
+
+static void fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_mask, int *new_tex_width, int *new_tex_height) {
+	*new_tex_width = MAX(dst->width, src->width);
+	*new_tex_height = MAX(dst->height, src->height);
+	int		x, y;
+
+	unsigned char	*img_dst;
+
+	img_dst = malloc(sizeof(unsigned char) * 4 * (*new_tex_height) * (*new_tex_width));
+
+	printf("tex size: %i/%i\n", *new_tex_width, *new_tex_height);
+
+	if (FOR(x = 0, x < *new_tex_width, x++))
+	{
+		if (FOR(y = 0, y < *new_tex_height, y++))
+		{
+			unsigned int src_pixel = TEXTURE_REPEAT(src, x, y);
+			unsigned int dst_pixel = TEXTURE_REPEAT(dst, x, y);
+
+			unsigned int result_pixel = 0;
+			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 0);
+			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 8);
+			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 16);
+			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 24);
+
+			*(unsigned int *)(img_dst + (*new_tex_width) * y * 4 + x * 4) = result_pixel;
+		}
+	}
+	// dst->channels = 4;
+	dst->data = img_dst;
+}
+
+#define FUSION_TEXTURE_ATLAS(m, p1, p2, aw, ah, m1, m2) { int new_x, new_y; *aw -= m->p1.width; fusion_texture(&m->p1, &m->p2, m1, m2, &new_x, &new_y); *aw += m->p1.width; *ah = MAX(*ah, m->p1.height); }
+
+#define W			0xFF000000
+#define XYZ		0xFFFFFFFF
 
 static void		load_textures_if_exists(t_material *m, char *scene_directory, int *atlas_width, int *atlas_height)
 {
@@ -288,6 +344,8 @@ static void		load_textures_if_exists(t_material *m, char *scene_directory, int *
 	LOAD_TEXTURE_ATLAS(m, refraction_map, refraction, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, opacity_map, opacity, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
+
+	// FUSION_TEXTURE_ATLAS(m, texture, opacity_map, atlas_width, atlas_height, XYZ, W);
 }
 
 static void		load_atlas(t_object *obj, char *scene_directory, int *atlas_width, int *atlas_height)
@@ -313,19 +371,27 @@ static void		add_subimage(t_atlas *atlas, int offset_x, int offset_y, t_image *i
 	imgdata = img->data;
 	x = 0;
 	y = 0;
+	printf("channels: %i\n", img->channels);
 	while (y < img->height)
 	{
 		begin = atlas->data + (offset_x * 4) + ((offset_y + y) * atlas->width * 4);
 		x = 0;
 		while (x < img->width)
 		{
-			*(unsigned int *)begin = *(unsigned int *)imgdata;
+			unsigned int color =  (*(unsigned int *)imgdata);
+			// printf("c: %08X\n", color);
+			// if (img->channels == 3)
+				// color <<= ;
+				// printf("ca: %08X\n", color);
+			*(unsigned int *)begin = color;
+			// printf("chess: %i/%i: \e]4;1;rgb:%2hhx/%2hhx/%2hhx\e\\\e[31m██ = #FF0000\e[m\n\n", x, y, RED(*(unsigned int *)begin), GREEN(*(unsigned int *)begin), BLUE(*(unsigned int *)begin));
 			begin += 4;
 			imgdata += img->channels;
 			x++;
 		}
 		y++;
 	}
+	free(img->data);
 }
 
 #define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / (float)atlas->width, (float)*offset_y / (float)atlas->height, (float)(*offset_x + m->p.width) / (float)atlas->width, (float)(*offset_y + m->p.height) / (float)atlas->height}
@@ -368,6 +434,11 @@ static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	for (int x = 0; x < atlas.width; x++)
+		for (int y = 0; y < atlas.height; y++)
+		{
+			// printf("pix: %i/%i: %x\n", x, y, *(unsigned int *)(atlas.data + x * 4 + y * atlas.width * 4));
+		}
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.data);
 	return (atlas.id);
 }

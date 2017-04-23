@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/21 17:11:44 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/22 20:11:50 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #define NEW_OBJECT(var, n) var = (t_object *)malloc(sizeof(t_object)); if (!var) ft_exit("malloc error"); bzero(var, sizeof(t_object)); init_default_material(&var->material); strcpy(var->name, n);
 #define SS(t) while(*t&&ft_isspace(*t))t++;
 #define SKIP_EMPTY_LINE(l) {char*t=l;SS(t);if (*t==0)continue;}
+#define FILL_PROP(X, line) _Generic((X), t_light *: fill_prop_light, t_transform *: fill_prop_transform, t_material *:fill_prop_material, t_camera *:fill_prop_camera, t_primitive *:fill_prop_primitive) (X, line)
+#define A(c, line, p1) FILL_PROP(&c-> p1, line);// FILL_PROP(&c-> p2, line, #p2);
 
 bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 {
@@ -39,7 +41,7 @@ bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 		line++;
 	}
 	if (!*line)
-		return false;
+		return (false);
 	k = line;
 	while (*line && *line++ != ':')
 		;
@@ -48,33 +50,33 @@ bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 		if (FOREACH(g_restricted_keywords, keyword))
 		{
 			if (!ft_strcmp(k, keyword))
-				return false;
+				return (false);
 		}
 		ft_strlcpy(obj_name, k, 256);
-		return true;
+		return (true);
 	}
 	else
-		return false;
+		return (false);
 }
 
-static void init_default_material(t_material *o)
+static void		init_default_material(t_material *o)
 {
 	o->color = (t_vec3){1, 0, 1};
 	o->specular = .5f;
 	o->opacity = 1;
 }
 
-void 			fill_prop_camera(t_camera *cam, char *line)
+void			fill_prop_camera(t_camera *cam, char *line)
 {
 	int		ret;
-	char	*str = (char *)(char[256]){0};
+	char	*str;
 	char	word[256];
 	int		i;
 
+	str = (char *)(char[256]){0};
 	ret = 0;
 	ft_sscanf(LF_RT_FOV, line, &cam->fov);
 	ft_sscanf(LF_RT_AMBIENT, line, &cam->ambient);
-
 	if (!ft_sscanf(LF_RT_MASK, line, str, 256))
 	{
 		while ((get_next_word(&str, word)))
@@ -91,32 +93,31 @@ void 			fill_prop_camera(t_camera *cam, char *line)
 	cam->post_processing_mask = ret;
 }
 
-void  		fill_prop_primitive(t_primitive *prim, char *line)
+void			fill_prop_primitive(t_primitive *prim, char *line)
 {
-	char	*str = (char *)(char[256]){0};
+	char	*str;
 	int		i;
 
+	str = (char *)(char[256]){0};
 	ft_sscanf(LF_RT_RADIUS, line, &prim->radius);
 	ft_sscanf(LF_RT_HEIGHT, line, &prim->height);
 	ft_sscanf(LF_RT_ANGLE, line, &prim->angle);
-
-	if(!ft_sscanf(LF_RT_TYPE, line, str, 256))
-	if (FOR(i = 0, type_restricted_keywords[i], i++))
-	{
-		if (!ft_strcmp(type_restricted_keywords[i],  ft_strupcase(str)))
-			prim->type = i + 1;
-	}
+	if (!ft_sscanf(LF_RT_TYPE, line, str, 256))
+		if (FOR(i = 0, type_restricted_keywords[i], i++))
+		{
+			if (!ft_strcmp(type_restricted_keywords[i], ft_strupcase(str)))
+				prim->type = i + 1;
+		}
 	if (!prim->type)
 		ft_exit("mauvais type pour un objet\n");
-	if( prim->nsl < 5 && !ft_sscanf(LF_RT_SLICE, line, &prim->slice[prim->nsl].x, &prim->slice[prim->nsl].y, &prim->slice[prim->nsl].z, &prim->slice[prim->nsl].w))
+	if (prim->nsl < 5 && !ft_sscanf(LF_RT_SLICE, line, &prim->slice[prim->nsl].x, &prim->slice[prim->nsl].y, &prim->slice[prim->nsl].z, &prim->slice[prim->nsl].w))
 		prim->nsl++;
 }
 
 void			fill_prop_light(t_light *light, char *line)
 {
-	if(ft_sscanf(LF_RT_COLOR_F, line, &light->color.x, &light->color.y, &light->color.z))
-			ft_sscanf(LF_RT_COLOR_V, line, &light->color.x, &light->color.y, &light->color.z);
-
+	if (ft_sscanf(LF_RT_COLOR_F, line, &light->color.x, &light->color.y, &light->color.z))
+		ft_sscanf(LF_RT_COLOR_V, line, &light->color.x, &light->color.y, &light->color.z);
 	ft_sscanf(LF_RT_INTENSITY, line, &light->intensity);
 }
 
@@ -126,17 +127,18 @@ void			fill_prop_transform(t_transform *tsf, char *line)
 	ft_sscanf(LF_RT_ROT, line, &tsf->rotation.x, &tsf->rotation.y, &tsf->rotation.z);
 }
 
-void  		fill_prop_material(t_material *mtl, char *line)
+void			fill_prop_material(t_material *mtl, char *line)
 {
-	char	*str = (char *)(char[256]){0};
+	char	*str;
 	char	word[256];
 	int		ret;
 	int		i;
 
+	str = (char *)(char[256]){0};
 	ret = 0;
 	if (ft_sscanf(LF_RT_COLOR_F, line, &mtl->color.x, &mtl->color.y, &mtl->color.z))
-			ft_sscanf(LF_RT_COLOR_V, line, &mtl->color.x, &mtl->color.y, &mtl->color.z);
-	if(ft_sscanf(LF_RT_EMISSION_COLOR_F, line, &mtl->emission_color.x, &mtl->emission_color.y, &mtl->emission_color.z))
+		ft_sscanf(LF_RT_COLOR_V, line, &mtl->color.x, &mtl->color.y, &mtl->color.z);
+	if (ft_sscanf(LF_RT_EMISSION_COLOR_F, line, &mtl->emission_color.x, &mtl->emission_color.y, &mtl->emission_color.z))
 		ft_sscanf(LF_RT_EMISSION_COLOR_V, line, &mtl->emission_color.x, &mtl->emission_color.y, &mtl->emission_color.z);
 	if (ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &mtl->highlight_color.x, &mtl->highlight_color.y, &mtl->highlight_color.z))
 		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &mtl->highlight_color.x, &mtl->highlight_color.y, &mtl->highlight_color.z);
@@ -148,7 +150,7 @@ void  		fill_prop_material(t_material *mtl, char *line)
 
 	if (FOR(i = 0, i < 2, i++))
 	{
-		struct {char *fmt; t_image *img; bool *active;} maps[8] ={
+		struct {char *fmt; t_image *img; bool *active;} maps[8] = {
 			{LF_RT_BUMPMAP, &mtl->bumpmap, &mtl->has_bumpmap},
 			{LF_RT_TEXTURE, &mtl->texture, &mtl->has_texture},
 			{LF_RT_EMISSION_MAP, &mtl->texture, &mtl->has_emission_map},
@@ -163,56 +165,52 @@ void  		fill_prop_material(t_material *mtl, char *line)
 	}
 	if (!ft_sscanf(LF_RT_ILLUM, line, str, 256))
 	{
-			while (get_next_word(&str, word))
+		while (get_next_word(&str, word))
+		{
+			if (FOR(i = 0, illum_restricted_keywords[i].value != END, i++))
 			{
-				if (FOR(i = 0, illum_restricted_keywords[i].value != END, i++))
-				{
-					if (!ft_strcmp(illum_restricted_keywords[i].name, word))
-						ret |= illum_restricted_keywords[i].value;
-				}
+				if (!ft_strcmp(illum_restricted_keywords[i].name, word))
+					ret |= illum_restricted_keywords[i].value;
 			}
-			mtl->illum = ret;
+		}
+		mtl->illum = ret;
 	}
-
 }
 
-void display_objects(t_object *lst_obj) {
-
+void			display_objects(t_object *lst_obj)
+{
 	while (lst_obj)
 	{
-	printf("\033[34;01mname: %s\033[00m\n", lst_obj->name);
-	//printf("transparency: %f\n", lst_obj->material.transparency);
-//	printf("reflection: %f\n", lst_obj->material.reflection);
-//	printf("refraction: %f\n", lst_obj->material.refraction);
-	//printf("specular: %f\n", lst_obj->material.specular);
-	//printf("light intensity: %f\n", lst_obj->light_prop.intensity);
-	//printf("FOV: %f\n", lst_obj->camera.fov);
-	//printf("primitive radius: %f\n", lst_obj->primitive.radius);
-	//printf("primitive height: %f\n", lst_obj->primitive.height);
-	//printf("primitive angle: %f\n", lst_obj->primitive.angle);
-	printf("pos x : %f ,pos y : %f ,pos z : %f\n", lst_obj->transform.position.x,lst_obj->transform.position.y,lst_obj->transform.position.z);
-	//printf("rot x : %f ,rot y : %f ,rot z : %f\n", lst_obj->transform.rotation.x,lst_obj->transform.rotation.y,lst_obj->transform.rotation.z);
-//	while (++i < lst_obj->primitive.nsl)
-//		printf("slice.x : %f ,slice.y : %f , slice.z : %f , slice.w : %f , nbsl : %d\n", lst_obj->primitive.slice[i].x, lst_obj->primitive.slice[i].y, lst_obj->primitive.slice[i].z, lst_obj->primitive.slice[i].w, lst_obj->primitive.nsl);
-//	printf("color : %f,%f,%f\n", lst_obj->material.color.x,lst_obj->material.color.y,lst_obj->material.color.z);
-//	printf("light_color : %f,%f,%f\n", lst_obj->light_prop.color.x, lst_obj->light_prop.color.y , lst_obj->light_prop.color.z);
-//	printf("emission_color : %f,%f,%f\n", lst_obj->material.emission_color.x,lst_obj->material.emission_color.y,lst_obj->material.emission_color.z);
-//	printf("highlight_color : %f,%f,%f\n", lst_obj->material.highlight_color.x,lst_obj->material.highlight_color.y,lst_obj->material.highlight_color.z);
-	//if (lst_obj->primitive.type == 6)
-	//	printf("mask: %d\n", lst_obj->camera.post_processing_mask);
-	//printf("illum: %d\n", lst_obj->material.illum);
-	//printf("type : %d\n", lst_obj->primitive.type);
-	//printf("fichier : %s, ID : %d\n", lst_obj->material.bumpmap.file, lst_obj->material.bumpmap.opengl_id);
-
-
-			if (lst_obj->children)
-				display_objects(lst_obj->children);
-			lst_obj = lst_obj->brother_of_children;
-		}
+		printf("\033[34;01mname: %s\033[00m\n", lst_obj->name);
+		printf("pos x : %f ,pos y : %f ,pos z : %f\n", lst_obj->transform.position.x, lst_obj->transform.position.y, lst_obj->transform.position.z);
+/*		printf("transparency: %f\n", lst_obj->material.transparency);
+		printf("reflection: %f\n", lst_obj->material.reflection);
+		printf("refraction: %f\n", lst_obj->material.refraction);
+		printf("specular: %f\n", lst_obj->material.specular);
+		printf("light intensity: %f\n", lst_obj->light_prop.intensity);
+		printf("FOV: %f\n", lst_obj->camera.fov);
+		printf("primitive radius: %f\n", lst_obj->primitive.radius);
+		printf("primitive height: %f\n", lst_obj->primitive.height);
+		printf("primitive angle: %f\n", lst_obj->primitive.angle);
+		printf("rot x : %f ,rot y : %f ,rot z : %f\n", lst_obj->transform.rotation.x,lst_obj->transform.rotation.y,lst_obj->transform.rotation.z);
+		while (++i < lst_obj->primitive.nsl)
+			printf("slice.x : %f ,slice.y : %f , slice.z : %f , slice.w : %f , nbsl : %d\n", lst_obj->primitive.slice[i].x, lst_obj->primitive.slice[i].y, lst_obj->primitive.slice[i].z, lst_obj->primitive.slice[i].w, lst_obj->primitive.nsl);
+		printf("color : %f,%f,%f\n", lst_obj->material.color.x,lst_obj->material.color.y,lst_obj->material.color.z);
+		printf("light_color : %f,%f,%f\n", lst_obj->light_prop.color.x, lst_obj->light_prop.color.y , lst_obj->light_prop.color.z);
+		printf("emission_color : %f,%f,%f\n", lst_obj->material.emission_color.x,lst_obj->material.emission_color.y,lst_obj->material.emission_color.z);
+		printf("highlight_color : %f,%f,%f\n", lst_obj->material.highlight_color.x,lst_obj->material.highlight_color.y,lst_obj->material.highlight_color.z);
+		if (lst_obj->primitive.type == 6)
+			printf("mask: %d\n", lst_obj->camera.post_processing_mask);
+		printf("illum: %d\n", lst_obj->material.illum);
+		printf("type : %d\n", lst_obj->primitive.type);
+		printf("fichier : %s, ID : %d\n", lst_obj->material.bumpmap.file, lst_obj->material.bumpmap.opengl_id);
+*/
+		if (lst_obj->children)
+			display_objects(lst_obj->children);
+		lst_obj = lst_obj->brother_of_children;
+	}
 }
 
-#define FILL_PROP(X, line) _Generic((X), t_light *: fill_prop_light, t_transform *: fill_prop_transform, t_material *:fill_prop_material, t_camera *:fill_prop_camera, t_primitive *:fill_prop_primitive) (X, line)
-#define A(c, line, p1) FILL_PROP(&c-> p1, line);// FILL_PROP(&c-> p2, line, #p2);
 void			parse_rt_file(char *file, t_scene *scene)
 {
 	int			fd;
@@ -227,7 +225,6 @@ void			parse_rt_file(char *file, t_scene *scene)
 	INIT(int, line_count, 0);
 	if ((fd = open(file, O_RDONLY)) == -1)
 		ft_exit("Open Failed");
-
 	if (!file_is_regular(fd))
 		ft_exit("bad file: %s\n", file);
 	while (gl(line, &fd))
@@ -238,18 +235,20 @@ void			parse_rt_file(char *file, t_scene *scene)
 			NEW_OBJECT(current_object, obj_name);
 			current_object->indent_level = indent_level;
 			scene->nb_object = ++nb_object;
-			if (scene->nb_object == 1){
+			if (scene->nb_object == 1)
+			{
 				scene->root_view = current_object;
 				old_object = current_object;
 			}
-			else if (old_object->indent_level < current_object->indent_level){
+			else if (old_object->indent_level < current_object->indent_level)
+			{
 				old_object->children = current_object;
 				current_object->parent = old_object;
 			}
-			while(old_object->indent_level > current_object->indent_level){
+			while (old_object->indent_level > current_object->indent_level)
 				old_object = old_object->parent;
-			}
-			if (scene->nb_object != 1 && old_object->indent_level == current_object->indent_level){
+			if (scene->nb_object != 1 && old_object->indent_level == current_object->indent_level)
+			{
 				old_object->brother_of_children = current_object;
 				current_object->parent = old_object->parent;
 			}
@@ -264,15 +263,12 @@ void			parse_rt_file(char *file, t_scene *scene)
 		{
 			A(current_object, line, primitive);
 			A(current_object, line, transform);
-			if (current_object->primitive.type >= 7){
+			if (current_object->primitive.type >= 7)
 				A(current_object, line, light_prop);
-			}
-			else if (current_object->primitive.type == 6){
+			if (current_object->primitive.type == 6)
 				A(current_object, line, camera);
-			}
-			else if (current_object->primitive.type <= 5){
+			if (current_object->primitive.type <= 5)
 				A(current_object, line, material);
-			}
 		}
 		else
 			ft_exit("bad indentation at line %i\n", line_count);

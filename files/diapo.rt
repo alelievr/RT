@@ -15,10 +15,15 @@ sphere2:
 	radius: 5
 	texture: ../textures/ice.jpg
 	opacity: 1
+<<<<<<< HEAD
 	refraction: 1
 	slice: -1 0 0 -1
 	slice: 0 1 1 -5
 
+=======
+    refraction: 1.9
+    slice: 2 1 0 -2
+>>>>>>> 4682732237ceb1c95fb7dd7ed8f550e6ff3e79e6
 
 background:
 	type: plane
