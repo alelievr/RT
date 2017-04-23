@@ -1,23 +1,24 @@
 camera:
-    type: camera
-    pos: 10 0 -10
-    fov: 1.2
-    ambient: 0.2
+	type: camera
+	pos: 10 0 -10
+	fov: 1.2
+	ambient: 0.2
 
 light:
-    type: point_light
-    intensity: 4
-    pos: 0 -10 -10
+	type: point_light
+	intensity: 4
+	pos: 0 -10 -10
 
 sphere2:
-    type: sphere
-    pos: 0 0 0
-    radius: 4
+	type: cone
+	pos: 0 0 -10
+	radius: 5
 	texture: ../textures/ice.jpg
 	opacity: 1
-    refraction: 1.9
-    slice: 0 0 1 2
-    slice: 0 1 1 2
+	refraction: 1
+	slice: -1 0 0 -1
+	slice: 0 1 1 -5
+
 
 background:
 	type: plane

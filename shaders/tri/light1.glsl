@@ -22,7 +22,7 @@ vec3		refraction(vec3 I, vec3 N, float n2)
 		float	eta = etai / etat;
 		float	k = 1 - eta * eta * (1 - cosi * cosi);
 		if (k < 0)
-			return vec3(0);
+			return I;
 		else
 			return (eta * I + (eta * cosi - sqrt(k)) * n);
 }
@@ -36,7 +36,7 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 	shadow.pos = pos;
 	shad = scene(shadow);
 
-	if (shad.dist < h.dist - EPSI){
+	if (shad.dist < h.dist + EPSI){
 		return ((1 - atlas_fetch(shad.mat.opacity, shad.uv).x) * (1 - atlas_fetch(shad.mat.texture, shad.uv).w));
 	}
 	return (1);
@@ -60,7 +60,7 @@ vec3		light(vec3 pos, Ray r, Hit h)
   if (dot(v2, r.dir) > 0)
     spec = pow(30, dot(v2, r.dir));
 	color = (limit(dot(h.norm, d), 0.0, 1.0)) * col;
-	return (color * 0.5/*shadows(h.pos, d, h)*/ + ambient);
+	return (color * shadows(h.pos, d, h) + ambient);
 }
 
 /*Definition de la reflection*/
@@ -71,7 +71,7 @@ vec3    freflection(vec3 pos, float reflection, Ray r, Hit h){
   vec3  color = vec3(0);
   Ray   ref;
 
-	while (++i < 3)
+	while (++i < 3 && on_off > 0)
 	{
 			h = h2;
 		  ref.dir = h.norm;
@@ -88,11 +88,20 @@ vec3    freflection(vec3 pos, float reflection, Ray r, Hit h){
 vec3    fopacity(vec3 pos, float opacity, float refrac, Ray r, Hit h){
   vec3  color = vec3(0);
   Ray   trans;
+  float   on_off = 1;
+	Hit h2 = h;
 
-	 trans.pos = h.pos;
-	 trans.dir = refraction(r.dir, h.norm, refrac);
-	 h = scene(trans);
-	 color = light(pos, trans, h) * (1 - opacity);
+	int i = -1;
+	while (++i < 2 && on_off > 0)
+	{
+		h = h2;
+		trans.pos = h.pos;
+	 	trans.dir = refraction(r.dir, h.norm, atlas_fetch(h.mat.refraction, h.uv).x);
+	 	h2 = scene(trans);
+		opacity = atlas_fetch(h.mat.opacity, h.uv).x;
+		on_off = on_off * (1 - opacity);
+		color += light(pos, trans, h2) * on_off;
+	}
    return color;
 }
 
@@ -110,7 +119,7 @@ vec3		calc_light(vec3 pos, Ray r, Hit h)
 	if (bump != vec3(0))
 	 h.norm = normalize(bump + h.norm);
   vec3 lambert = light(pos, r, h) * opacity;
-  if (reflection > EPSI)
+  if (reflection > 0)
     ref = freflection(pos, reflection, r, h);
   if (opacity < 1)
     tra = fopacity(pos, opacity, refrac, r, h);

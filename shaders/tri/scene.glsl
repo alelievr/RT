@@ -26,17 +26,20 @@ vec4 atlas_fetch(vec4 coord, vec2 obj_uv)
 bool decoupe(vec3 centre, vec3 inter, Coupes co)
 {
 	int i = 0;
-	bool res = false;
+	bool res = true;
 	vec3 pos;
 	float d;
 
 	while (i < co.nsl)
 	{
-		pos = centre + normalize(co.t[i].xyz) * co.t[i].w;
+		pos = centre + normalize(co.t[i].xyz) * abs(co.t[i].w);
 		d = (co.t[i].x * pos.x + co.t[i].y * pos.y + co.t[i].z * pos.z) * -1;
 
-		res = res || (co.t[i].x * inter.x + co.t[i].y * inter.y + co.t[i].z * inter.z + d < 0);
+		if (co.t[i].w > 0)
+			res = res && (co.t[i].x * inter.x + co.t[i].y * inter.y + co.t[i].z * inter.z + d > 0);
+		else
+			res = res && (co.t[i].x * inter.x + co.t[i].y * inter.y + co.t[i].z * inter.z + d < 0);
 		i++;
 	}
-	return res;
+	return !res;
 }
