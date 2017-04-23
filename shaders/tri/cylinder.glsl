@@ -7,6 +7,9 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 	float c = dot(d, d) - pow(dot(d, dir), 2) - data * data;
 	float g = b*b - 4*a*c;
 
+	bool dec = false;
+	bool dec1 = false;
+
 	if (g <= 0)
 		return;
 
@@ -14,8 +17,15 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 	float t1 = (sqrt(g) - b) / (2*a);
 
 	vec3 inter = r.pos + r.dir * t;
+	vec3 inter1 = r.pos + r.dir * t1;
 
-	if (t > EPSI && t < h.dist && !decoupe(pos, inter, coupe)) {
+	if (coupe.nsl > 0)
+	{
+		dec = decoupe(pos, inter, coupe);
+		dec1 = decoupe(pos, inter1, coupe);
+	}
+
+	if (t > EPSI && t < h.dist && !dec) {
 		h.dist = t;
 		h.pos = r.pos + r.dir * h.dist;
 		vec3 temp = dir * (dot(r.dir, dir) * h.dist + dot(r.pos - pos, dir));
@@ -27,9 +37,7 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 		return;
 	}
 
-	vec3 inter1 = r.pos + r.dir * t1;
-
-	if ((t < EPSI || decoupe(pos, inter, coupe)) && !decoupe(pos, inter1, coupe)){
+	if ((t < EPSI || dec) && !dec1){
 		if (t1 > EPSI && t1 < h.dist){
 			h.dist = t1;
 			h.pos = r.pos + r.dir * h.dist;

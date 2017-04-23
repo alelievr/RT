@@ -10,15 +10,12 @@ light:
 	pos: 0 -10 -10
 
 sphere2:
-	type: cone
+	type: glass
 	pos: 0 0 -10
-	radius: 5
-	texture: ../textures/ice.jpg
-	opacity: 1
+	radius: 4
+	opacity: 0.5
+	color: 0xFF0000
 	refraction: 1
-	slice: -1 0 0 -1
-	slice: 0 1 1 -5
-
 
 background:
 	type: plane

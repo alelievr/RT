@@ -174,7 +174,7 @@ static const char* fragment_shader_text =
 static const char *main_image_start_text =
 "void        mainImage(vec2 coord)\n"
 "{\n"
-"	vec2    uv = (coord / iResolution);\n"
+"	vec2    uv = ((coord / iResolution) - .5) * 2.f;\n"
 "	vec3    cameraPos = iMoveAmount.xyz;\n"
 "	vec3    cameraDir = iForward;\n"
 "	vec3    col;\n"

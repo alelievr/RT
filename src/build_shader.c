@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/23 00:16:42 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/23 20:29:34 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef struct		s_atlas
 #define LIST_INSERT(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp;}
 #define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s;	tmp->next = l->next; l->next = tmp; l = tmp;}
 #define ISTYPE(x) (obj->primitive.type == x + 1)
-#define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE) || ISTYPE(CUBE))
+#define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE) || ISTYPE(CUBE) || ISTYPE(GLASS))
 #define ISLIGHT (ISTYPE(POINT_LIGHT) || ISTYPE(DIRECTIONAL_LIGHT) || ISTYPE(SPOT_LIGHT))
 #define MAX(x, y) ((x > y) ? x : y)
 #define MAX_SHADER_FILE_SIZE	0xF000
@@ -78,7 +78,7 @@ static void	init_shader_file(t_shader_file *shader_file)
 
 static void	load_essencial_files(t_shader_file *shader_file)
 {
-	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/light1.glsl", NULL};
+	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/glass.glsl", "shaders/tri/light.glsl", NULL};
 	int					fd;
 	char				line[0xF000];
 
@@ -182,6 +182,8 @@ static char		*generate_scene_line(t_object *obj)
 		sprintf(line, "\tcone(%s_position, %s_rotation, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(CUBE))
 		sprintf(line, "\tcube(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.height, generate_material_line(&obj->material));
+	else if (ISTYPE(GLASS))
+		sprintf(line, "\tglass(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.height, generate_material_line(&obj->material));
 	else
 		return (NULL);
 	return (strdup(line));
@@ -273,8 +275,6 @@ static unsigned char	*load_image(char *path, int *width, int *height, int *chann
 {
 	unsigned char *ret = SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO);
 
-	printf("image channels: %i\n", *channels);
-
 	return ret;
 }
 
@@ -291,12 +291,23 @@ unsigned int		channelToMask(int chan)
 			ret |= 255 << ((8 * chan));
 		return ret;
 }
-#define TEXTURE_REPEAT(tex, x, y) ({int _x = x % tex->width; int _y = y % tex->height; (*(unsigned int *)(tex->data + _y * tex->width * 4 + _x * 4)) & channelToMask(tex->channels);})
+
+unsigned int		apply_channel_mask_pixel(unsigned int pixel, int chans)
+{
+	pixel &= channelToMask(chans);
+
+	if (chans == 3)
+	{
+		pixel |= 0xFF000000;
+	}
+	return pixel;
+}
+#define TEXTURE_REPEAT(tex, x, y) ({int _x = x % tex->width; int _y = y % tex->height; apply_channel_mask_pixel((*(unsigned int *)(tex->data + _y * tex->width * tex->channels + _x * tex->channels)), tex->channels);})
 
 #define MIN(x, y) ((x) < (y)) ? (x) : (y)
 
 #define OCTET(x, c) (((x) >> c) & 0xFF)
-#define FUSION_PIXEL_COMPONENT(p1, m1, p2, m2, c) (OCTET(p2 & m2, c) == 0xFF || OCTET(m2, c) == 0x00) ? OCTET(p1, c) << c : (0x00)
+#define FUSION_PIXEL_COMPONENT(p1, m1, p2, m2, c) (OCTET(p2 & m2, c) == 0xFF || OCTET(m2, c) == 0x00) ? OCTET(p1, c) << c : (((OCTET(p2 & m2, c) + OCTET(p1 & m1, c)) / 2) << c)
 
 static void fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_mask, int *new_tex_width, int *new_tex_height) {
 	*new_tex_width = MAX(dst->width, src->width);
@@ -322,10 +333,12 @@ static void fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_mas
 			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 16);
 			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 24);
 
+			// printf("src: %08X, dst: %08X, pix: %08X\n", src_pixel, dst_pixel, result_pixel);
+
 			*(unsigned int *)(img_dst + (*new_tex_width) * y * 4 + x * 4) = result_pixel;
 		}
 	}
-	// dst->channels = 4;
+	dst->channels = 4;
 	dst->data = img_dst;
 }
 
@@ -345,7 +358,7 @@ static void		load_textures_if_exists(t_material *m, char *scene_directory, int *
 	LOAD_TEXTURE_ATLAS(m, opacity_map, opacity, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
 
-	// FUSION_TEXTURE_ATLAS(m, texture, opacity_map, atlas_width, atlas_height, XYZ, W);
+	FUSION_TEXTURE_ATLAS(m, texture, opacity_map, atlas_width, atlas_height, XYZ, W);
 }
 
 static void		load_atlas(t_object *obj, char *scene_directory, int *atlas_width, int *atlas_height)
@@ -378,8 +391,7 @@ static void		add_subimage(t_atlas *atlas, int offset_x, int offset_y, t_image *i
 		x = 0;
 		while (x < img->width)
 		{
-			unsigned int color =  (*(unsigned int *)imgdata);
-			// printf("c: %08X\n", color);
+			unsigned int color = (*(unsigned int *)imgdata) & channelToMask(img->channels);
 			// if (img->channels == 3)
 				// color <<= ;
 				// printf("ca: %08X\n", color);

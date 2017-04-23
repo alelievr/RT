@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/22 19:37:15 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/23 18:38:04 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,7 @@ enum		e_primitive_type
 	CYLINDRE,
 	CONE,
 	CUBE,
+	GLASS,
 	CAMERA,
 	POINT_LIGHT,
 	SPOT_LIGHT,

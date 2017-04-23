@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/22 20:11:50 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/23 18:47:19 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,11 +263,11 @@ void			parse_rt_file(char *file, t_scene *scene)
 		{
 			A(current_object, line, primitive);
 			A(current_object, line, transform);
-			if (current_object->primitive.type >= 7)
+			if (current_object->primitive.type >= 8)
 				A(current_object, line, light_prop);
-			if (current_object->primitive.type == 6)
+			if (current_object->primitive.type == 7)
 				A(current_object, line, camera);
-			if (current_object->primitive.type <= 5)
+			if (current_object->primitive.type <= 6)
 				A(current_object, line, material);
 		}
 		else
