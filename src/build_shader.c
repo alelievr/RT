@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/23 20:29:34 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/24 18:20:54 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ static char		*generate_scene_line(t_object *obj)
 	static char		line[0xF00];
 
 	if (ISTYPE(SPHERE))
-		sprintf(line, "\tsphere(%s_position, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->primitive.radius, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
+		sprintf(line, "\tsphere(%s_position, %s_rotation, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->name, obj->primitive.radius, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(PLANE))
 		sprintf(line, "\tplane(%s_rotation, %s_position, 0, Coupes(%s), Material(%s), r, hit);", obj->name, obj->name, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(CYLINDRE))
@@ -307,7 +307,7 @@ unsigned int		apply_channel_mask_pixel(unsigned int pixel, int chans)
 #define MIN(x, y) ((x) < (y)) ? (x) : (y)
 
 #define OCTET(x, c) (((x) >> c) & 0xFF)
-#define FUSION_PIXEL_COMPONENT(p1, m1, p2, m2, c) (OCTET(p2 & m2, c) == 0xFF || OCTET(m2, c) == 0x00) ? OCTET(p1, c) << c : (((OCTET(p2 & m2, c) + OCTET(p1 & m1, c)) / 2) << c)
+#define FUSION_PIXEL_COMPONENT(p1, m1, p2, m2, c) (OCTET(m2, c) == 0x00) ? OCTET(p1, c) << c : (((OCTET(p2 & m2, c)) * (OCTET(p1 & m1, c)) / 255) << c)
 
 static void fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_mask, int *new_tex_width, int *new_tex_height) {
 	*new_tex_width = MAX(dst->width, src->width);

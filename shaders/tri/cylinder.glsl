@@ -21,8 +21,8 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 
 	if (coupe.nsl > 0)
 	{
-		dec = decoupe(pos, inter, coupe);
-		dec1 = decoupe(pos, inter1, coupe);
+		dec = decoupe(pos, rot, inter, coupe);
+		dec1 = decoupe(pos, rot,  inter1, coupe);
 	}
 
 	if (t > EPSI && t < h.dist && !dec) {
@@ -43,7 +43,7 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 			h.pos = r.pos + r.dir * h.dist;
 			vec3 temp = dir * (dot(r.dir, dir) * h.dist + dot(r.pos - pos, dir));
 			vec3 tmp = h.pos - pos;
-			h.norm = tmp - temp;
+			h.norm = -tmp + temp;
 			h.mat = mat;
 			vec3	d = h.pos -dot(pos, r.dir);
 			h.uv = vec2(-(0.5 + (atan(d.z, d.x) / (M_PI * 0.25))), -((d.y / M_PI) - floor(d.y / M_PI)));

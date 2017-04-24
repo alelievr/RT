@@ -9,7 +9,7 @@ camera:
     type: camera
     pos: 0 0 0
     fov: 1.2
-    ambient: 0.2
+    ambient: 0.4
 
 light:
     type: point_light
@@ -26,15 +26,15 @@ sphere2:
     type: sphere
     pos: 20 10 0
     radius: 4
-    texture: ../textures/chess.jpg
-    opacity: 0.6
+    texture: ../textures/wood.png
+    opacity: 0.5
     refraction: 1.9
 
 sphere3:
     type: sphere
     pos: 10 0 -20
     radius: 4
-    color: 100 100 200
+    color: 100 100 0
     bumpmap: ../textures/normal.jpg
 
 sphere4:

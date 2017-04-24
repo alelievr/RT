@@ -23,7 +23,7 @@ vec4 atlas_fetch(vec4 coord, vec2 obj_uv)
     return texture(atlas, uv);
 }
 
-bool decoupe(vec3 centre, vec3 inter, Coupes co)
+bool decoupe(vec3 centre, vec3 rot, vec3 inter, Coupes co)
 {
 	int i = 0;
 	bool res = true;
@@ -32,6 +32,7 @@ bool decoupe(vec3 centre, vec3 inter, Coupes co)
 
 	while (i < co.nsl)
 	{
+		co.t[i].xyz = rotate(co.t[i].xyz, rot, 1);
 		pos = centre + normalize(co.t[i].xyz) * abs(co.t[i].w);
 		d = (co.t[i].x * pos.x + co.t[i].y * pos.y + co.t[i].z * pos.z) * -1;
 

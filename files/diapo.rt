@@ -11,11 +11,13 @@ light:
 
 sphere2:
 	type: glass
-	pos: 0 0 -10
+	pos: 10 10 -20
+	rot: 45 45 0
 	radius: 4
-	opacity: 0.5
-	color: 0xFF0000
+	opacity: 0.1
+	color: 0xFFFFFF
 	refraction: 1
+	slice: 0 0 1 -1.2
 
 background:
 	type: plane

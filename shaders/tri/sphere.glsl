@@ -1,4 +1,4 @@
-void sphere (vec3 pos, float data, Coupes coupe, Material mat, Ray r, inout Hit h){
+void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, inout Hit h){
 	vec3 d = r.pos - pos;
 
 	bool dec = false;
@@ -21,8 +21,8 @@ void sphere (vec3 pos, float data, Coupes coupe, Material mat, Ray r, inout Hit 
 
 	if (coupe.nsl > 0)
 	{
-		dec = decoupe(pos, inter, coupe);
-		dec1 = decoupe(pos, inter1, coupe);
+		dec = decoupe(pos, rot, inter, coupe);
+		dec1 = decoupe(pos, rot, inter1, coupe);
 	}
 	if (t > EPSI && t < h.dist && !dec) {
 		h.dist = t;
