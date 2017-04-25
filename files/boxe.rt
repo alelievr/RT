@@ -32,7 +32,7 @@ sphere2:
 
 sphere3:
     type: sphere
-    pos: 10 0 -20
+    pos: 40 40 40
     radius: 4
     color: 100 0 0
     bumpmap: ../textures/normal.jpg
