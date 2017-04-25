@@ -196,24 +196,19 @@ static char		*get_scene_directory(char *scene_dir)
 
 void		initSourceFiles(t_file *files, size_t max, size_t *num)
 {
-	struct dirent	*d;
-	DIR				*dir;
 	struct stat		st;
 
 	*num = 0;
-	if (!(dir = opendir("./shaders")))
-		perror("opendir"), exit(-1);
-	while ((d = readdir(dir)))
+	while (42)
 	{
-		if (!FILE_CHECK_EXT(d->d_name, "glsl"))
-			continue ;
 		if (*num >= max)
 			break ;
-		ft_sprintf(files[*num].path, "./shaders/%s", d->d_name);
 		files[*num].fd = open(files[*num].path, O_RDONLY);
-		fstat(files[*num].fd, &st);
+		if (stat(files[*num].path, &st) == -1)
+			return ;
 		lastModifiedFile[files[*num].fd] = st.st_mtime;
-		if (files[*num].fd == -1 || !S_ISREG(st.st_mode))
+		printf("initialized source file: %s\n", files[*num].path);
+		if (!S_ISREG(st.st_mode) || !(st.st_mode & S_IRUSR))
 			printf("not a valid file: %s\n", files[*num].path), exit(-1);
 		else
 			(*num)++;
@@ -242,7 +237,7 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 				files[i].fd = fd;
 			else
 				break ;
-			char *file = build_shader(get_scene(NULL), get_scene_directory(NULL), &atlas_id);
+			char *file = build_shader(get_scene(NULL), get_scene_directory(NULL), &atlas_id, files);
 			GLint new_program = create_program(file, false);
 			if (new_program != 0)
 			{
@@ -339,11 +334,12 @@ int			main(int ac, char **av)
 	load_scene_directory(av[1]);
 
 	get_scene(&scene);
-	initSourceFiles(sources, 0xF00, &num);
 
 	GLFWwindow *win = init("Re Tweet");
 
-	program_source = build_shader(&scene, get_scene_directory(NULL), &atlas_id);
+	program_source = build_shader(&scene, get_scene_directory(NULL), &atlas_id, sources);
+
+	initSourceFiles(sources, 0xF00, &num);
 
 	GLuint		program = create_program(program_source, true);
 	GLuint		vbo = createVBO();

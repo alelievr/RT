@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/23 18:47:19 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/25 21:19:39 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,7 @@ void			parse_rt_file(char *file, t_scene *scene)
 	char		obj_name[256];
 	int			indent_level;
 	int			nb_object;
-	t_object	*current_object;
+	t_object	*current_object = NULL;
 	t_object	*old_object;
 
 	nb_object = 0;
@@ -259,6 +259,8 @@ void			parse_rt_file(char *file, t_scene *scene)
 			ft_exit("max indentation reached at line: %i\n", line_count);
 		if (nb_object > 300)
 			ft_exit("nb max object reached at line: %i\n", line_count);
+		if (current_object == NULL)
+			ft_exit("unexpected property without object: %s\n", line);
 		if (indent_level == current_object->indent_level + 1)
 		{
 			A(current_object, line, primitive);

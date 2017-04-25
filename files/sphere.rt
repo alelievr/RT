@@ -1,0 +1,9 @@
+sphere:
+	type: sphere
+	radius: 20
+	color: 0xFFFFFF
+
+light:
+	type: point_light
+	intensity: 4
+	pos: 30 30 30

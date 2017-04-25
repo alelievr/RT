@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/23 18:38:04 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/25 21:04:47 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,6 +314,5 @@ void					parse_rt_file(char *file, t_scene *prim);
 void					parse_obj_file(char *file, t_mesh *mesh);
 int						get_next_word(char **str, char *res);
 int						parse(int ac, char **av);
-char					*build_shader(t_scene *scene, char *scene_directory, int *atlas_id);
 
 #endif

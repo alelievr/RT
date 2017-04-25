@@ -119,6 +119,7 @@ GLuint			create_program(char *file, bool fatal);
 float			getCurrentTime(void);
 bool			file_is_regular(int fd) __attribute__((overloadable));
 bool			file_is_regular(char *fd) __attribute__((overloadable));
+char			*build_shader(t_scene *scene, char *scene_directory, int *atlas_id, t_file *sources);
 
 static const char* vertex_shader_text =
 "#version 330\n"

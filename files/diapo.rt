@@ -14,9 +14,7 @@ sphere2:
 	pos: 10 10 20
 	rot: 45 45 0
 	radius: 4
-	opacity: 1
 	color: 0xFF0000
-	refraction: 1
 
 background:
 	type: plane
@@ -24,4 +22,3 @@ background:
 	height: 50
 	rot: 0 0 1
 	color: 0xFFFFFF
-	opacity: 1

@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/25 03:00:31 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/25 21:11:04 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,11 +76,12 @@ static void	init_shader_file(t_shader_file *shader_file)
 	LIST_APPEND(shader_file->uniform_begin, strdup("/* Generated uniforms */\n"));
 }
 
-static void	load_essencial_files(t_shader_file *shader_file)
+static void	load_essencial_files(t_shader_file *shader_file, t_file *sources)
 {
 	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/glass.glsl", "shaders/tri/light.glsl", NULL};
 	int					fd;
 	char				line[0xF000];
+	int					i = 0;
 
 	while (*files)
 	{
@@ -93,6 +94,8 @@ static void	load_essencial_files(t_shader_file *shader_file)
 			ft_exit("bad file type: %s\n", *files);
 		while (gl(line, &fd))
 			LIST_APPEND(shader_file->function_begin, strdup(line));
+		close(fd);
+		strcpy(sources[i++].path, *files);
 		files++;
 	}
 }
@@ -454,7 +457,7 @@ static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height
 	return (atlas.id);
 }
 
-char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id)
+char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id, t_file *sources)
 {
 	t_shader_file		shader_file;
 	int					atlas_width;
@@ -463,7 +466,7 @@ char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id)
 	atlas_width = 0;
 	atlas_height = 0;
 	init_shader_file(&shader_file);
-	load_essencial_files(&shader_file);
+	load_essencial_files(&shader_file, sources);
 	load_atlas(root->root_view, scene_directory, &atlas_width, &atlas_height);
 	*atlas_id = build_atlas(root->root_view, atlas_width, atlas_height, true);
 	tree_march(&shader_file, root->root_view);
