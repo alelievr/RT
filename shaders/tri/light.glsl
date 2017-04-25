@@ -150,14 +150,11 @@ vec3		calc_light(vec3 pos, Ray r, Hit h)
   float reflection = atlas_fetch(h.mat.reflection, h.uv).x;
 	float	opacity = atlas_fetch(h.mat.texture, h.uv).w;
 	float	refrac = atlas_fetch(h.mat.refraction, h.uv).x;
-  vec3 bump = atlas_fetch(h.mat.bump, h.uv).xyz;
 
   vec3  ref = vec3(0);
   vec3  tra = vec3(0);
 	vec3  deg = vec3(0);
 
-	if (bump != vec3(0))
-		h.norm  = normalize(bump + h.norm);
   vec3 lambert = light(pos, r, h) * opacity;
   // if (reflection > 0)
   //   ref = freflection(pos, reflection, r, h);
