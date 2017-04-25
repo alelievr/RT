@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 17:03:04 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/21 19:20:45 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/25 23:36:27 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void		loadFonts(void)
 		}
 		if ((error = FT_New_Face(g_library, f, 0, &face)))
 			ft_printf("error while loading font file: %f\n", f);
-		FT_Set_Char_Size(face, 0, 48 * 64, window.x, window.y);
+		FT_Set_Char_Size(face, 0, 48 * 64, g_window.x, g_window.y);
 		FT_Set_Pixel_Sizes(face, 0, 48);
 	}
 }

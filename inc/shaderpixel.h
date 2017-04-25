@@ -101,18 +101,18 @@ typedef struct	s_sound
 
 #define BIT_SET(i, pos, v) (v) ? (i |= 1 << pos) : (i &= ~(1 << pos))
 #define BIT_GET(i, pos) (i >> pos) & 1
-#define MOVE_AMOUNT 0.05f;
+#define g_move_AMOUNT 0.05f;
 
-extern vec4			mouse;
-extern vec4			move;
-extern vec2			window;
-extern vec3			forward;
-extern int			keys;
-extern int			input_pause;
-extern float		pausedTime;
-extern long			lastModifiedFile[0xF00];
-extern float		fov;
-extern float		ambient;
+extern vec4			g_mouse;
+extern vec4			g_move;
+extern vec2			g_window;
+extern vec3			g_forward;
+extern int			g_keys;
+extern int			g_input_pause;
+extern float		g_paused_time;
+extern long			g_last_modified_file[0xF00];
+extern float		g_fov;
+extern float		g_ambient;
 
 GLFWwindow		*init(char *fname);
 GLuint			create_program(char *file, bool fatal);

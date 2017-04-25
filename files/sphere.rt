@@ -1,6 +1,10 @@
+camera:
+	type: camera
+	fov: 1.5
+
 sphere:
 	type: sphere
-	radius: 20
+	radius: 4
 	color: 0xFFFFFF
 
 light:

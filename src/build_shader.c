@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/25 21:11:04 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/25 23:36:27 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,11 +210,11 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 	}
 	else if (ISTYPE(CAMERA))
 	{
-		move.x = obj->transform.position.x;
-		move.y = obj->transform.position.y;
-		move.z = obj->transform.position.z;
-		fov = obj->camera.fov;
-		ambient = obj->camera.ambient;
+		g_move.x = obj->transform.position.x;
+		g_move.y = obj->transform.position.y;
+		g_move.z = obj->transform.position.z;
+		g_fov = obj->camera.fov;
+		g_ambient = obj->camera.ambient;
 	}
 }
 
