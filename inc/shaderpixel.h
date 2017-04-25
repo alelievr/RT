@@ -194,7 +194,7 @@ static const char *scene_start_text =
 "Hit     scene(Ray r)\n"
 "{\n"
 "	int i = -1;\n"
-"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1)),vec2(0,0));\n";
+"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(0,0,0,0),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1),vec4(-1,-1,-1,-1)),vec2(0,0));\n";
 
 static const char *scene_end_text =
 "    return hit;\n"

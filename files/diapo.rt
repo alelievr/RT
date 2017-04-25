@@ -2,7 +2,7 @@ camera:
 	type: camera
 	pos: 10 0 -10
 	fov: 1.2
-	ambient: 0.2
+	ambient: 0
 
 light:
 	type: point_light
@@ -14,13 +14,14 @@ sphere2:
 	pos: 10 10 -20
 	rot: 45 45 0
 	radius: 4
-	opacity: 1
+	opacity: 0
 	color: 0xFF0000
 	refraction: 1
-	slice: 0 0 1 -1.2
 
 background:
 	type: plane
-	pos: 0 0 10
+	pos: 0 0 -20
+	height: 50
 	rot: 0 0 1
 	color: 0xFFFFFF
+	opacity: 1

@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/24 18:20:54 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/25 03:00:31 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,24 +421,27 @@ static void		add_object_textures_to_atlas(t_material *mat, t_atlas *atlas, int *
 	ADD_TEXTURE_ATLAS(mat, specular_map);
 }
 
-static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height)
+static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height, bool first)
 {
 	t_atlas			atlas;
 	int				offset_x;
 	int				offset_y;
 
-	offset_x = 0;
+	offset_x = 1;
 	offset_y = 0;
+	atlas_width += 1;
 	atlas.width = atlas_width;
 	atlas.height = atlas_height;
 	atlas.data = (unsigned char *)malloc(sizeof(int) * atlas_width * atlas_height);
 	memset(atlas.data, 0, sizeof(int) * atlas_width * atlas_height);
+	if (first)
+		ft_memcpy(atlas.data, (unsigned char *)(char[4]){0, 0, 0, 255}, 4);
 	glGenTextures(1, &atlas.id);
 	while (obj)
 	{
 		add_object_textures_to_atlas(&obj->material, &atlas, &offset_x, &offset_y);
 		if (obj->children)
-			build_atlas(obj->children, atlas_width, atlas_height);
+			build_atlas(obj->children, atlas_width, atlas_height, false);
 		obj = obj->brother_of_children;
 	}
 	glBindTexture(GL_TEXTURE_2D, atlas.id);
@@ -446,11 +449,7 @@ static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	for (int x = 0; x < atlas.width; x++)
-		for (int y = 0; y < atlas.height; y++)
-		{
-			// printf("pix: %i/%i: %x\n", x, y, *(unsigned int *)(atlas.data + x * 4 + y * atlas.width * 4));
-		}
+
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.data);
 	return (atlas.id);
 }
@@ -466,7 +465,7 @@ char		*build_shader(t_scene *root, char *scene_directory, int *atlas_id)
 	init_shader_file(&shader_file);
 	load_essencial_files(&shader_file);
 	load_atlas(root->root_view, scene_directory, &atlas_width, &atlas_height);
-	*atlas_id = build_atlas(root->root_view, atlas_width, atlas_height);
+	*atlas_id = build_atlas(root->root_view, atlas_width, atlas_height, true);
 	tree_march(&shader_file, root->root_view);
 	return (concat_line_list(&shader_file));
 }

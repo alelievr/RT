@@ -1,8 +1,15 @@
+salle:
+    type: cube
+    pos: 0 0 0
+    rot: 0 0 0
+    height: 100
+    color: 0xFFFFFF
+
 camera:
     type: camera
     pos: 0 0 0
     fov: 1.2
-    ambient: 0.4
+    ambient: 0.8
 
 light:
     type: point_light
@@ -19,7 +26,7 @@ sphere2:
     type: sphere
     pos: 20 10 0
     radius: 4
-    texture: ../textures/wood.png
+    texture: ../textures/nyancat.png
     opacity: 0.5
     refraction: 1.9
 
@@ -27,7 +34,7 @@ sphere3:
     type: sphere
     pos: 10 0 -20
     radius: 4
-    color: 100 100 0
+    color: 100 0 0
     bumpmap: ../textures/normal.jpg
 
 sphere4:

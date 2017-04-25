@@ -86,7 +86,7 @@ vec3    fopacity(vec3 pos, float opacity, float refrac, Ray r, Hit h){
 	Hit h2 = h;
 
 	int i = -1;
-	while (++i < 2)
+	while (++i < 3)
 	{
 		h = h2;
 		trans.pos = h.pos;
