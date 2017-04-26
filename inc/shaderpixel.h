@@ -245,7 +245,7 @@ static const char *raytrace_start_text =
 "    vec3        ambient;\n"
 "    r.dir = rd;\n"
 "    r.pos = ro;\n"
-"    h = scene(r);\n"
+"	// h = scene(r);\n"
 "	//if(h.dist < 1e20)\n"
 "	//	color = atlas_fetch(h.mat.texture, h.uv).xyz;\n";
 

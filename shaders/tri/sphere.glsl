@@ -27,11 +27,10 @@ void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, 
 	if (t > EPSI && t < h.dist && !dec) {
 		h.dist = t;
 		h.pos = r.pos + r.dir * h.dist;
-		h.norm = normalize((h.pos - pos) + atlas_fetch(h.mat.bump, h.uv).xyz);
 		h.mat = mat;
 		vec3 n = normalize(h.pos - pos);
 		h.uv = vec2(-(0.5 + (atan(n.z, n.x)) / (M_PI)), (0.5 - asin(n.y)) / M_PI);
-		h.norm = normalize((h.pos - pos) + atlas_fetch(h.mat.bump, h.uv).xyz);
+		h.norm = h.pos - pos;
 		return;
 	}
 

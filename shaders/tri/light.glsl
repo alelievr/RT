@@ -31,10 +31,10 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 	Hit		shad;
 
 	shadow.dir = d;
-	shadow.pos = pos;
+	shadow.pos = pos + d * EPSI;
 	shad = scene(shadow);
 
-	if (shad.dist < h.dist + EPSI){
+	if (shad.dist < h.dist){
 		return ((1 - atlas_fetch(shad.mat.texture, shad.uv).w));
 	}
 	return (1);
@@ -54,7 +54,7 @@ vec3		light(vec3 pos, Ray r, Hit h)
 	if (h.dist > 1e20)
 		return (ambient);
 	color = (limit(dot(h.norm, d), 0.0, 1.0)) * col;
-	return (color * shadows(h.pos, d, h) + ambient);
+	return ((color * shadows(h.pos, d, h)) * (10 / distance(h.pos, pos)) + ambient);
 }
 
 /*Definition de la transparence*/
@@ -77,8 +77,6 @@ vec3    fopacity(vec3 pos, float opacity, Ray r, Hit h){
 	}
    return color;
 }
-
-
 
 /*Definition de la reflection*/
 vec3    freflection(vec3 pos, float reflection, Ray r, Hit h){
@@ -131,7 +129,7 @@ vec3		fdeg(vec3 pos, float reflection, float opacity, Ray r, Hit h)
 		}
 		opacity = atlas_fetch(htr.mat.texture, htr.uv).w;
 		on_off_tr = on_off_tr * (1 - opacity);
-		if (on_off_tr > 0)
+		else if (on_off_tr > 0)
 		{
 			ht = htr;
 			trans.pos = ht.pos;
@@ -149,17 +147,12 @@ vec3		calc_light(vec3 pos, Ray r, Hit h)
 {
   float reflection = atlas_fetch(h.mat.reflection, h.uv).x;
 	float	opacity = atlas_fetch(h.mat.texture, h.uv).w;
-	float	refrac = atlas_fetch(h.mat.refraction, h.uv).x;
 
   vec3  ref = vec3(0);
   vec3  tra = vec3(0);
 	vec3  deg = vec3(0);
 
   vec3 lambert = light(pos, r, h) * opacity;
-  // if (reflection > 0)
-  //   ref = freflection(pos, reflection, r, h);
-  // if (opacity < 1)
-  //   tra = fopacity(pos, opacity, r, h);
 	if (reflection > 0 || opacity < 1)
 		deg += fdeg(pos, reflection, opacity, r, h);
 	return (lambert + deg);
