@@ -1,7 +1,7 @@
 void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, inout Hit h) {
 	vec3 d = r.pos - pos;
 	vec3 dir = rotate(vec3(0,0,1),rot,1);
-	dir = normalize(dir);
+
 	float a = dot(r.dir,r.dir) - pow(dot(r.dir, dir), 2);
 	float b = 2 * (dot(r.dir, d) - dot(r.dir, dir) * dot(d, dir));
 	float c = dot(d, d) - pow(dot(d, dir), 2) - data * data;
@@ -32,8 +32,8 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 		vec3 tmp = h.pos - pos;
 		h.norm = tmp - temp;
 		h.mat = mat;
-		vec3	d = h.pos -dot(pos, r.dir);
-		h.uv = vec2(-(0.5 + (atan(d.z, d.x) / (M_PI * 0.25))), -((d.y / M_PI) - floor(d.y / M_PI)));
+		vec3	d = normalize(h.pos + -1 * dot(pos, r.dir));
+		h.uv = vec2(-1 * (0.5 + (atan(d.z, d.x) / (M_PI * 0.25))), -1 * ((d.y / M_PI) - floor(d.y / M_PI)));
 		return;
 	}
 
@@ -43,10 +43,10 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 			h.pos = r.pos + r.dir * h.dist;
 			vec3 temp = dir * (dot(r.dir, dir) * h.dist + dot(r.pos - pos, dir));
 			vec3 tmp = h.pos - pos;
-			h.norm = -tmp + temp;
+			h.norm = temp - tmp;
 			h.mat = mat;
-			vec3	d = h.pos -dot(pos, r.dir);
-			h.uv = vec2(-(0.5 + (atan(d.z, d.x) / (M_PI * 0.25))), -((d.y / M_PI) - floor(d.y / M_PI)));
+			vec3	d = normalize(h.pos + -1 * dot(pos, r.dir));
+			h.uv = vec2(-1 * (0.5 + (atan(d.z, d.x) / (M_PI * 0.25))), -1 * ((d.y / M_PI) - floor(d.y / M_PI)));
 		}
 		return;
 	}
