@@ -36,6 +36,7 @@ void cone(vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 		h.mat = mat;
 		vec3	d = normalize(h.pos - pos);
 		h.uv = vec2(-1 * (0.5 + (atan(h.norm.z, h.norm.x) / (M_PI * 2))), (h.norm.y /  M_PI) - floor(h.norm.y / M_PI));
+		h.inside = false;
 		return;
 	}
 
@@ -49,6 +50,7 @@ void cone(vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 			h.mat = mat;
 			vec3	d = normalize(h.pos - pos);
 			h.uv = vec2(-1 * (0.5 + (atan(h.norm.z, h.norm.x) / (M_PI * 2))), (h.norm.y /  M_PI) - floor(h.norm.y / M_PI));
+			h.inside = true;
 		}
 		return;
 	}

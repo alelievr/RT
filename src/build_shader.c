@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_shader.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/26 07:38:34 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/26 17:26:32 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,7 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 	}
 	else if (ISLIGHT)
 	{
-		sprintf(line, "\tcolor += calc_color(r, vec3(%f, %f, %f));", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z);
+		sprintf(line, "\tcolor += calc_color(r, vec3(%f, %f, %f), vec3(%f, %f, %f));", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z, obj->light_prop.color.x, obj->light_prop.color.y, obj->light_prop.color.z);
 		LIST_APPEND(shader_file->raytrace_lights, strdup(line));
 	}
 	else if (ISTYPE(CAMERA))

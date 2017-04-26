@@ -31,6 +31,7 @@ void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, 
 		vec3 n = normalize(h.pos - pos);
 		h.uv = vec2(-(0.5 + (atan(n.z, n.x)) / (M_PI)), (0.5 - asin(n.y)) / M_PI);
 		h.norm = h.pos - pos;
+		h.inside = false;
 		return;
 	}
 
@@ -42,6 +43,7 @@ void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, 
 			h.mat = mat;
 			vec3 n = normalize(h.pos - pos);
 			h.uv = vec2(-(0.5 + (atan(n.z, n.x)) / (M_PI)), (0.5 - asin(n.y)) / M_PI);
+			h.inside = true;
 		}
 		return;
 	}

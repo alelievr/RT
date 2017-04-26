@@ -13,8 +13,8 @@ void glass(vec3 pos, vec3 rot, float data, Material mat, Ray r, inout Hit h)
   c.t[0] = vec4(0,0,1,-1 * data / 3);
   c.nsl = 1;
 	sphere(vec3(0) + (data + hauteur / 2 - fleche) * dir, vec3(0), data, c, mat, r, h);
-  c.t[0] = vec4(0,0,1,-1 * hauteur / 2);
-  c.t[1] = vec4(0,0,-1,-1 * hauteur / 2);
+  c.t[0] = vec4(0,0,1,-hauteur / 2);
+  c.t[1] = vec4(0,0,-1,-hauteur / 2);
 	c.nsl = 2;
   cyl(vec3(0), vec3(0), data / 8, c, mat, r, h);
   c.t[0] = vec4(0,0,1,0);

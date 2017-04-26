@@ -7,14 +7,18 @@ camera:
 light:
 	type: point_light
 	intensity: 4
-	pos: 0 -10 -10
+	pos: 20 20 20
+	color: 0x000000
 
 sphere2:
-	type: glass
-	pos: 10 10 20
+	type: sphere
+	pos: 0 0 0
 	rot: 45 45 0
 	radius: 4
 	color: 0xFF0000
+	specular: 0
+	opacity: 0.5
+	refraction: 1
 
 background:
 	type: plane

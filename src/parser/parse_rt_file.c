@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/25 21:19:39 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/26 16:44:34 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 static void		init_default_material(t_material *o)
 {
 	o->color = (t_vec3){1, 0, 1};
-	o->specular = .5f;
+	o->specular = 0;
 	o->opacity = 1;
 }
 

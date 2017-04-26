@@ -31,7 +31,7 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 }
 
 /* Définition de l'effet de la lumière sur les objets présents */
-vec3		light(vec3 pos, Ray r, Hit h)
+vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 {
 	vec3 v1 = pos - h.pos;
 	vec3 v3 = v1 * v1;
@@ -45,7 +45,8 @@ vec3		light(vec3 pos, Ray r, Hit h)
 	h.dist = sqrt(v3.x + v3.y + v3.z);
 	if (h.dist > 1e20)
 		return (color);
-  h.norm = normalize(h.norm + 2 * bump);
+	if (!h.inside)
+		h.norm = normalize(normalize(h.norm) + bump);
   coef = (limit(dot(h.norm, d), 0.0, 1.0));
 	color = coef * col;
   if (coef > 0)
@@ -55,10 +56,10 @@ vec3		light(vec3 pos, Ray r, Hit h)
     spec *= pow(coef, 30) * atlas_fetch(h.mat.specular, h.uv).x;
   }
   //return (((color + spec) * shadows(h.pos, d, h)));
-	return (((color) * shadows(h.pos, d, h)));
+	return (color * shadows(h.pos, d, h));
 }
 
-vec3	 calc_color(Ray r, vec3 pos_light)
+vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color)
 {
   Hit h;
   Ray cam = r;
@@ -78,14 +79,15 @@ vec3	 calc_color(Ray r, vec3 pos_light)
     if (h.dist < 1e20){
         color_hit = atlas_fetch(h.mat.texture, h.uv).xyz;
 
-        color += light(pos_light, r, h) * limit;
+        color += light(pos_light, light_color, r, h) * limit;
         color += iAmbient * color_hit;
 
         if (opacity < 1)
         {
             r.pos = h.pos + r.dir * EPSI;
-            r.dir = refraction(cam.dir, h.norm, atlas_fetch(h.mat.refraction, h.uv).x);
+            r.dir = refraction(cam.dir, h.norm, atlas_fetch(h.mat.refraction, h.uv).w);
 
+						light_color = light_color * opacity + color_hit * 1 - opacity;
             limit *= 1 - opacity;
             if (limit == 0)
                 return (color);
