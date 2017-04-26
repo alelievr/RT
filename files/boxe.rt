@@ -9,7 +9,7 @@ camera:
     type: camera
     pos: 0 0 0
     fov: 1.2
-    ambient: 0.8
+    ambient: 0.3
 
 light:
     type: point_light

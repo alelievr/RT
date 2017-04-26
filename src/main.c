@@ -32,8 +32,8 @@ int		g_keys = 0;
 int		g_input_pause = 0;
 long	g_last_modified_file[0xF00] = {0};
 float	g_paused_time = 0;
-float	g_fov;
-float	g_ambient;
+float	g_fov = 1.2;
+float	g_ambient = 0.2;
 
 static void		usage(const char *n) __attribute__((noreturn));
 static void		usage(const char *n)
@@ -253,7 +253,7 @@ void		checkFileChanged(GLuint *program, t_file *files, size_t num)
 int			checkFileExtention(char *file, char **exts)
 {
 	char	*ext;
-   
+
 	ext = file + strlen(file) - 1;
 	while (ext != file && *ext != '.')
 		ext--;

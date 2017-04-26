@@ -213,8 +213,10 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 		g_move.x = obj->transform.position.x;
 		g_move.y = obj->transform.position.y;
 		g_move.z = obj->transform.position.z;
-		g_fov = obj->camera.fov;
-		g_ambient = obj->camera.ambient;
+		if (obj->camera.fov > 0)
+			g_fov = obj->camera.fov;
+		if (obj->camera.ambient > 0)
+			g_ambient = obj->camera.ambient;
 	}
 }
 
