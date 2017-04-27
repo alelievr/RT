@@ -56,4 +56,16 @@ saturne:
 	type: sphere
 	pos: 150 0 0
 	radius: 8
-	texture: ../textures/chess.jpg
+	color: 128 128 0
+
+uranus:
+	type: sphere
+	pos: 190 0 0
+	radius: 6
+	color: 0 0 128
+
+neptune:
+	type: sphere
+	pos: 230 0 0
+	radius: 6
+	color: 31 192 246
