@@ -21,7 +21,7 @@ sphere2:
     type: sphere
 	pos: 10 10 0
 	radius: 5
-	texture: ../textures/earth.jpg
+	texture: ../textures/lava-rock-4k.jpg
 
 sphere3:
     type: sphere
