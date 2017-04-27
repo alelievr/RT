@@ -5,7 +5,7 @@ light:
 
 camera:
 	type: camera
-	pos: 0 0 0
+	pos: 0 60 0
 	fov: 1.2
 	ambiant 0.5
 
@@ -13,7 +13,7 @@ space:
 	type: cube
 	pos: 0 0 0
 	rot: 0 0 0
-	height: 300
+	height: 700
 	texture: ../textures/space.jpg
 
 sun:
@@ -48,12 +48,12 @@ mars:
 
 jupiter:
 	type: sphere
-	pos: 70 0 0
+	pos: 100 0 0
 	radius: 10
 	texture: ../textures/jupiter.jpg
 
 saturne:
 	type: sphere
-	pos: 85 0 0
+	pos: 150 0 0
 	radius: 8
-	texture: ../textures/saturne.jpg
+	texture: ../textures/chess.jpg
