@@ -1,0 +1,59 @@
+light:
+	type: point_light
+	pos: 0 40 20
+	intensity: 10
+
+camera:
+	type: camera
+	pos: 0 0 0
+	fov: 1.2
+	ambiant 0.5
+
+space:
+	type: cube
+	pos: 0 0 0
+	rot: 0 0 0
+	height: 300
+	texture: ../textures/space.jpg
+
+sun:
+	type: sphere
+	pos: -50 0 0
+	radius: 15
+	texture: ../textures/sun.jpg
+
+mercure:
+	type: sphere
+	pos: -15 0 0
+	radius: 2
+	texture: ../textures/mercure.jpg
+
+venus:
+	type: sphere
+	pos: 0 0 0
+	radius: 3
+	texture: ../textures/venus.jpg
+
+earth:
+	type: sphere
+	pos: 20 0 0
+	radius: 3
+	texture: ../textures/earth.jpg
+
+mars:
+	type: sphere
+	pos: 40 0 0
+	radius: 3
+	texture: ../textures/mars.jpg
+
+jupiter:
+	type: sphere
+	pos: 70 0 0
+	radius: 10
+	texture: ../textures/jupiter.jpg
+
+saturne:
+	type: sphere
+	pos: 85 0 0
+	radius: 8
+	texture: ../textures/saturne.jpg

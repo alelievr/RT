@@ -47,15 +47,3 @@ vec3	nightvision(vec3 color)
 	float	t = max(max(color.r, color.g), color.b);
 	return vec3(0.0, t, 0.0);
 }
-
-vec3	sscp(vec3 color)
-{
-	vec3	right = color;
-	vec3	left = color;
-	vec3	col, coeff = vec3(0.15, 0.15, 0.7);
-
-	col.r = left.r;
-	col.g = left.g;
-	col.b = dot(right, coeff);
-	return (col);
-}
