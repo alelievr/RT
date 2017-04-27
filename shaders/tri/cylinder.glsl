@@ -32,8 +32,8 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 		vec3 tmp = h.pos - pos;
 		h.norm = tmp - temp;
 		h.mat = mat;
-		vec3	d = normalize(h.pos - dot(pos, r.dir));
-		h.uv = vec2(-1 * (0.5 + (atan(d.z, d.x) / (M_PI * 0.25))), -1 * ((d.y / M_PI) - floor(d.y / M_PI)));
+		vec3	d = normalize(h.pos - pos);
+		h.uv = vec2(atan(d.x, d.z) / (M_PI * 2), d.y / 0.01);
 		h.inside = false;
 		return;
 	}

@@ -40,6 +40,12 @@ earth:
 	radius: 3
 	texture: ../textures/earth.jpg
 
+moon:
+	type: sphere
+	pos: 25 0 0
+	radius: 1
+	color: 125 125 125
+
 mars:
 	type: sphere
 	pos: 40 0 0
