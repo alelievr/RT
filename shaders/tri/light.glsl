@@ -22,6 +22,7 @@ vec4		shadows(vec3 pos, vec3 d, vec3 color_light, Hit h)
 	float t;
 	float ret = 1;
 	vec3 color = color_light / 255;
+	float transparency = 0;
 
 	shadow.dir = d;
 	shadow.pos = pos + d * EPSI;
@@ -29,9 +30,10 @@ vec4		shadows(vec3 pos, vec3 d, vec3 color_light, Hit h)
 	t = shad.dist;
 	while (t < h.dist + EPSI)
 	{
+		transparency = atlas_fetch(shad.mat.texture, shad.uv).w;
 		shadow.pos = shad.pos + d * EPSI;
-		ret *= (1 - atlas_fetch(shad.mat.texture, shad.uv).w);
-		color += atlas_fetch(shad.mat.texture, shad.uv).xyz;
+		ret *= 1 - transparency;
+		color += atlas_fetch(shad.mat.texture, shad.uv).xyz * transparency;
 		shad = scene(shadow);
 		t += shad.dist;
 		if (ret == 0)
@@ -67,7 +69,7 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
   //	spec *= pow(coef, 4) * atlas_fetch(h.mat.specular, h.uv).x;
  // }
 	vec4 s = shadows(h.pos, d,light_color, h);
-	return (((color + s.xyz * coef) / 2) * s.w);
+	return (((color + (s.xyz * coef)) / 2) * s.w);
 }
 
 vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color, float intensity)
