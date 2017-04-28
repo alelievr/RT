@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 12:39:32 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/28 15:07:50 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef struct		s_atlas
 #define LIST_INSERT(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s; tmp->next = l->next; l->next = tmp;}
 #define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s;	tmp->next = l->next; l->next = tmp; l = tmp;}
 #define ISTYPE(x) (obj->primitive.type == x + 1)
-#define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE) || ISTYPE(CUBE) || ISTYPE(GLASS) || ISTYPE(DISK))
+#define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE) || ISTYPE(CUBE) || ISTYPE(CUBE_TROUE) || ISTYPE(GLASS) || ISTYPE(DISK))
 #define ISLIGHT (ISTYPE(POINT_LIGHT) || ISTYPE(DIRECTIONAL_LIGHT) || ISTYPE(SPOT_LIGHT))
 #define MAX(x, y) ((x > y) ? x : y)
 #define MAX_SHADER_FILE_SIZE	0xF000
@@ -78,7 +78,7 @@ static void	init_shader_file(t_shader_file *shader_file)
 
 static void	load_essencial_files(t_shader_file *shader_file, t_file *sources)
 {
-	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/glass.glsl", "shaders/tri/disk.glsl", "shaders/tri/light.glsl", NULL};
+	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/cubetroue.glsl", "shaders/tri/glass.glsl", "shaders/tri/disk.glsl", "shaders/tri/light.glsl", NULL};
 	int					fd;
 	char				line[0xF000];
 	int					i = 0;
@@ -183,6 +183,8 @@ static char		*generate_scene_line(t_object *obj)
 		sprintf(line, "\tcyl(%s_position, %s_rotation, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(CONE))
 		sprintf(line, "\tcone(%s_position, %s_rotation, %f, Coupes(%s), Material(%s), r, hit);", obj->name, obj->name, obj->primitive.angle, generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
+	else if (ISTYPE(CUBE_TROUE))
+		sprintf(line, "\tcubetroue(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.height, generate_material_line(&obj->material));
 	else if (ISTYPE(CUBE))
 		sprintf(line, "\tcube(%s_position, %s_rotation, %f, Material(%s), r, hit);", obj->name, obj->name, obj->primitive.height, generate_material_line(&obj->material));
 	else if (ISTYPE(GLASS))

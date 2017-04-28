@@ -1,31 +1,30 @@
 plane1:
-    type: disk
+    type: cube_troue
     pos: 10 10 0
-    rot: 0 45 45
+    rot: 45 0 45
 	radius: 5
     texture: ../textures/chess.jpg
-	slice: 0 0 1 -2
 
 axex:
 	type: cylindre
 	radius: 1
 	pos: 0 0 0
 	rot: 90 0 0
-	color: 0x00FF00
+	texture: ../textures/chess.jpg
 
 axey:
 	type: cylindre
 	radius: 1
 	pos: 0 0 0
 	rot: 0 90 0
-	color: 0xFF0000
+	texture: ../textures/chess.jpg
 
 axez:
 	type: cylindre
 	radius: 1
 	pos: 0 0 0
 	rot: 0 0 0
-	color: 0x0000FF
+	texture: ../textures/chess.jpg
 
 light1:
 	type: point_light
