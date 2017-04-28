@@ -21,7 +21,7 @@ sphere2:
     type: sphere
 	pos: 10 10 0
 	radius: 5
-	texture: ../textures/earth.jpg
+	texture: ../textures/lava-rock-4k.jpg
 
 sphere3:
     type: sphere
@@ -39,10 +39,10 @@ box:
 
 cone1:
     type: cone
-    pos: -50 0 0
+    pos: 30 0 0
 	angle: 5
-	rot: 0 45 0
-	color: 231 91 134
+	rot: 90 0 0
+	texture: ../textures/chess.jpg
 
 cylindre1:
 	type: cylindre
