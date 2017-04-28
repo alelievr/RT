@@ -1,5 +1,6 @@
 void plane (vec3 norm, vec3 pos, float data, Coupes coupe, Material mat, Ray r, inout Hit h) {
-	norm = normalize(norm);
+	//norm = normalize(norm);
+	norm = rotate(vec3(0,0,1),norm,1);
 	float t = (dot(norm,pos) - (dot (norm, r.pos))) / dot (norm, r.dir);
 	Hit tmp = h;
 	vec3 plus = pos + data/2;
@@ -10,7 +11,7 @@ void plane (vec3 norm, vec3 pos, float data, Coupes coupe, Material mat, Ray r, 
 
 	if (t < h.dist) {
 		h.dist = t;
-		h.pos = r.pos + r.dir * h.dist;
+		h.pos = rotate(r.pos + r.dir * h.dist,norm,1);
 		h.norm = faceforward(norm, norm, r.dir);
     h.mat = mat;
 		vec3	u = vec3(norm.y, norm.z, -1 * norm.x );

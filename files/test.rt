@@ -1,58 +1,36 @@
-lovely triangle:
-	type: plane
-	pos: 900 520 20
-	color: 0xFF00FF
-	transparency: 1
-	fov: 70
+plane1:
+    type: sphere
+    pos: 0 0 0
+    rot: 0 45 45
+	radius: 5
+    texture: ../textures/chess.jpg
+	slice: 0 0 1 -2
 
-little sphere:
-	type: sphere
-	pos: 5 0 10
+axex:
+	type: cylindre
+	radius: 1
+	pos: 0 0 0
+	rot: 90 0 0
+	color: 0x00FF00
+
+axey:
+	type: cylindre
+	radius: 1
+	pos: 0 0 0
+	rot: 0 90 0
+	color: 0xFF0000
+
+axez:
+	type: cylindre
+	radius: 1
+	pos: 0 0 0
 	rot: 0 0 0
-	radius: 0.5
-	slice: 0 5 0 .3
-	height: 0.8
-	texture: yolol.png
-	color: 12 25 35
-	emission color: 0xFFEF00
-	highlight color: 1 1 0
-	slice: 4 5 8 5
-	slice: 0 1 0 .3
-	transparency: 0.5
-	reflection: 2.
-	refraction: .5
-	bumpmap: Map__6_Noise.tga
-	illum: AMBIANT CAST_SHADOW
-	post_processing_mask: SEPIA CARTOON
+	color: 0x0000FF
 
-poulpe:
-	type: camera
-	post_processing_mask: SEPIA CARTOON
-
-
-plane:
-	type: plane
-	refraction map: refrac.png
-	emission map: olol.tga
-	highlight map: color.tga
-	transparency map: map.png
-	specular: 6.2
-	color: 5 98 12
-	specular map: sepc.png
-	pos: 880 540 200
-	rot: 0.1 0 -1
-	scale: 0 0 0
-
-light 1:
+light1:
 	type: point_light
-	intensity: 3
-	height: 0.9
-	color: 5 98 12
+	pos: 10 10 10
 
-sun:
-	type: directional_light
-	intensity: 3
-	pos: 100 100 100
-	color: 5 98 12
-	rot: 0 -1 0
-
+camera:
+	type: camera
+	pos: 10 10 10
