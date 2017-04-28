@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 23:52:18 by alelievr          #+#    #+#             */
-/*   Updated: 2016/12/21 19:02:55 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/28 23:18:45 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ typedef struct	s_untyped_list
 # define VOID				void
 # define LAST_ADDR(x)		(*((VOID *[1]){0} + x))
 # define LIST				t_untyped_list *
-# define LIST_INIT(l,p)		l = malloc(sizeof(t_untyped_list)); l->base = NULL; l->current = NULL; l->end = NULL; l->pointer = p;
+# define LIST_INIT(l,p)		l = malloc(sizeof(t_untyped_list));l->base = NULL; l->current = NULL; l->end = NULL; l->pointer = p;
 # define LIST_NEXT_(ptr)	*((unsigned long *)ptr)
 # define LIST_PREV_(ptr)	*((unsigned long *)ptr + 1)
 # define LIST_NEW(l, e)		*((VOID *[1]){malloc(sizeof(t_list_links) + sizeof(e))}); \
@@ -79,9 +79,9 @@ typedef struct	s_untyped_list
 
 # define LIST_CURRENT(l, type) LIST_GET_(l, type, l->current)
 
-# define LIST_AT(l, i) 
+# define LIST_AT(l, i)
 
-#define LIST_CONTENT(elem, type) ((type)((VOID *)elem + sizeof(t_list_links))) 
+# define LIST_CONTENT(elem, type) ((type)((VOID *)elem + sizeof(t_list_links))) 
 # define LIST_FOREACH(l, type, as) type __##as; t_untyped_list *__iter##as; \
 	for ((__##as = LIST_CONTENT(l->base, type), __iter##as = l->begin); \
 			__iter##as; (__##as = LIST_CONTENT(__iter##as, type), __iter##as = __iter##as->next))

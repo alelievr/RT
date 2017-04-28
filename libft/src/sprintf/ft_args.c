@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/19 19:41:37 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 20:41:47 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/28 23:23:49 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,12 @@
 #define FLAG_HAS(flag, v) (flag & (v))
 #define H_FLAG(flag) ((FLAG_HAS(flag, F_16BIT)) ? F_08BIT : F_16BIT)
 #define L_FLAG(flag) ((FLAG_HAS(flag, F_48BIT)) ? F_64BIT : F_48BIT)
-#define	CHAR_FLAG_TO_VAL(flag) (O('0', F_ZERO, O('-', F_NEGATIVE, O('+', F_PLUS, O(' ', F_SPACE, O('#', F_PREFIX, O('\'', F_SEPARATOR, O('h', H_FLAG(flag), O('l', L_FLAG(flag), 0)))))))))
+#define CHAR_FLAG_TO_VAL(flag) (O('0', F_ZERO, O('-', F_NEGATIVE, O('+', F_PLUS, O(' ', F_SPACE, O('#', F_PREFIX, O('\'', F_SEPARATOR, O('h', H_FLAG(flag), O('l', L_FLAG(flag), 0)))))))))
 #define SIZEOF_TYPE(t) (P(T_CHAR, sizeof(char), P(T_INTEGER, sizeof(int), P(T_LONG, sizeof(long), P(T_POINTER, sizeof(void *), sizeof(char *))))))
 
 static int					g_additional_flags[127] = {0};
 static void					init_additional_flags(void) __attribute__((constructor));
+
 static void					init_additional_flags(void)
 {
 	g_additional_flags['c'] = 0;
