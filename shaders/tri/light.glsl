@@ -54,22 +54,23 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
   vec3 bump = atlas_fetch(h.mat.bump, h.uv).xyz;
   vec3 spec = vec3(1);
 	vec3 specularColor = vec3(0);
+	float specu = 0;
 
 	h.dist = sqrt(v3.x + v3.y + v3.z);
 	if (h.dist > 1e20)
 		return (color);
 	if (!h.inside)
 		h.norm = normalize(normalize(h.norm) + bump);
-  coef = (limit(dot(h.norm, d), 0.0, 1.0));
+ 	coef = (limit(dot(h.norm, d), 0.0, 1.0));
 	color = coef * col;
-//  if (coef > 0)
-//  {
-//		vec3 refdir = normalize(2.0 * dot(h.norm, d) * (h.norm - d));
-  //	coef = max(dot(refdir, h.norm), 0);
-  //	spec *= pow(coef, 4) * atlas_fetch(h.mat.specular, h.uv).x;
- // }
+	vec3 v = d - h.norm * (2 * dot(h.norm, d));
+	float t = dot(v, r.dir);
+	if (t > 0)
+		specu = pow(t, 16)  *  atlas_fetch(h.mat.specular, h.uv).x;
+	if (specu > EPSI && atlas_fetch(h.mat.texture, h.uv).w == 1)
+		coef += specu;
 	vec4 s = shadows(h.pos, d,light_color, h);
-	return (((color + (s.xyz * coef)) / 2) * s.w);
+	return (((color + s.xyz) * coef / 2) * s.w);
 }
 
 vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color, float intensity)
