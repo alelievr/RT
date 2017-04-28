@@ -13,7 +13,7 @@
 #include "shaderpixel.h"
 #include <math.h>
 
-static vec2	angleAmount;
+static t_vec2	angleAmount;
 static int	cursor_mode;
 static float lastPausedTime;
 
@@ -29,23 +29,48 @@ static void		key_callback(GLFWwindow *g_window, int key,int scancode, int action
 	(void) mods;
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(g_window, GLFW_TRUE);
-	if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D)
+	if (key == GLFW_KEY_RIGHT)
 		BIT_SET(g_keys, RIGHT, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A)
+	if (key == GLFW_KEY_LEFT)
 		BIT_SET(g_keys, LEFT, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_UP || key == GLFW_KEY_W)
+	if (key == GLFW_KEY_UP)
 		BIT_SET(g_keys, FORWARD, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S)
+	if (key == GLFW_KEY_DOWN)
 		BIT_SET(g_keys, BACK, action == GLFW_PRESS || action == GLFW_REPEAT);
+
+	if (key == GLFW_KEY_D)
+		BIT_SET(g_keys, SOBJ_POS_RIGHT, action == GLFW_PRESS || action == GLFW_REPEAT);
+	if (key == GLFW_KEY_A)
+		BIT_SET(g_keys, SOBJ_POS_LEFT, action == GLFW_PRESS || action == GLFW_REPEAT);
+	if (key == GLFW_KEY_W)
+		BIT_SET(g_keys, SOBJ_POS_FORWARD, action == GLFW_PRESS || action == GLFW_REPEAT);
+	if (key == GLFW_KEY_S)
+		BIT_SET(g_keys, SOBJ_POS_BACK, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_Q)
-		BIT_SET(g_keys, UP, action == GLFW_PRESS || action == GLFW_REPEAT);
+		BIT_SET(g_keys, SOBJ_POS_UP, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_E)
-		BIT_SET(g_keys, DOWN, action == GLFW_PRESS || action == GLFW_REPEAT);
+		BIT_SET(g_keys, SOBJ_POS_DOWN, action == GLFW_PRESS || action == GLFW_REPEAT);
+
+	if (key == GLFW_KEY_X)
+		BIT_SET(g_keys, SOBJ_DIR_X, action == GLFW_PRESS || action == GLFW_REPEAT);
+	if (key == GLFW_KEY_Y)
+		BIT_SET(g_keys, SOBJ_DIR_Y, action == GLFW_PRESS || action == GLFW_REPEAT);
+	if (key == GLFW_KEY_Z)
+		BIT_SET(g_keys, SOBJ_DIR_Z, action == GLFW_PRESS || action == GLFW_REPEAT);
+
+//	if (key == GLFW_KEY_Q)
+//		BIT_SET(g_keys, UP, action == GLFW_PRESS || action == GLFW_REPEAT);
+//	if (key == GLFW_KEY_E)
+//		BIT_SET(g_keys, DOWN, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_KP_ADD || key == GLFW_KEY_EQUAL)
 		BIT_SET(g_keys, PLUS, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_KP_SUBTRACT || key == GLFW_KEY_MINUS)
 		BIT_SET(g_keys, MOIN, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_SPACE)
+	if (key == GLFW_KEY_TAB && !(mods & GLFW_MOD_SHIFT) && action == GLFW_PRESS)
+		g_selected_object_index++, select_object();
+	if (key == GLFW_KEY_TAB && (mods & GLFW_MOD_SHIFT) && action == GLFW_PRESS)
+		g_selected_object_index--, select_object();
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	{
 		g_input_pause ^= action;
 		if (g_input_pause)
@@ -89,8 +114,6 @@ static void		g_mouse_click_callback(GLFWwindow *win, int button, \
 		g_mouse.z = 1;
 	else
 		g_mouse.z = 0;
-
-	//onClick();
 }
 
 static void		resize_callback(GLFWwindow *win, int width, int height)

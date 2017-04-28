@@ -22,7 +22,6 @@
 # include "SOIL2.h"
 # include "fmod.h"
 # include "libft.h"
-# include "parser.h"
 # undef PLUS
 
 # if __APPLE__
@@ -36,34 +35,28 @@
 # define SCALE 70
 //# define DOUBLE_PRECISION 1
 
-typedef struct s_vec22
-{
-	float x;
-	float y;
-}				vec2;
+typedef struct s_scene	t_scene;
 
-typedef struct s_vec33
+typedef	struct			s_vec2
 {
-	float x;
-	float y;
-	float z;
-}				vec3;
+	float				x;
+	float				y;
+}						t_vec2;
 
-typedef struct s_vec44
+typedef	struct 			s_vec3
 {
-	float x;
-	float y;
-	float z;
-	float w;
-}				vec4;
+	float				x;
+	float				y;
+	float				z;
+}						t_vec3;
 
-typedef struct s_dvec4
+typedef	struct			s_vec4
 {
-	double x;
-	double y;
-	double z;
-	double w;
-}				dvec4;
+	float				x;
+	float				y;
+	float				z;
+	float				w;
+}						t_vec4;
 
 typedef struct	s_file
 {
@@ -81,6 +74,15 @@ enum			KEY_BITS
 	BACK,
 	PLUS,
 	MOIN,
+	SOBJ_DIR_X,
+	SOBJ_DIR_Y,
+	SOBJ_DIR_Z,
+	SOBJ_POS_RIGHT,
+	SOBJ_POS_FORWARD,
+	SOBJ_POS_BACK,
+	SOBJ_POS_LEFT,
+	SOBJ_POS_UP,
+	SOBJ_POS_DOWN,
 };
 
 enum			SOUND_FORMAT
@@ -99,22 +101,30 @@ typedef struct	s_sound
 	enum SOUND_FORMAT	sound_format;
 }				t_sound;
 
+typedef struct		s_selected
+{
+	int		pos_uniform;
+	int		dir_uniform;
+	t_vec3	*dir;
+	t_vec3	*pos;
+}					t_selected;
+
 #define BIT_SET(i, pos, v) (v) ? (i |= 1 << pos) : (i &= ~(1 << pos))
 #define BIT_GET(i, pos) (i >> pos) & 1
 #define g_move_AMOUNT 0.05f;
 
-extern vec4			g_mouse;
-extern vec4			g_move;
-extern vec2			g_window;
-extern vec3			g_forward;
+extern t_vec4		g_mouse;
+extern t_vec4		g_move;
+extern t_vec2		g_window;
+extern t_vec3		g_forward;
 extern int			g_keys;
 extern int			g_input_pause;
 extern float		g_paused_time;
 extern long			g_last_modified_file[0xF00];
 extern float		g_fov;
 extern float		g_ambient;
-extern int			g_selected_object_pos;
-extern int			g_selected_object_dir;
+extern t_selected	g_selected_object;
+extern int			g_selected_object_index;
 
 GLFWwindow		*init(char *fname);
 GLuint			create_program(char *file, bool fatal);
@@ -123,6 +133,9 @@ bool			file_is_regular(int fd) __attribute__((overloadable));
 bool			file_is_regular(char *fd) __attribute__((overloadable));
 char			*build_shader(t_scene *scene, char *scene_directory, int *atlas_id, t_file *sources);
 t_scene			*get_scene(t_scene *scene);
+int				get_program(int p);
+void			save_object_transform(void);
+void			select_object(void);
 
 static const char* vertex_shader_text =
 "#version 330\n"
@@ -193,7 +206,7 @@ static const char *main_image_start_text =
 "	vec3    right = normalize(cross(forw, vec3(0, 1, 0)));\n"
 "	vec3    up = normalize(cross(right, forw));\n"
 "	vec3    rd = normalize(uv.x * right + uv.y * up + iFov * forw);\n"
-"	fragColor = vec4(raytrace(cameraPos, rd), 1);\n"
+"	fragColor = vec4(raytrace(cameraPos, rd), 0);\n"
 "}\n";
 
 static const char *scene_start_text =

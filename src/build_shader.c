@@ -6,11 +6,12 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 15:07:50 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/28 18:47:10 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "shaderpixel.h"
+#include "parser.h"
 #include <sys/stat.h>
 #include <string.h>
 #include <unistd.h>
@@ -200,16 +201,16 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 {
 	static char		line[0xF000];
 
-	if (ISPRIMITIVE)
+	if (!ISTYPE(CAMERA))
 	{
 		sprintf(line, "uniform vec3 %s_position = vec3(%f, %f, %f);", obj->name, obj->transform.position.x, obj->transform.position.y, obj->transform.position.z);
 		LIST_APPEND(shader_file->uniform_begin, strdup(line));
 		sprintf(line, "uniform vec3 %s_rotation = vec3(%f, %f, %f);", obj->name, obj->transform.rotation.x, obj->transform.rotation.y, obj->transform.rotation.z);
 		LIST_APPEND(shader_file->uniform_begin, strdup(line));
 	}
-	else if (ISLIGHT)
+	if (ISLIGHT)
 	{
-		sprintf(line, "\tcolor += calc_color(r, vec3(%f, %f, %f), vec3(%f, %f, %f), %f);", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z, obj->light_prop.color.x, obj->light_prop.color.y, obj->light_prop.color.z, obj->light_prop.intensity);
+		sprintf(line, "\tcolor += calc_color(r, %s_position, vec3(%f, %f, %f), %f);", obj->name, obj->light_prop.color.x, obj->light_prop.color.y, obj->light_prop.color.z, obj->light_prop.intensity);
 		LIST_APPEND(shader_file->raytrace_lights, strdup(line));
 	}
 	else if (ISTYPE(CAMERA))

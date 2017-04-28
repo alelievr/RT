@@ -6,11 +6,12 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/25 23:30:02 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 06:11:52 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/28 19:18:13 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "shaderpixel.h"
+#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -22,22 +23,20 @@
 #include <dirent.h>
 
 #define VEC3_ADD_DIV(v1, v2, f) { v1.x += v2.x / (f); v1.y += v2.y / (f); v1.z += v2.z / (f); }
-#define VEC3_UP ((vec3){0, 1, 0})
+#define VEC3_UP ((t_vec3){0, 1, 0})
 
-vec4	g_mouse = {0, 0, 0, 0};
-vec4	g_move = {0, 0, 0, 1};
-vec2	g_window = {WIN_W, WIN_H};
-vec3	g_forward = {0, 0, 1};
-int		g_keys = 0;
-int		g_input_pause = 0;
-long	g_last_modified_file[0xF00] = {0};
-float	g_paused_time = 0;
-float	g_fov = 1.2;
-float	g_ambient = 0.2;
-int		g_selected_object_pos = -1;
-int		g_selected_object_dir = -1;
-vec3	g_selected_position;
-vec3	g_selected_rotation;
+t_vec4		g_mouse = {0, 0, 0, 0};
+t_vec4		g_move = {0, 0, 0, 1};
+t_vec2		g_window = {WIN_W, WIN_H};
+t_vec3		g_forward = {0, 0, 1};
+int			g_keys = 0;
+int			g_input_pause = 0;
+long		g_last_modified_file[0xF00] = {0};
+float		g_paused_time = 0;
+float		g_fov = 1.2;
+float		g_ambient = 0.2;
+t_selected	g_selected_object = {.dir_uniform = -1, .pos_uniform = -1};
+int			g_selected_object_index = 0;
 
 static void		usage(const char *n) __attribute__((noreturn));
 static void		usage(const char *n)
@@ -97,7 +96,8 @@ void		updateUniforms(GLint *unis, GLint *images)
 	static int		frames = 0;
 
 	float ti = getCurrentTime();
-	glUniform1f(unis[0], ti);
+	if (!g_input_pause)
+		glUniform1f(unis[0], ti);
 	glUniform1i(unis[1], frames++);
 	glUniform4f(unis[2], g_mouse.x, WIN_H - g_mouse.y, g_mouse.y, g_mouse.y);
 	glUniform3f(unis[3], g_forward.x, g_forward.y, g_forward.z);
@@ -109,21 +109,21 @@ void		updateUniforms(GLint *unis, GLint *images)
 	glBindTexture(GL_TEXTURE_2D, images[0]);
 	glUniform1i(unis[9], images[0]);
 
-	if (g_selected_object_pos != -1)
-		glUniform3f(g_selected_object_pos, g_selected_position.x, g_selected_position.y, g_selected_position.z);
-	if (g_selected_object_dir != -1)
-		glUniform3f(g_selected_object_dir, g_selected_rotation.x, g_selected_rotation.y, g_selected_rotation.z);
+	if (g_selected_object.pos_uniform != -1)
+		glUniform3fv(g_selected_object.pos_uniform, 1, &g_selected_object.pos->x);
+	if (g_selected_object.dir_uniform != -1)
+		glUniform3fv(g_selected_object.dir_uniform, 1, &g_selected_object.dir->x);
 }
 
-vec3		vec3_cross(vec3 v1, vec3 v2)
+t_vec3		vec3_cross(t_vec3 v1, t_vec3 v2)
 {
-	return (vec3){v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x};
+	return (t_vec3){v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x};
 }
 
 void		update_keys(void)
 {
-	vec3	right;
-	vec3	up;
+	t_vec3	right;
+	t_vec3	up;
 
 	right = vec3_cross(g_forward, VEC3_UP);
 	up = vec3_cross(g_forward, right);
@@ -139,6 +139,30 @@ void		update_keys(void)
 		VEC3_ADD_DIV(g_move, g_forward, 10 / g_move.w);
 	if (BIT_GET(g_keys, BACK))
 		VEC3_ADD_DIV(g_move, -g_forward, 10 / g_move.w);
+
+	if (g_selected_object.dir_uniform != -1)
+	{
+		if (BIT_GET(g_keys, SOBJ_POS_RIGHT))
+			g_selected_object.pos->x += .3;
+		if (BIT_GET(g_keys, SOBJ_POS_LEFT))
+			g_selected_object.pos->x -= .3;
+		if (BIT_GET(g_keys, SOBJ_POS_FORWARD))
+			g_selected_object.pos->z += .3;
+		if (BIT_GET(g_keys, SOBJ_POS_BACK))
+			g_selected_object.pos->z -= .3;
+		if (BIT_GET(g_keys, SOBJ_POS_UP))
+			g_selected_object.pos->y += .3;
+		if (BIT_GET(g_keys, SOBJ_POS_DOWN))
+			g_selected_object.pos->y -= .3;
+
+		if (BIT_GET(g_keys, SOBJ_DIR_X))
+			g_selected_object.dir->x += 1;
+		if (BIT_GET(g_keys, SOBJ_DIR_Y))
+			g_selected_object.dir->y += 1;
+		if (BIT_GET(g_keys, SOBJ_DIR_Z))
+			g_selected_object.dir->z += 1;
+	}
+
 	if (BIT_GET(g_keys, PLUS))
 		g_move.w *= 1 + g_move_AMOUNT;
 	if (BIT_GET(g_keys, MOIN))
@@ -199,7 +223,7 @@ int		get_program(int p)
 
 	if (p != -1)
 		program = p;
-	return p;
+	return program;
 }
 
 static char		*get_scene_directory(char *scene_dir)

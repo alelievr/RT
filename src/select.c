@@ -6,100 +6,64 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/28 05:53:41 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/28 06:50:22 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/28 19:04:34 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "shaderpixel.h"
 #include "parser.h"
-#define ISTYPE(x) (obj->primitive.type == x + 1)
-#define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || ISTYPE(CONE) || ISTYPE(CUBE) || ISTYPE(GLASS))
-#define ISLIGHT (ISTYPE(POINT_LIGHT) || ISTYPE(DIRECTIONAL_LIGHT) || ISTYPE(SPOT_LIGHT))
-
-
-struct	s_hit
-{
-	char	*objname;
-	float	dist;
-}				t_hit;
-
-struct	s_ray
-{
-	vec3	pos;
-	vec3	dir;
-}				t_ray;
-
-float			dot(vec3 v1, vec3 v2)
-{
-	return(v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
-}
-
-t_hit			plane(t_object *obj)
-{
-	t_hit		h;
-	float		t;
-	t = (dot(norm,pos) - (dot (norm, r.pos))) / dot (norm, r.dir);
-
-	if (t < h.dist)
-	{
-			h.dist = t;
-			h.objname = ft_strcpy(h.objname, obj.name);
-  }
-	return (h);
-}
-
-t_hit			sphere(t_object *obj)
-{
-	t_hit		h;
-
-}
-
-t_hit			raytrace(t_scene *scene)
-{
-	int				i;
-	int				nb_obj;
-	t_object	*obj;
-	t_hit				h;
-	t_hit				hit;
-	t_ray				ray;
-
-	h.dist = 1e20;
-	ray.pos = ;
-	ray.dir = ;
-
-	i = -1;
-	nb_obj = scene.nb_object;
-	while (++i < nb_obj)
-	{
-		obj = scene.root_view;
-		if (ISTYPE(PLANE))
-			hit = plane(obj);
-		else
-			hit = sphere(obj);
-		if (hit.dist < h.dist)
-			h = hit;
-	}
-}
-
-void		onClick()
+/*
+void		save_object_transform(void)
 {
 	t_scene		*scene = get_scene(NULL);
-	t_hit				h;
+	t_object	*obj;
+	int			i;
 
-	g_forward;
-	g_move;
-	g_mouse;
-
-	h.dist = 1e20;
-	h = raytrace(scene);
-
-	if (h.dist < 1e20)
+	obj = scene->root_view;
+	i = 0;
+	while (obj)
 	{
-		g_selected_object_pos = glGetUniformLocation(get_program(), h->objname + "_position");
-		g_selected_object_dir = glGetUniformLocation(get_program(), h->objname + "_rotation");
-		g_selected_position = object position;
-		g_selected_rotation = object rotation;
+		if (g_selected_object_index == i)
+		{
+			obj->transform.position = g_selected_object.pos;
+			obj->transform.rotation = g_selected_object.dir;
+		}
+		obj = obj->brother_of_children;
+		i++;
 	}
-	g_selected_object_pos = -1;
-	g_selected_object_dir = -1;
+}*/
+
+void		select_object()
+{
+	t_scene		*scene = get_scene(NULL);
+	t_object	*obj;
+	int			i;
+	char		buff[0xF000];
+
+	if (g_selected_object_index < 0)
+		g_selected_object_index = scene->nb_object - 1;
+	if (g_selected_object_index > scene->nb_object - 1)
+		g_selected_object_index = 0;
+
+	obj = scene->root_view;
+	i = 0;
+	while (obj)
+	{
+		if (g_selected_object_index == i)
+		{
+			if (obj->primitive.type == CAMERA + 1)
+				return g_selected_object_index++, select_object();
+
+			g_selected_object.pos = &obj->transform.position;
+			g_selected_object.dir = &obj->transform.rotation;
+
+			sprintf(buff, "%s_position", obj->name);
+			g_selected_object.pos_uniform = glGetUniformLocation(get_program(-1), buff);
+			sprintf(buff, "%s_rotation", obj->name);
+			g_selected_object.dir_uniform = glGetUniformLocation(get_program(-1), buff);
+			printf("selected object: %s\n", obj->name);
+		}
+		obj = obj->brother_of_children;
+		i++;
+	}
 }

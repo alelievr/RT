@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/14 19:08:51 by alelievr         ###   ########.fr        #
+#    Updated: 2017/04/28 16:58:59 by avially          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ SRC			=	main.c						\
 				glfw_init.c					\
 				shader.c					\
 				build_shader.c				\
+				select.c					\
 				file.c						\
 				parser/parse_rt_file.c		\
 				parser/utils.c				\
