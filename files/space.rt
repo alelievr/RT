@@ -13,7 +13,7 @@ space:
 	type: cube
 	pos: 0 0 0
 	rot: 0 0 0
-	height: 700
+	height: 10000
 	texture: ../textures/space.jpg
 
 sun:
@@ -45,6 +45,7 @@ moon:
 	pos: 25 0 0
 	radius: 1
 	color: 125 125 125
+	texture: ../textures/moon.jpg
 
 mars:
 	type: sphere
@@ -63,15 +64,18 @@ saturne:
 	pos: 150 0 0
 	radius: 8
 	color: 128 128 0
+	texture: ../textures/saturne.jpg
 
 uranus:
 	type: sphere
 	pos: 190 0 0
 	radius: 6
 	color: 0 0 128
+	texture: ../textures/uranus.jpg
 
 neptune:
 	type: sphere
 	pos: 230 0 0
 	radius: 6
 	color: 31 192 246
+	texture: ../textures/neptune.jpg

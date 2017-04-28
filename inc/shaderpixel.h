@@ -113,6 +113,8 @@ extern float		g_paused_time;
 extern long			g_last_modified_file[0xF00];
 extern float		g_fov;
 extern float		g_ambient;
+extern int			g_selected_object_pos;
+extern int			g_selected_object_dir;
 
 GLFWwindow		*init(char *fname);
 GLuint			create_program(char *file, bool fatal);
@@ -120,6 +122,7 @@ float			getCurrentTime(void);
 bool			file_is_regular(int fd) __attribute__((overloadable));
 bool			file_is_regular(char *fd) __attribute__((overloadable));
 char			*build_shader(t_scene *scene, char *scene_directory, int *atlas_id, t_file *sources);
+t_scene			*get_scene(t_scene *scene);
 
 static const char* vertex_shader_text =
 "#version 330\n"
@@ -182,6 +185,8 @@ static const char *main_image_start_text =
 "\n"
 "	//window ratio correciton:\n"
 "	uv.x *= iResolution.x / iResolution.y;\n"
+//"	fragColor = texture(atlas, uv);\n"
+//"	return ;"
 "\n"
 "	//perspective view\n"
 "	vec3    forw = normalize(iForward);\n"
@@ -251,7 +256,7 @@ static const char *raytrace_start_text =
 "	//	color = atlas_fetch(h.mat.texture, h.uv).xyz;\n";
 
 static const char *raytrace_end_text =
-"	return (color / 2);\n"
+"	return (color);\n"
 "}\n";
 
 #endif

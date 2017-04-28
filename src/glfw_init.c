@@ -89,6 +89,8 @@ static void		g_mouse_click_callback(GLFWwindow *win, int button, \
 		g_mouse.z = 1;
 	else
 		g_mouse.z = 0;
+
+	//onClick();
 }
 
 static void		resize_callback(GLFWwindow *win, int width, int height)

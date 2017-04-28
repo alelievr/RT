@@ -11,11 +11,11 @@ light:
 	color: 0x000000
 
 sphere2:
-	type: sphere
+	type: glass
 	pos: 0 0 0
 	rot: 45 45 0
 	radius: 4
-	color: 0xFF0000
+	color: 0x0000FF
 	specular: 0
 	opacity: 0.5
 	refraction: 1

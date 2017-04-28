@@ -1,0 +1,3 @@
+earth:
+	type: sphere
+	texture: ../textures/earth-16k.jpg

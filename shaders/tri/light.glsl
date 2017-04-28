@@ -85,7 +85,6 @@ vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color)
 
     reflection = atlas_fetch(h.mat.reflection, h.uv).x;
     opacity = atlas_fetch(h.mat.texture, h.uv).w;
-		refrac = atlas_fetch(h.mat.refraction, h.uv).x;
 
     color_hit = atlas_fetch(h.mat.texture, h.uv).xyz;
 
@@ -95,8 +94,10 @@ vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color)
 
     if (opacity < 1)
     {
-        r.dir = refraction(r.dir, h.norm , 1 / (atlas_fetch(h.mat.refraction, h.uv).x * 10));
-				r.pos = h.pos;
+				refrac = atlas_fetch(h.mat.refraction, h.uv).x * 10;
+				if (refrac > 1)
+					r.dir = refraction(r.dir, h.norm , (1 / refrac));
+				r.pos = h.pos + r.dir * EPSI;
 				limit *= (1 - opacity);
 				// if (limit < 0.1)
 				// 	return color;

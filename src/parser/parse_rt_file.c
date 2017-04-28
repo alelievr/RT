@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/26 16:44:34 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/28 04:23:14 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ static void		init_default_material(t_material *o)
 	o->color = (t_vec3){1, 0, 1};
 	o->specular = 0;
 	o->opacity = 1;
+	o->refraction = 1;
 }
 
 void			fill_prop_camera(t_camera *cam, char *line)

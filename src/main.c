@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/25 23:30:02 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/25 23:47:40 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/28 06:11:52 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,10 @@ long	g_last_modified_file[0xF00] = {0};
 float	g_paused_time = 0;
 float	g_fov = 1.2;
 float	g_ambient = 0.2;
+int		g_selected_object_pos = -1;
+int		g_selected_object_dir = -1;
+vec3	g_selected_position;
+vec3	g_selected_rotation;
 
 static void		usage(const char *n) __attribute__((noreturn));
 static void		usage(const char *n)
@@ -104,6 +108,11 @@ void		updateUniforms(GLint *unis, GLint *images)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, images[0]);
 	glUniform1i(unis[9], images[0]);
+
+	if (g_selected_object_pos != -1)
+		glUniform3f(g_selected_object_pos, g_selected_position.x, g_selected_position.y, g_selected_position.z);
+	if (g_selected_object_dir != -1)
+		glUniform3f(g_selected_object_dir, g_selected_rotation.x, g_selected_rotation.y, g_selected_rotation.z);
 }
 
 vec3		vec3_cross(vec3 v1, vec3 v2)
@@ -175,13 +184,22 @@ GLint		*getUniformLocation(GLuint program)
 	return unis;
 }
 
-static t_scene	*get_scene(t_scene *scene)
+t_scene	*get_scene(t_scene *scene)
 {
 	static t_scene	*scn = NULL;
 
 	if (scene != NULL)
 		scn = scene;
 	return (scn);
+}
+
+int		get_program(int p)
+{
+	static int		program = -1;
+
+	if (p != -1)
+		program = p;
+	return p;
 }
 
 static char		*get_scene_directory(char *scene_dir)
@@ -349,7 +367,8 @@ int			main(int ac, char **av)
     GLint		*unis = getUniformLocation(program);
     GLint		*images = (int[]){atlas_id};
 
-	ft_printf("max textures: %i\n", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+	get_program(program);
+
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
 		checkFileChanged(&program, sources, num);
