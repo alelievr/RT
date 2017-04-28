@@ -60,14 +60,14 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 		h.norm = normalize(normalize(h.norm) + bump);
   coef = (limit(dot(h.norm, d), 0.0, 1.0));
 	color = coef * col;
-  if (coef > 0)
-  {
-		vec3 refdir = normalize(2.0 * dot(h.norm, d) * (h.norm - d));
-  	coef = max(dot(refdir, h.norm), 0);
-  	spec *= pow(coef, 4) * atlas_fetch(h.mat.specular, h.uv).x;
-  }
+//  if (coef > 0)
+//  {
+//		vec3 refdir = normalize(2.0 * dot(h.norm, d) * (h.norm - d));
+  //	coef = max(dot(refdir, h.norm), 0);
+  //	spec *= pow(coef, 4) * atlas_fetch(h.mat.specular, h.uv).x;
+ // }
 	vec4 s = shadows(h.pos, d,light_color, h);
-	return ((color * s.w + s.xyz)/2);
+	return (((color + s.xyz * coef) / 2) * s.w);
 }
 
 vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color, float intensity)
@@ -81,7 +81,8 @@ vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color, float intensity)
   vec3    color = vec3(0);
 	float refrac;
 
-	light_color /= 8;
+	light_color *= (intensity / 10);
+//light_color /= 2;;
   while (++i < 10)
   {
 		h.dist = 0;
