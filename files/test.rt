@@ -1,6 +1,6 @@
 plane1:
-    type: sphere
-    pos: 0 0 0
+    type: disk
+    pos: 10 10 0
     rot: 0 45 45
 	radius: 5
     texture: ../textures/chess.jpg
