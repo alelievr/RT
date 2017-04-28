@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 01:09:48 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/28 11:41:38 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,7 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 	}
 	else if (ISLIGHT)
 	{
-		sprintf(line, "\tcolor += calc_color(r, vec3(%f, %f, %f), vec3(%f, %f, %f));", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z, obj->light_prop.color.x, obj->light_prop.color.y, obj->light_prop.color.z);
+		sprintf(line, "\tcolor += calc_color(r, vec3(%f, %f, %f), vec3(%f, %f, %f), %f);", obj->transform.position.x, obj->transform.position.y, obj->transform.position.z, obj->light_prop.color.x, obj->light_prop.color.y, obj->light_prop.color.z, obj->light_prop.intensity);
 		LIST_APPEND(shader_file->raytrace_lights, strdup(line));
 	}
 	else if (ISTYPE(CAMERA))

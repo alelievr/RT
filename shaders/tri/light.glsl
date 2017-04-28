@@ -70,7 +70,7 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 	return ((color * s.w + s.xyz)/2);
 }
 
-vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color)
+vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color, float intensity)
 {
   Hit h;
   float   reflection;
