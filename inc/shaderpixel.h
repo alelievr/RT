@@ -71,6 +71,31 @@ typedef struct	s_file
 	int		fd;
 }				t_file;
 
+typedef struct	s_line_list
+{
+	char				*line;
+	struct s_line_list	*next;
+}				t_line_list;
+
+typedef struct	s_shader_file
+{
+	t_line_list		*begin;
+	t_line_list		*function_begin;
+	t_line_list		*uniform_begin;
+	t_line_list		*main_image_begin;
+	t_line_list		*raytrace_lights;
+	t_line_list		*scene_begin;
+	t_line_list		*scene_end;
+}				t_shader_file;
+
+typedef struct		s_atlas
+{
+	unsigned char	*data;
+	GLuint			id;
+	int				width;
+	int				height;
+}					t_atlas;
+
 enum			KEY_BITS
 {
 	RIGHT,

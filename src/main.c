@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/25 23:30:02 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 06:11:52 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/28 17:02:03 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,14 @@ vec3	g_selected_position;
 vec3	g_selected_rotation;
 
 static void		usage(const char *n) __attribute__((noreturn));
+
 static void		usage(const char *n)
 {
 	printf("usage: %s <shader>\n", n);
 	exit(0);
 }
 
-GLuint		createVBO(void)
+GLuint		create_vbo(void)
 {
 	float points[] = {
    		-1.0f,  -1.0f,
@@ -65,7 +66,7 @@ GLuint		createVBO(void)
 	return vbo;
 }
 
-GLuint		createVAO(GLuint vbo, int program)
+GLuint		create_vao(GLuint vbo, int program)
 {
 	GLint		frag_pos;
 	GLuint		vao = 0;
@@ -346,6 +347,11 @@ int			main(int ac, char **av)
 	t_scene			scene;
 	char			*program_source;
 	int				atlas_id;
+    GLint		*images;
+	GLuint		program;
+	GLuint		vbo;
+	GLuint		vao;
+   	GLint		*unis;
 
 	if (ac < 1)
 		usage(*av);
@@ -361,14 +367,13 @@ int			main(int ac, char **av)
 
 	initSourceFiles(sources, 0xF00, &num);
 
-	GLuint		program = create_program(program_source, true);
-	GLuint		vbo = createVBO();
-	GLuint		vao = createVAO(vbo, program);
-    GLint		*unis = getUniformLocation(program);
-    GLint		*images = (int[]){atlas_id};
+	program = create_program(program_source, true);
+	vbo = create_vbo();
+	vao = create_vao(vbo, program);
+    unis = getUniformLocation(program);
+    images = (int[]){atlas_id};
 
 	get_program(program);
-
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
 		checkFileChanged(&program, sources, num);
