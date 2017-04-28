@@ -15,12 +15,13 @@ vec3      refraction(vec3 dir, vec3 norm, float r)
   return (ref);
 }
 
-float			shadows(vec3 pos, vec3 d, Hit h)
+vec4		shadows(vec3 pos, vec3 d, vec3 color_light, Hit h)
 {
 	Ray		shadow;
 	Hit		shad;
 	float t;
 	float ret = 1;
+	vec3 color = color_light / 255;
 
 	shadow.dir = d;
 	shadow.pos = pos + d * EPSI;
@@ -30,12 +31,13 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 	{
 		shadow.pos = shad.pos + d * EPSI;
 		ret *= (1 - atlas_fetch(shad.mat.texture, shad.uv).w);
+		color += atlas_fetch(shad.mat.texture, shad.uv).xyz;
 		shad = scene(shadow);
 		t += shad.dist;
 		if (ret == 0)
-			return (0);
+			return (vec4(0));
 	}
-	return (ret);
+	return (vec4(color.x,color.y,color.z,ret));
 }
 
 /* Définition de l'effet de la lumière sur les objets présents */
@@ -49,6 +51,7 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
   vec3 col = atlas_fetch(h.mat.texture, h.uv).xyz;
   vec3 bump = atlas_fetch(h.mat.bump, h.uv).xyz;
   vec3 spec = vec3(1);
+	vec3 specularColor = vec3(0);
 
 	h.dist = sqrt(v3.x + v3.y + v3.z);
 	if (h.dist > 1e20)
@@ -59,12 +62,12 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 	color = coef * col;
   if (coef > 0)
   {
-    vec3 refdir = d - 2.0 * dot(h.norm, d) * h.norm;
-    coef = max(dot(r.dir, refdir), 0);
-    spec *= pow(coef, 30) * atlas_fetch(h.mat.specular, h.uv).x;
+		vec3 refdir = normalize(2.0 * dot(h.norm, d) * (h.norm - d));
+  	coef = max(dot(refdir, h.norm), 0);
+  	spec *= pow(coef, 4) * atlas_fetch(h.mat.specular, h.uv).x;
   }
-  //return (((color + spec) * shadows(h.pos, d, h)));
-	return (color * shadows(h.pos, d, h));
+	vec4 s = shadows(h.pos, d,light_color, h);
+	return ((color * s.w + s.xyz)/2);
 }
 
 vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color)
@@ -78,6 +81,7 @@ vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color)
   vec3    color = vec3(0);
 	float refrac;
 
+	light_color /= 8;
   while (++i < 10)
   {
 		h.dist = 0;
@@ -87,10 +91,9 @@ vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color)
     opacity = atlas_fetch(h.mat.texture, h.uv).w;
 
     color_hit = atlas_fetch(h.mat.texture, h.uv).xyz;
-
     color += light(pos_light, light_color, r, h) * limit;
     color += iAmbient * color_hit * limit;
-		color *= opacity;
+		//color *= opacity;
 
     if (opacity < 1)
     {
