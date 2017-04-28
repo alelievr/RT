@@ -19,15 +19,23 @@ float			shadows(vec3 pos, vec3 d, Hit h)
 {
 	Ray		shadow;
 	Hit		shad;
+	float t;
+	float ret = 1;
 
 	shadow.dir = d;
 	shadow.pos = pos + d * EPSI;
 	shad = scene(shadow);
-
-	if (shad.dist < h.dist){
-		return ((1 - atlas_fetch(shad.mat.texture, shad.uv).w));
+	t = shad.dist;
+	while (t < h.dist + EPSI)
+	{
+		shadow.pos = shad.pos + d * EPSI;
+		ret *= (1 - atlas_fetch(shad.mat.texture, shad.uv).w);
+		shad = scene(shadow);
+		t += shad.dist;
+		if (ret == 0)
+			return (0);
 	}
-	return (1);
+	return (ret);
 }
 
 /* Définition de l'effet de la lumière sur les objets présents */
@@ -62,49 +70,46 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color)
 {
   Hit h;
-  Ray cam = r;
   float   reflection;
   float   opacity;
   int     i = -1;
   float   limit = 1;
   vec3    color_hit = vec3(0);
   vec3    color = vec3(0);
+	float refrac;
 
-  while (1 == 1)
+  while (++i < 10)
   {
+		h.dist = 0;
     h = scene(r);
+
     reflection = atlas_fetch(h.mat.reflection, h.uv).x;
     opacity = atlas_fetch(h.mat.texture, h.uv).w;
+		refrac = atlas_fetch(h.mat.refraction, h.uv).x;
 
-    if (h.dist < 1e20){
-        color_hit = atlas_fetch(h.mat.texture, h.uv).xyz;
+    color_hit = atlas_fetch(h.mat.texture, h.uv).xyz;
 
-        color += light(pos_light, light_color, r, h) * limit;
-        color += iAmbient * color_hit;
+    color += light(pos_light, light_color, r, h) * limit;
+    color += iAmbient * color_hit * limit;
+		color *= opacity;
 
-        if (opacity < 1)
-        {
-            r.pos = h.pos + r.dir * EPSI;
-            r.dir = refraction(cam.dir, h.norm, atlas_fetch(h.mat.refraction, h.uv).w);
-
-						light_color = light_color * opacity + color_hit * 1 - opacity;
-            limit *= 1 - opacity;
-            if (limit == 0)
-                return (color);
-        }
-        else if (reflection > 0)
-        {
-            r.pos = h.pos;
-            r.dir = r.dir - 2.0 * dot(h.norm, r.dir) * h.norm;
-
-            limit *= reflection;
-            if (limit == 0)
-                return (color);
-        }
-        else
-            return (color);
-      }
-      else
-          return(color);
+    if (opacity < 1)
+    {
+        r.dir = refraction(r.dir, h.norm , 1 / (atlas_fetch(h.mat.refraction, h.uv).x * 10));
+				r.pos = h.pos;
+				limit *= (1 - opacity);
+				// if (limit < 0.1)
+				// 	return color;
+		}
+    else if (reflection > 0)
+    {
+        r.dir = r.dir - 2.0 * dot(normalize(h.norm), r.dir) * normalize(h.norm);
+				r.pos = h.pos + r.dir * EPSI;
+				limit *= reflection;
+				// if (limit < 0.1)
+				// 	return color;
     }
+    else
+        return (color);
+  }
 }

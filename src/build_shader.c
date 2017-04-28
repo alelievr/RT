@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/26 17:26:32 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/28 01:09:48 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -359,7 +359,7 @@ static void		load_textures_if_exists(t_material *m, char *scene_directory, int *
 	LOAD_TEXTURE_ATLAS(m, emission_map, emission_color, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, highlight_map, highlight_color, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, reflection_map, reflection, atlas_width, atlas_height);
-	LOAD_TEXTURE_ATLAS(m, refraction_map, refraction, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, refraction_map, refraction/10, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, opacity_map, opacity, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
 
