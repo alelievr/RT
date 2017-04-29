@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 07:16:13 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 07:47:49 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@
 #define GET_VEC4(vec) vec.x, vec.y, vec.z, vec.w
 #define LOAD_TEXTURE(m, p, o) printf("texture: %s\n", #p); if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height, &m->p.channels); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
 #define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
-#define TEXTURE_REPEAT(tex, x, y) ({int _x = x % tex->width; int _y = y % tex->height; apply_channel_mask_pixel((*(unsigned int *)(tex->data + _y * tex->width * tex->channels + _x * tex->channels)), tex->channels);})
 #define MIN(x, y) ((x) < (y)) ? (x) : (y)
 #define OCTET(x, c) (((x) >> c) & 0xFF)
 #define FUSION_PIXEL_COMPONENT(p1, m1, p2, m2, c) (OCTET(m2, c) == 0x00) ? OCTET(p1, c) << c : (((OCTET(p2 & m2, c)) * (OCTET(p1 & m1, c)) / 255) << c)
@@ -38,6 +37,42 @@
 #define XYZ		0xFFFFFFFF
 #define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / (float)atlas->width, (float)*offset_y / (float)atlas->height, (float)(*offset_x + m->p.width) / (float)atlas->width, (float)(*offset_y + m->p.height) / (float)atlas->height}
 #define ADD_TEXTURE_ATLAS(m, p) add_subimage(atlas, *offset_x, *offset_y, &m->p); m->p.atlas_uv = COMPUTE_OFFSET(m, p); *offset_x += m->p.width; printf("uv: %f/%f - %f/%f\n", m->p.atlas_uv.x, m->p.atlas_uv.y, m->p.atlas_uv.z, m->p.atlas_uv.w)
+
+unsigned int		channeltomask(int chan)
+{
+	unsigned int	ret;
+
+	ret = 0;
+	if (chan == 0)
+		return (-1);
+	while (chan--)
+		ret |= 255 << ((8 * chan));
+	return (ret);
+}
+
+
+unsigned int		apply_channel_mask_pixel(unsigned int pixel, int chans)
+{
+	pixel &= channeltomask(chans);
+	if (chans == 3)
+	{
+		pixel |= 0xFF000000;
+	}
+	return (pixel);
+}
+
+
+static unsigned int  texture_repeat(t_image *tex, int x, int y)
+{
+	if (tex->width == 0 || tex->height == 0)
+		return 0;
+	else
+	{
+		int _x = x % tex->width;
+		int _y = y % tex->height;
+		return apply_channel_mask_pixel((*(unsigned int *)(tex->data + _y * tex->width * tex->channels + _x * tex->channels)), tex->channels);
+	}
+}
 
 static void	init_shader_file(t_shader_file *shader_file)
 {
@@ -288,28 +323,6 @@ static unsigned char	*load_image(char *path, int *width, int *height, int *chann
 	return (ret);
 }
 
-unsigned int		channeltomask(int chan)
-{
-	unsigned int	ret;
-
-	ret = 0;
-	if (chan == 0)
-		return (-1);
-	while (chan--)
-		ret |= 255 << ((8 * chan));
-	return (ret);
-}
-
-unsigned int		apply_channel_mask_pixel(unsigned int pixel, int chans)
-{
-	pixel &= channeltomask(chans);
-	if (chans == 3)
-	{
-		pixel |= 0xFF000000;
-	}
-	return (pixel);
-}
-
 static void			fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_mask, int *new_tex_width, int *new_tex_height)
 {
 	int					x;
@@ -327,8 +340,8 @@ static void			fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_m
 	{
 		if (FOR(y = 0, y < *new_tex_height, y++))
 		{
-			src_pixel = TEXTURE_REPEAT(src, x, y);
-			dst_pixel = TEXTURE_REPEAT(dst, x, y);
+			src_pixel = texture_repeat(src, x, y);
+			dst_pixel = texture_repeat(dst, x, y);
 			result_pixel = 0;
 			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 0);
 			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 8);

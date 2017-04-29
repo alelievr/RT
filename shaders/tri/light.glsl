@@ -99,7 +99,7 @@ vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color, float intensity)
     color_hit = atlas_fetch(h.mat.texture, h.uv).xyz;
     color += light(pos_light, light_color, r, h) * limit;
     color += iAmbient * color_hit * limit;
-		//color *= opacity;
+		color *= opacity;
 
     if (opacity < 1)
     {

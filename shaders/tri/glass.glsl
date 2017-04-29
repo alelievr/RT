@@ -3,6 +3,7 @@ void glass(vec3 pos, vec3 rot, float data, Material mat, Ray r, inout Hit h)
 	Hit hit;
 	hit = h;
 	Coupes c;
+	rot = rot * iGlobalTime;
   float hauteur = 2 * data;
 	float fleche = data - sqrt(data * data - ((data / 4) * (data / 4)) / 4);
 	r.pos = rotate(r.pos - pos, rot, 1);

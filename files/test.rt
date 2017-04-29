@@ -1,5 +1,5 @@
 plane1:
-    type: glass
+    type: cone
     pos: 10 10 0
     rot: 45 0 45
 	radius: 5
@@ -10,7 +10,7 @@ axex:
 	radius: 1
 	pos: 0 0 0
 	rot: 90 0 0
-	texture: ../textures/chess.jpg
+	texture: chess.jpg
 
 axey:
 	type: cylindre
