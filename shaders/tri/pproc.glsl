@@ -47,11 +47,11 @@ vec3	nightvision(vec3 color)
 	return vec3(0.0, t, 0.0);
 }
 
-vec3	vignetting(vec3 color, vec2 coord)
+vec3	vignetting(vec3 color, vec2 uv)
 {
-	vec2	pos = coord;
+	vec2	pos = uv * 2 - 1;
 	float	len = length(pos);
-	float	vignette = smoothstep(0.9, 0.9 - 0.45, len);
+	float	vignette = smoothstep(0.9, 0.9 - 0.5, len);
 	color = mix(color, color * vignette, 0.5);
 	return color;
 }
