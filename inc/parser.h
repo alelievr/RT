@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 06:19:23 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 08:15:13 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ enum		e_primitive_type
 	GLASS,
 	DISK,
 	CUBE_TROUE,
+	TORE_DE_SPHERE,
 	CAMERA,
 	POINT_LIGHT,
 	SPOT_LIGHT,

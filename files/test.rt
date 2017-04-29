@@ -1,16 +1,16 @@
 plane1:
-    type: cone
-    pos: 10 10 0
-    rot: 45 0 45
+    type: tore_de_sphere
+    pos: 10 10 10
+    rot: 45 0 0
 	radius: 5
-    texture: ../textures/chess.jpg
+    color: 0xFF00FF
 
 axex:
 	type: cylindre
 	radius: 1
 	pos: 0 0 0
 	rot: 90 0 0
-	texture: chess.jpg
+	texture: ../textures/chess.jpg
 
 axey:
 	type: cylindre
