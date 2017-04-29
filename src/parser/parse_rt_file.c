@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/29 11:24:20 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/29 13:17:32 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,15 +114,12 @@ void			fill_prop_vec4(t_vec4 *data, char *line)
 	}
 	if (!ft_sscanf(LF_RT_ROTATE, line, word, 256, &speed))
 	{
-		printf("word: %s\n", word);
 		if (strchr(word, 'X'))
 			data->x = 1;
 		if (strchr(word, 'Y'))
 			data->y = 1;
 		if (strchr(word, 'Z'))
 			data->z = 1;
-		printf("rotate: %f\n", speed);
-		printf("rotate: %f/%f/%f\n", data->x, data->y, data->z);
 		data->w = speed;
 	}
 }
@@ -191,27 +188,12 @@ void			fill_prop_transform(t_transform *tsf, char *line)
 	ft_sscanf(LF_RT_ROT, line, &tsf->euler_angles.x, &tsf->euler_angles.y, &tsf->euler_angles.z);
 }
 
-void			fill_prop_material(t_material *mtl, char *line)
+void			fill_prop_material_map(t_material *mtl, char *line, char *word, char *str)
 {
-	char	*str;
-	char	word[256];
-	int		ret;
 	int		i;
+	int		ret = 0;
 
 	str = (char *)(char[256]){0};
-	ret = 0;
-	if (ft_sscanf(LF_RT_COLOR_F, line, &mtl->color.x, &mtl->color.y, &mtl->color.z))
-		ft_sscanf(LF_RT_COLOR_V, line, &mtl->color.x, &mtl->color.y, &mtl->color.z);
-	if (ft_sscanf(LF_RT_EMISSION_COLOR_F, line, &mtl->emission_color.x, &mtl->emission_color.y, &mtl->emission_color.z))
-		ft_sscanf(LF_RT_EMISSION_COLOR_V, line, &mtl->emission_color.x, &mtl->emission_color.y, &mtl->emission_color.z);
-	if (ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &mtl->highlight_color.x, &mtl->highlight_color.y, &mtl->highlight_color.z))
-		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &mtl->highlight_color.x, &mtl->highlight_color.y, &mtl->highlight_color.z);
-
-	ft_sscanf(LF_RT_OPACITY, line, &mtl->opacity);
-	ft_sscanf(LF_RT_SPECULAR, line, &mtl->specular);
-	ft_sscanf(LF_RT_REFLECTION, line, &mtl->reflection);
-	ft_sscanf(LF_RT_REFRACTION, line, &mtl->refraction);
-
 	if (FOR(i = 0, i < 2, i++))
 	{
 		struct {char *fmt; t_image *img; bool *active;} maps[8] = {
@@ -230,15 +212,39 @@ void			fill_prop_material(t_material *mtl, char *line)
 	if (!ft_sscanf(LF_RT_ILLUM, line, str, 256))
 	{
 		while (get_next_word(&str, word))
-		{
 			if (FOR(i = 0, illum_restricted_keywords[i].value != END, i++))
-			{
 				if (!ft_strcmp(illum_restricted_keywords[i].name, word))
 					ret |= illum_restricted_keywords[i].value;
-			}
-		}
 		mtl->illum = ret;
 	}
+}
+
+void			fill_prop_material(t_material *mtl, char *line)
+{
+	char	*str;
+	char	word[256];
+	int		ret;
+	int		i;
+
+	str = (char *)(char[256]){0};
+	ret = 0;
+	i = 0;
+	ALIAS(mtl->color, c);
+	ALIAS(mtl->emission_color, e)
+	ALIAS(mtl->highlight_color, h)
+	if (ft_sscanf(LF_RT_COLOR_F, line, &c.x, &c.y, &c.z))
+		ft_sscanf(LF_RT_COLOR_V, line, &c.x, &c.y, &c.z);
+	if (ft_sscanf(LF_RT_EMISSION_COLOR_F, line, &e.x, &e.y, &e.z))
+		ft_sscanf(LF_RT_EMISSION_COLOR_V, line, &e.x, &e.y, &e.z);
+	if (ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &h.x, &h.y, &h.z))
+		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &h.x, &h.y, &h.z);
+
+	ft_sscanf(LF_RT_OPACITY, line, &mtl->opacity);
+	ft_sscanf(LF_RT_SPECULAR, line, &mtl->specular);
+	ft_sscanf(LF_RT_REFLECTION, line, &mtl->reflection);
+	ft_sscanf(LF_RT_REFRACTION, line, &mtl->refraction);
+
+	fill_prop_material_map(mtl, line, word, str);
 }
 
 void			display_objects(t_object *lst_obj)
@@ -301,7 +307,7 @@ void			parse_rt_file(char *file, t_scene *scene)
 	nb_object = 0;
 	INIT(int, line_count, 0);
 	if ((fd = open(file, O_RDONLY)) == -1)
-		ft_exit("Open Failed");
+		ft_exit("Open Failed: %s\n", file);
 	if (!file_is_regular(fd))
 		ft_exit("bad file: %s\n", file);
 	while (gl(line, &fd))

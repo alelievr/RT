@@ -6,11 +6,12 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/31 21:56:16 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/28 20:36:07 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 13:00:01 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
+#define FTN float *r, float *g, float
 
 static	void	skip_space(char **format, char **str)
 {
@@ -37,7 +38,8 @@ static int		convert_float(char **format, char **str, float *f)
 		return (0);
 	else
 		*f = (float)ft_atof(*str);
-	while (ft_isdigit(**str) || **str == '.' || **str == 'f' || **str == '-' || **str == '+')
+	while (ft_isdigit(**str) || **str == '.'
+			|| **str == 'f' || **str == '-' || **str == '+')
 		(void)(*str)++;
 	(*format) += 2;
 	return (1);
@@ -60,7 +62,8 @@ static	int		convert_word(char **format, char **str, char *ptr, int buffsize)
 	const char		*begin_word = *str;
 
 	len = 0;
-	while (**str && !ft_isspace(**str) && **str != ',' && **str != ':' && **str != '|')
+	while (**str && !ft_isspace(**str)
+			&& **str != ',' && **str != ':' && **str != '|')
 		_((*str)++, len++);
 	ft_strlcpy(ptr, begin_word, (len < buffsize + 1) ? len + 1 : buffsize);
 	(*format) += 2;
@@ -80,14 +83,14 @@ static	int		convert_str(char **format, char **str, char *ptr, int buffsize)
 	return (1);
 }
 
-void	rgbcolor(int color, float *r, float *g, float *b)
+void			rgbcolor(int color, float *r, float *g, float *b)
 {
 	*r = color >> 16 & 255;
 	*g = color >> 8 & 255;
 	*b = color & 255;
 }
 
-int			hexa(char *str)
+int				hexa(char *str)
 {
 	int	i;
 
@@ -100,7 +103,7 @@ int			hexa(char *str)
 	return (0);
 }
 
-static int	convert_color(char **format, char **str, float *r, float *g, float *b)
+static int		convert_color(char **format, char **str, FTN *b)
 {
 	if (**str == '0' && hexa(*str))
 	{
@@ -112,13 +115,13 @@ static int	convert_color(char **format, char **str, float *r, float *g, float *b
 	return (1);
 }
 
-int			sscanf_return(int value, va_list *vargs)
+int				sscanf_return(int value, va_list *vargs)
 {
 	va_end(*vargs);
 	return (value);
 }
 
-int			ft_sscanf(char *format, char *str, ...)
+int				ft_sscanf(char *format, char *str, ...)
 {
 	va_list	vargs;
 
@@ -136,13 +139,16 @@ int			ft_sscanf(char *format, char *str, ...)
 			if (!convert_int(&format, &str, va_arg(vargs, int *)))
 				return (sscanf_return(-1, &vargs));
 		if (*format == '%' && format[1] == 'w')
-			if (!convert_word(&format, &str, va_arg(vargs, char *), va_arg(vargs, int)))
+			if (!convert_word(&format, &str, va_arg(vargs, char *),
+						va_arg(vargs, int)))
 				return (sscanf_return(-1, &vargs));
 		if (*format == '%' && format[1] == 's')
-			if (!convert_str(&format, &str, va_arg(vargs, char *), va_arg(vargs, int)))
+			if (!convert_str(&format, &str, va_arg(vargs, char *),
+						va_arg(vargs, int)))
 				return (sscanf_return(-1, &vargs));
 		if (*format == '%' && format[1] == 'z')
-			if (!convert_color(&format, &str, va_arg(vargs, float *), va_arg(vargs, float *), va_arg(vargs, float *)))
+			if (!convert_color(&format, &str, va_arg(vargs, float *),
+						va_arg(vargs, float *), va_arg(vargs, float *)))
 				return (sscanf_return(-1, &vargs));
 		if (!skip_string(&format, &str))
 			return (sscanf_return(-1, &vargs));

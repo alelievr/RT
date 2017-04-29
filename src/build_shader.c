@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 11:08:06 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/29 12:52:01 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #define MAX_TEXTURES	512
 #define NEW_LINE_LIST ({t_line_list *m; if (!(m = (t_line_list *)malloc(sizeof(t_line_list)))) ft_exit("malloc error !"); m->next = NULL; m->line = NULL; m;})
@@ -111,7 +112,7 @@ static void	load_essencial_files(t_shader_file *shader_file, t_file *sources)
 	{
 		if ((fd = open(*files, O_RDONLY)) == -1)
 		{
-			perror("open");
+			printf("open error on [%s]: %s", *files, strerror(errno));
 			exit(-1);
 		}
 		if (!file_is_regular(fd))
