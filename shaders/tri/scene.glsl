@@ -5,7 +5,9 @@
 
 vec3 rotate(vec3 point, vec3 rot, int t)
 {
-	rot = rot * M_PI / 180;
+		if (rot == vec3(0))
+			return (point);
+		rot = rot * M_PI / 180;
 
     float cx = cos(rot.x); float cy = cos(rot.y); float cz = cos(rot.z);
     float sx = sin(rot.x); float sy = sin(rot.y); float sz = sin(rot.z);

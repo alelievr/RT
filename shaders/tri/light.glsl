@@ -17,6 +17,8 @@ vec3      refraction(vec3 dir, vec3 norm, float r)
 
 vec4		shadows(vec3 pos, vec3 d, vec3 color_light, Hit h)
 {
+	if (iShadow == 0)
+		return vec4(.5);
 	Ray		shadow;
 	Hit		shad;
 	float t;

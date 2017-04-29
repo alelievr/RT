@@ -142,6 +142,7 @@ extern t_vec4		g_mouse;
 extern t_vec4		g_move;
 extern t_vec2		g_window;
 extern t_vec3		g_forward;
+extern int			g_shadow;
 extern int			g_keys;
 extern int			g_input_pause;
 extern float		g_paused_time;
@@ -193,8 +194,9 @@ static const char* fragment_shader_text =
 "uniform vec3		iForward;\n"
 "uniform vec4		iMoveAmount;\n"
 "uniform sampler2D	atlas;\n"
-"uniform float	iFov;"
-"uniform float	iAmbient;"
+"uniform float		iFov;"
+"uniform float		iAmbient;"
+"uniform int		iShadow = 0;\n"
 "\n"
 "void mainImage(vec2 f);\n"
 "\n"
@@ -251,7 +253,7 @@ static const char *main_image_start_text =
 "\n"
 "	//window ratio correciton:\n"
 "	uv.x *= iResolution.x / iResolution.y;\n"
-"	if (iGlobalTime < 5.f) { progressbar(coord); return ;}\n"
+"	if (iGlobalTime < 3.f) { progressbar(coord); return ;}\n"
 //"	fragColor = texture(atlas, uv);\n"
 //"	return ;"
 "\n"

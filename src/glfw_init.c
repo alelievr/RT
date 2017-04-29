@@ -70,6 +70,8 @@ static void		key_callback(GLFWwindow *g_window, int key,int scancode, int action
 		g_selected_object_index++, select_object();
 	if (key == GLFW_KEY_TAB && (mods & GLFW_MOD_SHIFT) && action == GLFW_PRESS)
 		g_selected_object_index--, select_object();
+	if (key == GLFW_KEY_O && action == GLFW_PRESS)
+		g_shadow ^= action;
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	{
 		g_input_pause ^= action;

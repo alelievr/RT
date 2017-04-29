@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/25 23:30:02 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 04:13:55 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 05:27:28 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,13 @@
 #define VEC3_ADD_DIV(v1, v2, f) { v1.x += v2.x / (f); v1.y += v2.y / (f); v1.z += v2.z / (f); }
 #define VEC3_UP ((t_vec3){0, 1, 0})
 
+static float lastPausedTime;
+
 t_vec4		g_mouse = {0, 0, 0, 0};
 t_vec4		g_move = {0, 0, 0, 1};
 t_vec2		g_window = {WIN_W, WIN_H};
 t_vec3		g_forward = {0, 0, 1};
+int			g_shadow = 0;
 int			g_keys = 0;
 int			g_input_pause = 0;
 long		g_last_modified_file[0xF00] = {0};
@@ -106,6 +109,7 @@ void		updateUniforms(GLint *unis, GLint *images)
 	glUniform2f(unis[5], g_window.x, g_window.y);
   	glUniform1f(unis[6], g_fov);
   	glUniform1f(unis[7], g_ambient);
+	glUniform1i(unis[8], g_shadow);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, images[0]);
 	glUniform1i(unis[9], images[0]);
@@ -186,7 +190,9 @@ void		loop(GLFWwindow *win, GLuint program, GLuint vao, GLint *unis, GLint *imag
 	updateUniforms(unis, images);
 	glUseProgram(program);
 	glBindVertexArray(vao);
+	lastPausedTime = getCurrentTime();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
+	g_paused_time += getCurrentTime() - lastPausedTime;
 	glfwSwapBuffers(win);
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
 		glfwSetCursorPos(win, g_window.x / 2, g_window.y / 2);
@@ -205,7 +211,8 @@ GLint		*getUniformLocation(GLuint program)
 	unis[5] = glGetUniformLocation(program, "iResolution");
   	unis[6] = glGetUniformLocation(program, "iFov");
   	unis[7] = glGetUniformLocation(program, "iAmbient");
-	unis[9] = 8;
+	unis[8] = glGetUniformLocation(program, "iShadow");
+	unis[9] = 9;
 	return unis;
 }
 

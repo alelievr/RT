@@ -2,7 +2,6 @@ void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, 
 	vec3 d = r.pos - pos;
 	bool dec = false;
 	bool dec1 = false;
-
 	float a = dot (r.dir, r.dir);
 	float b = dot (r.dir, d);
 	float c = dot (d, d) - data * data;
@@ -28,7 +27,7 @@ void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, 
 		h.pos = r.pos + r.dir * h.dist;
 		h.mat = mat;
 		vec3 n = normalize(h.pos - pos);
-		n = rotate(n, rot, 0);
+		n = rotate(n, rot, 1);
 		h.uv = vec2(atan(n.x, n.z) / (M_PI) + 0.5, -(n.y * 0.5 + 0.5));
 		h.norm = h.pos - pos;
 		h.inside = false;
@@ -41,7 +40,7 @@ void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, 
 			h.pos = r.pos + r.dir * h.dist;
 			h.norm = -1 * (h.pos - pos);
 			vec3 n = normalize(h.pos - pos);
-			n = rotate(n, rot, 0);
+			n = rotate(n, rot, 1);
 			h.uv = vec2(atan(n.x, n.z) / (2 * M_PI) + 0.5, -(n.y * 0.5 + 0.5));
 			h.mat = mat;
 			h.inside = true;
