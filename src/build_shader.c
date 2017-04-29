@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 06:23:01 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 06:32:32 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,8 @@ static void		append_post_processing(t_shader_file *shader_file, t_camera *c)
 		LIST_APPEND(shader_file->post_processing, strdup("\tcolor = nightvision(color);"));
 	if (c->post_processing_mask & SEPIA)
 		LIST_APPEND(shader_file->post_processing, strdup("\tcolor = sepia(color);"));
+	if (c->post_processing_mask & VIGNETTING)
+		LIST_APPEND(shader_file->post_processing, strdup("\tcolor = vignetting(color, gl_FragCoord.xy);"));
 	printf("post processing mask: %i\n", c->post_processing_mask);
 }
 

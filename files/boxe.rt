@@ -7,9 +7,10 @@ salle:
 
 camera:
     type: camera
-    pos: 0 0 0
+    pos: 0 0 -2
     fov: 1.2
     ambient: 0.2
+    effect: VIGNETTING | SEPIA
 
 light:
     type: point_light
