@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/29 08:13:44 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 11:24:20 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,6 +277,8 @@ void			display_objects(t_object *lst_obj)
 
 bool		name_already_exists(t_object *obj, char *name)
 {
+	if (obj != NULL)
+		return false;
 	while (obj)
 	{
 		if (!ft_strcmp(obj->name, name))

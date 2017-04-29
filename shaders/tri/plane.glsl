@@ -1,6 +1,6 @@
-void plane (vec3 rot, vec3 pose, float data, Coupes coupe, Material mat, Ray r, inout Hit h) {
-	vec3 pos = vec3(0);
-	vec3 norm = vec3(0,0,1);
+void plane (vec3 rot, vec3 pos, float data, Coupes coupe, Material mat, Ray r, inout Hit h) {
+	vec3 norm = normalize(rot);
+	bool	dec = false;
 	Hit hit = h;
 	norm = normalize(norm);
 	float t = (dot(norm,pos) - (dot (norm, r.pos))) / dot (norm, r.dir);
@@ -10,6 +10,11 @@ void plane (vec3 rot, vec3 pose, float data, Coupes coupe, Material mat, Ray r, 
 
 	if (t < EPSI)
 		return;
+
+	vec3	inter = r.pos + r.dir * t;
+
+	if (coupe.nsl > 0)
+		dec = decoupe(pos, rot, inter, coupe);
 
 	if (t < h.dist) {
 		h.dist = t;

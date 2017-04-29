@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 08:15:28 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 11:08:06 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,9 +137,13 @@ static char	*concat_line_list(t_shader_file *shader_file)
 	{
 		if (line->line == NULL)
 		{
+			prev = line;
 			line = line->next;
+			free(prev);
 			continue ;
 		}
+		if (index + strlen(line->line) >= MAX_SHADER_FILE_SIZE)
+			ft_exit("max shader file reached !\n");
 		strcpy(buff + index, line->line);
 		index += strlen(line->line);
 		free(line->line);
@@ -353,6 +357,7 @@ static void			fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_m
 		}
 	}
 	dst->channels = 4;
+	free(dst->data);
 	dst->data = img_dst;
 }
 
@@ -451,6 +456,7 @@ static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.data);
+	free(atlas.data);
 	return (atlas.id);
 }
 
