@@ -22,14 +22,14 @@ sphere1:
     type: sphere
     pos: 40 0 0
     radius: 4
-    texture: ../textures/lava-rock-4k.jpg
+    texture: ../../textures/lava-rock-4k.jpg
 	specular: 1
 
 sphere2:
     type: sphere
     pos: 10 10 -4
     radius: 4
-    texture: ../textures/nyancat.png
+    texture: ../../textures/nyancat.png
     opacity: 0.5
     refraction: 1.3
     moving: XYZ 5 1
@@ -42,7 +42,7 @@ sphere3:
     color: 255 0 0
     opacity: 1
     refraction: 1
-    bumpmap: ../textures/normal.jpg
+    bumpmap: ../../textures/normal.jpg
 
 sphere3.5:
     type: sphere
@@ -51,7 +51,7 @@ sphere3.5:
     color: 0 0 255
     opacity: 0.5
     refraction: 1
-    bumpmap: ../textures/normal.jpg
+    bumpmap: ../../textures/normal.jpg
 	specular: 1
 
 

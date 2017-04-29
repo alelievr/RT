@@ -37,6 +37,10 @@
 
 typedef struct s_scene	t_scene;
 typedef struct s_object	t_object;
+typedef struct s_image	t_image;
+typedef struct s_material	t_material;
+typedef struct s_primitive	t_primitive;
+typedef struct s_camera	t_camera;
 
 typedef	struct			s_vec2
 {
@@ -193,6 +197,42 @@ t_vec3			get_object_position(t_object *obj);
 void			update_uniforms(GLint *unis, GLint *images);
 void			update_keys(void);
 void			update_object_transform(void);
+
+
+unsigned int	texture_repeat(t_image *tex, int x, int y);
+unsigned int	apply_channel_mask_pixel(unsigned int pixel, int chans);
+unsigned int	channeltomask(int chan);
+
+#define FTN3 int src_mask, int *new_tex_width, int
+void			fusion_texture(t_image *dst, t_image *src,
+		int dst_mask, FTN3 *new_tex_height);
+#define FTN4 int x, int y, t_image *src, t_image
+unsigned int	fusion_pixel(int src_mask, int dst_mask, FTN4 *dst);
+
+unsigned int	build_atlas(t_object *obj, int atlas_w, \
+	int atlas_h, bool first);
+GLuint		new_opengl_texture(int width, int height, unsigned char *data);
+void		load_atlas(t_object *obj, char *scene_directory, \
+	int *atlas_width, int *atlas_height);
+void		add_object_textures_to_atlas(t_material *mat, t_atlas *atlas, \
+	int *offset_x, int *offset_y);
+void		add_subimage(t_atlas *atlas, int off_x, int off_y, t_image *img);
+
+void		append_uniforms(t_shader_file *shader_file, t_object *obj);
+char		*generate_coupes_line(t_primitive *prim);
+char		*generate_scene_line(t_object *obj);
+char		*generate_material_line(t_material *mat);
+unsigned char	*generate_image_from_data(float data, \
+int *width, int *height) __attribute__((overloadable));
+unsigned char	*generate_image_from_data(t_vec3 data, \
+int *width, int *height) __attribute__((overloadable));
+unsigned char	*load_image(char *path, int *width, int *height, \
+	int *channels);
+char		*build_path(char *dir, char *file);
+
+void		append_post_processing(t_shader_file *shader_file, t_camera *c);
+void		load_textures_if_exists(t_material *m, char *scene_directory, \
+	int *atlas_width, int *atlas_height);
 
 static const char* vertex_shader_text =
 "#version 330\n"

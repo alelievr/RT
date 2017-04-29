@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/29 11:08:35 by alelievr         ###   ########.fr        #
+#    Updated: 2017/04/29 14:41:03 by pmartine         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,11 @@ SRC			=	main.c						\
 				shaderutils2.c				\
 				math.c						\
 				update_shader.c				\
+				texture_utils.c				\
+				atlas.c						\
+				build_shader_lines.c		\
+				build_shader_utils.c		\
+				build_shader_utils2.c		\
 				parser/parse_rt_file.c		\
 				parser/utils.c				\
 				parser/ft_sscanf.c			\
