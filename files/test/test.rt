@@ -1,0 +1,35 @@
+plane1:
+    type: cone
+    pos: 10 10 0
+    rot: 45 0 45
+	radius: 5
+    texture: ../textures/chess.jpg
+
+axex:
+	type: cylindre
+	radius: 1
+	pos: 0 0 0
+	rot: 90 0 0
+	texture: chess.jpg
+
+axey:
+	type: cylindre
+	radius: 1
+	pos: 0 0 0
+	rot: 0 90 0
+	texture: ../textures/chess.jpg
+
+axez:
+	type: cylindre
+	radius: 1
+	pos: 0 0 0
+	rot: 0 0 0
+	texture: ../textures/chess.jpg
+
+light1:
+	type: point_light
+	pos: 10 10 10
+
+camera:
+	type: camera
+	pos: 10 10 10

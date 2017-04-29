@@ -1,7 +1,6 @@
 void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, inout Hit h) {
 	vec3 d = r.pos - pos;
-	vec3 dir = rotate(vec3(0,0,1),rot,0);
-
+	vec3 dir = rotate(vec3(0, 0, 1), rot, 0);
 	float a = dot(r.dir,r.dir) - pow(dot(r.dir, dir), 2);
 	float b = 2 * (dot(r.dir, d) - dot(r.dir, dir) * dot(d, dir));
 	float c = dot(d, d) - pow(dot(d, dir), 2) - data * data;
