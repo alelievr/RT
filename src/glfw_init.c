@@ -16,6 +16,7 @@
 static t_vec2	angleAmount;
 static int	cursor_mode;
 static float lastPausedTime;
+int			gl_ssNbr = 1;
 
 static void		error_callback(int error, const char *description)
 {
@@ -84,6 +85,16 @@ static void		key_callback(GLFWwindow *g_window, int key,int scancode, int action
 		cursor_mode ^= action == GLFW_PRESS;
 	glfwSetInputMode(g_window, GLFW_CURSOR, (cursor_mode) ? GLFW_CURSOR_NORMAL \
 	: GLFW_CURSOR_DISABLED);
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		char	*name = (char *)malloc(sizeof(char) * 50);
+		name = ft_strjoin(name, "screenshot_");
+		name = ft_strjoin(name, ft_itoa(gl_ssNbr));
+		name = ft_strjoin(name, ".png");
+		SOIL_save_screenshot(name, SOIL_SAVE_TYPE_PNG, 0, 0, 1080, 720);
+		free(name);
+		gl_ssNbr++;
+	}
 }
 
 static void		g_mouse_callback(GLFWwindow *win, double x, double y)
