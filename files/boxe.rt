@@ -10,7 +10,6 @@ camera:
     pos: 0 0 -2
     fov: 1.2
     ambient: 0.2
-    effect: VIGNETTING | SEPIA
 
 light:
     type: point_light
@@ -38,7 +37,7 @@ sphere3:
     pos: 20 10 -20
     radius: 4
     color: 255 0 0
-    opacity: 0.5
+    opacity: 1
     refraction: 1
     bumpmap: ../textures/normal.jpg
 	specular: 1

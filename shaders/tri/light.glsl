@@ -96,28 +96,29 @@ vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color, float intensity)
     reflection = atlas_fetch(h.mat.reflection, h.uv).x;
     opacity = atlas_fetch(h.mat.texture, h.uv).w;
 
-    color_hit = atlas_fetch(h.mat.texture, h.uv).xyz;
-    color += light(pos_light, light_color, r, h) * limit;
+    color_hit = atlas_fetch(h.mat.texture, h.uv).xyz * opacity;
+
+		color += light(pos_light, light_color, r, h) * limit;
     color += iAmbient * color_hit * limit;
-		color *= opacity;
+		//color *= opacity;
 
     if (opacity < 1)
     {
 				refrac = atlas_fetch(h.mat.refraction, h.uv).x * 10;
 				if (refrac > 1)
-					r.dir = refraction(r.dir, h.norm , (1 / refrac));
+				r.dir = refraction(r.dir, h.norm , (1 / refrac));
 				r.pos = h.pos + r.dir * EPSI;
 				limit *= (1 - opacity);
-				// if (limit < 0.1)
-				// 	return color;
+				if (limit < 0.1)
+					return color;
 		}
     else if (reflection > 0)
     {
-        r.dir = r.dir - 2.0 * dot(normalize(h.norm), r.dir) * normalize(h.norm);
+        r.dir = normalize(r.dir - 2.0 * dot(normalize(h.norm), r.dir) * normalize(h.norm));
 				r.pos = h.pos + r.dir * EPSI;
 				limit *= reflection;
-				// if (limit < 0.1)
-				// 	return color;
+				if (limit < 0.1)
+					return color;
     }
     else
         return (color);
