@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/28 16:58:59 by avially          ###   ########.fr        #
+#    Updated: 2017/04/29 07:12:58 by avially          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,7 +55,7 @@ SOILLIB		=	SOIL2/libSOIL2.a
 NAME		=	RT
 
 #	Compiler
-WERROR		=	#-Werror
+WERROR		=	-Werror
 CFLAGS		=	-Wall -Wextra -ferror-limit=999
 CPROTECTION	=	-z execstack -fno-stack-protector
 

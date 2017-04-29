@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 06:39:44 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 07:16:13 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,15 +215,25 @@ static void		append_post_processing(t_shader_file *shader_file, t_camera *c)
 
 static void		tree_march(t_shader_file *shader_file, t_object *obj)
 {
+	int		n_light = 0;
+	char	line[0xF000];
+
 	while (obj)
 	{
 		if (obj->primitive.type == CAMERA + 1)
 			append_post_processing(shader_file, &obj->camera);
+		if (ISLIGHT)
+			n_light++;
 		append_uniforms(shader_file, obj);
 		LIST_APPEND(shader_file->scene_begin, generate_scene_line(obj));
 		if (obj->children)
 			tree_march(shader_file, obj->children);
 		obj = obj->brother_of_children;
+	}
+	if (n_light == 0)
+	{
+		sprintf(line, "\tcolor += calc_color(r, vec3(%f, %f, %f), vec3(%f, %f, %f), %f);", 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 0.f);
+		LIST_APPEND(shader_file->raytrace_lights, strdup(line));
 	}
 }
 

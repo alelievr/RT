@@ -315,15 +315,12 @@ static const char *shader_header_text =
 static const char *raytrace_start_text =
 "vec3    raytrace(vec3 ro, vec3 rd)\n"
 "{\n"
-"    Ray         r;\n"
-"    Hit         h;\n"
-"    vec3        color = vec3(0,0,0);\n"
-"    vec3        ambient;\n"
-"    r.dir = rd;\n"
-"    r.pos = ro;\n"
-"	// h = scene(r);\n"
-"	//if(h.dist < 1e20)\n"
-"	//	color = atlas_fetch(h.mat.texture, h.uv).xyz;\n";
+"   Ray         r;\n"
+"   Hit         h;\n"
+"   vec3        color = vec3(0,0,0);\n"
+"   vec3        ambient;\n"
+"   r.dir = rd;\n"
+"	r.pos = ro;\n";
 
 static const char *raytrace_end_text =
 "	return (color);\n"
