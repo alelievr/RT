@@ -1,5 +1,5 @@
 plane1:
-    type: cube_troue
+    type: glass
     pos: 10 10 0
     rot: 45 0 45
 	radius: 5

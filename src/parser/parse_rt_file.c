@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/29 06:18:17 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 06:55:25 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,19 @@
 #include <sys/stat.h>
 #include "keywords.h"
 
-#define NEW_OBJECT(var, n) var = (t_object *)malloc(sizeof(t_object)); if (!var) ft_exit("malloc error"); bzero(var, sizeof(t_object)); init_default_object(var); strcpy(var->name, format_name(n));
+#define NO4(var, n)(scene->root_view, n)) ft_exit("name already exist: %s\n",n);
+#define NO3(var, n)if (current_object != NULL && name_already_exists NO4(var, n)
+#define NO2(var, n)strcpy(var->name, format_name(n)); NO3(var, n)
+#define NO1(var, n)sizeof(t_object)); init_default_object(var); NO2(var, n)
+#define NO(var, n)if (!var) ft_exit("malloc error"); bzero(var, NO1(var, n)
+#define NEW_OBJECT(var, n) var = (t_object *)malloc(sizeof(t_object)); NO(var,n)
 #define SS(t) while(*t&&ft_isspace(*t))t++;
 #define SKIP_EMPTY_LINE(l) {char*t=l;SS(t);if (*t==0)continue;}
-#define FILL_PROP(X, line) _Generic((X), t_light *: fill_prop_light, t_transform *: fill_prop_transform, t_material *:fill_prop_material, t_camera *:fill_prop_camera, t_primitive *:fill_prop_primitive, t_vec4 *: fill_prop_vec4) (X, line)
+#define FP4(X, line) fill_prop_vec4) (X, line)
+#define FP3(X, line)t_primitive *:fill_prop_primitive, t_vec4 *: FP4(X,line)
+#define FP2(X, line)fill_prop_material, t_camera *:fill_prop_camera, FP3(X,line)
+#define FP1(X, line)t_transform *: fill_prop_transform, t_material *:FP2(X,line)
+#define FILL_PROP(X, line) _Generic((X), t_light *: fill_prop_light, FP1(X,line)
 #define A(c, line, p1) FILL_PROP(&c-> p1, line);// FILL_PROP(&c-> p2, line, #p2);
 
 static char		*format_name(char *name)
@@ -266,22 +275,14 @@ void			display_objects(t_object *lst_obj)
 	}
 }
 
-bool		name_already_exists(t_object *objs, char *name)
+bool		name_already_exists(t_object *obj, char *name)
 {
-	/*char			*verif;
-	t_object		*verif_obj;
-
-	while (lst_obj)
+	while (obj)
 	{
-		verif = lst_obj->name;
-		verif_obj = lst_obj;
-		while (ft_strcmp(verif_obj && verif_obj->name, verif_obj)
-			verif_obj = verif_obj->brother_of_children;
-		if (verif_obj)
-			return (verif_obj->name);
-		lst_obj = lst_obj->brother_of_children;
+		if (!ft_strcmp(obj->name, name))
+			return true;
+		obj = obj->brother_of_children;
 	}
-	return (NULL);*/
 	return false;
 }
 
@@ -351,8 +352,6 @@ void			parse_rt_file(char *file, t_scene *scene)
 		else
 			ft_exit("bad indentation at line %i\n", line_count);
 	}
-	if (current_object != NULL && name_already_exists(scene->root_view, current_object->name))
-		ft_exit("name already exist: %s", current_object->name);
 	display_objects(scene->root_view);
 	close(fd);
 }
