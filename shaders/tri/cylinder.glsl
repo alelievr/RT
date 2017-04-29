@@ -1,7 +1,7 @@
 void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, inout Hit h) {
-	vec3 dir = rotate(vec3(0,0,1), rot, 1);
 	vec3 d = r.pos - pos;
-	Hit hit = h;
+	vec3 dir = rotate(vec3(0,0,1),rot,1);
+
 	float a = dot(r.dir,r.dir) - pow(dot(r.dir, dir), 2);
 	float b = 2 * (dot(r.dir, d) - dot(r.dir, dir) * dot(d, dir));
 	float c = dot(d, d) - pow(dot(d, dir), 2) - data * data;
@@ -32,9 +32,10 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 		vec3 tmp = h.pos - pos;
 		h.norm = tmp - temp;
 		h.mat = mat;
-		h.inside = false;
 		vec3	d = h.pos - pos;
-		h.uv = vec2(-(0.5 + (atan(d.x, d.y) / (M_PI * 0.25))), -((d.z / M_PI) - floor(d.z / M_PI)));
+		d = rotate(d, rot, 0);
+		h.uv = vec2(-(0.5 + (atan(d.y, d.x) / M_PI)), -((d.z / M_PI) - floor(d.z / M_PI)));
+		h.inside = false;
 		return;
 	}
 
@@ -46,9 +47,10 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 			vec3 tmp = h.pos - pos;
 			h.norm = temp - tmp;
 			h.mat = mat;
-			h.inside = true;
 			vec3	d = h.pos - pos;
-			h.uv = vec2(-(0.5 + (atan(d.x, d.y) / (M_PI * 0.25))), -((d.z / M_PI) - floor(d.z / M_PI)));
+			d = rotate(d, rot, 0);
+			h.uv = vec2(-(0.5 + (atan(d.y, d.x) / M_PI)), -((d.z / M_PI) - floor(d.z / M_PI)));
+			h.inside = true;
 		}
 		return;
 	}

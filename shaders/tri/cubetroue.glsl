@@ -27,7 +27,6 @@ void cubetroue(vec3 pos, vec3 rot, float data, Material mat, Ray r, inout Hit hi
 	Hit h;
 	h = hit;
 	Coupes c;
-    rot = iGlobalTime * (rot);
 	r.pos = rotate(r.pos - pos, rot, 1);
 	r.dir = rotate(r.dir, rot, 1);
 	planet(vec3(0, 0, 1),vec3(0,0,data/2), data, c, mat, r, hit);

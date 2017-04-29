@@ -64,6 +64,31 @@ typedef struct	s_file
 	int		fd;
 }				t_file;
 
+typedef struct	s_line_list
+{
+	char				*line;
+	struct s_line_list	*next;
+}				t_line_list;
+
+typedef struct	s_shader_file
+{
+	t_line_list		*begin;
+	t_line_list		*function_begin;
+	t_line_list		*uniform_begin;
+	t_line_list		*main_image_begin;
+	t_line_list		*raytrace_lights;
+	t_line_list		*scene_begin;
+	t_line_list		*scene_end;
+}				t_shader_file;
+
+typedef struct		s_atlas
+{
+	unsigned char	*data;
+	GLuint			id;
+	int				width;
+	int				height;
+}					t_atlas;
+
 enum			KEY_BITS
 {
 	RIGHT,
@@ -189,6 +214,34 @@ static const char* fragment_shader_text =
 "}\n";
 
 static const char *main_image_start_text =
+"#line 1\n"
+"float pi = 3.1415;\n"
+"void		progressbar(vec2 fragCoord)\n"
+"{\n"
+"	float radius = 0.3;\n"
+"float lineWidth = 5.0; // in pixels\n"
+"float glowSize = 5.0; // in pixels\n"
+"\n"
+"float pixelSize = 1.0 / min(iResolution.x, iResolution.y);\n"
+"lineWidth *= pixelSize;\n"
+"glowSize *= pixelSize;\n"
+"glowSize *= 2.0;\n"
+"\n"
+"vec2 uv = (fragCoord.xy / iResolution.xy)-0.5;\n"
+"uv.x *= iResolution.x/iResolution.y;\n"
+"\n"
+"float len = length(uv);\n"
+"float angle = atan(uv.y, uv.x);\n"
+"\n"
+"float fallOff = fract(-0.5*(angle/pi)-iGlobalTime*0.5);\n"
+"\n"
+"lineWidth = (lineWidth-pixelSize)*0.5*fallOff;\n"
+"float color = smoothstep(pixelSize, 0.0, abs(radius - len) - lineWidth)*fallOff;\n"
+"color += smoothstep(glowSize*fallOff, 0.0, abs(radius - len) - lineWidth)*fallOff*0.5;    \n"
+"\n"
+"fragColor = vec4(color);\n"
+"}\n"
+"\n"
 "void        mainImage(vec2 coord)\n"
 "{\n"
 "	vec2    uv = ((coord / iResolution) - .5) * 2.f;\n"
@@ -198,6 +251,7 @@ static const char *main_image_start_text =
 "\n"
 "	//window ratio correciton:\n"
 "	uv.x *= iResolution.x / iResolution.y;\n"
+"	if (iGlobalTime < 5.f) { progressbar(coord); return ;}\n"
 //"	fragColor = texture(atlas, uv);\n"
 //"	return ;"
 "\n"

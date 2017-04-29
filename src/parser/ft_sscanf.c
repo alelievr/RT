@@ -6,7 +6,7 @@
 /*   By: vdaviot <vdaviot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/31 21:56:16 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/22 19:43:18 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/28 20:36:07 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int		convert_int(char **format, char **str, int *i)
 static	int		convert_word(char **format, char **str, char *ptr, int buffsize)
 {
 	int				len;
-	const char		*begin_word = ptr;
+	const char		*begin_word = *str;
 
 	len = 0;
 	while (**str && !ft_isspace(**str) && **str != ',' && **str != ':' && **str != '|')

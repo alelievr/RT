@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 18:47:10 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 01:25:59 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,31 +15,6 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <unistd.h>
-
-typedef struct	s_line_list
-{
-	char				*line;
-	struct s_line_list	*next;
-}				t_line_list;
-
-typedef struct	s_shader_file
-{
-	t_line_list		*begin;
-	t_line_list		*function_begin;
-	t_line_list		*uniform_begin;
-	t_line_list		*main_image_begin;
-	t_line_list		*raytrace_lights;
-	t_line_list		*scene_begin;
-	t_line_list		*scene_end;
-}				t_shader_file;
-
-typedef struct		s_atlas
-{
-	unsigned char	*data;
-	GLuint			id;
-	int				width;
-	int				height;
-}					t_atlas;
 
 #define MAX_TEXTURES	512
 #define NEW_LINE_LIST ({t_line_list *m; if (!(m = (t_line_list *)malloc(sizeof(t_line_list)))) ft_exit("malloc error !"); m->next = NULL; m->line = NULL; m;})
@@ -52,6 +27,17 @@ typedef struct		s_atlas
 #define MAX_SHADER_FILE_SIZE	0xF000
 #define GET_UVS(img) img.atlas_uv.x, img.atlas_uv.y, img.atlas_uv.z, img.atlas_uv.w
 #define GET_VEC4(vec) vec.x, vec.y, vec.z, vec.w
+#define LOAD_TEXTURE(m, p, o) printf("texture: %s\n", #p); if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height, &m->p.channels); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
+#define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
+#define TEXTURE_REPEAT(tex, x, y) ({int _x = x % tex->width; int _y = y % tex->height; apply_channel_mask_pixel((*(unsigned int *)(tex->data + _y * tex->width * tex->channels + _x * tex->channels)), tex->channels);})
+#define MIN(x, y) ((x) < (y)) ? (x) : (y)
+#define OCTET(x, c) (((x) >> c) & 0xFF)
+#define FUSION_PIXEL_COMPONENT(p1, m1, p2, m2, c) (OCTET(m2, c) == 0x00) ? OCTET(p1, c) << c : (((OCTET(p2 & m2, c)) * (OCTET(p1 & m1, c)) / 255) << c)
+#define FUSION_TEXTURE_ATLAS(m, p1, p2, aw, ah, m1, m2) { int new_x, new_y; *aw -= m->p1.width; fusion_texture(&m->p1, &m->p2, m1, m2, &new_x, &new_y); *aw += m->p1.width; *ah = MAX(*ah, m->p1.height); }
+#define W			0xFF000000
+#define XYZ		0xFFFFFFFF
+#define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / (float)atlas->width, (float)*offset_y / (float)atlas->height, (float)(*offset_x + m->p.width) / (float)atlas->width, (float)(*offset_y + m->p.height) / (float)atlas->height}
+#define ADD_TEXTURE_ATLAS(m, p) add_subimage(atlas, *offset_x, *offset_y, &m->p); m->p.atlas_uv = COMPUTE_OFFSET(m, p); *offset_x += m->p.width; printf("uv: %f/%f - %f/%f\n", m->p.atlas_uv.x, m->p.atlas_uv.y, m->p.atlas_uv.z, m->p.atlas_uv.w)
 
 static void	init_shader_file(t_shader_file *shader_file)
 {
@@ -82,8 +68,9 @@ static void	load_essencial_files(t_shader_file *shader_file, t_file *sources)
 	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/cubetroue.glsl", "shaders/tri/glass.glsl", "shaders/tri/disk.glsl", "shaders/tri/light.glsl", NULL};
 	int					fd;
 	char				line[0xF000];
-	int					i = 0;
+	int					i;
 
+	i = 0;
 	while (*files)
 	{
 		if ((fd = open(*files, O_RDONLY)) == -1)
@@ -127,21 +114,6 @@ static char	*concat_line_list(t_shader_file *shader_file)
 	}
 	write(1, buff, index);
 	return (buff);
-}
-
-static void		format_name(char *name)
-{
-	while (*name)
-	{
-		if (*name == ':')
-		{
-			*name = 0;
-			break ;
-		}
-		if (!isalnum(*name))
-			*name = '_';
-		name++;
-	}
 }
 
 static char		*generate_material_line(t_material *mat)
@@ -205,7 +177,7 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 	{
 		sprintf(line, "uniform vec3 %s_position = vec3(%f, %f, %f);", obj->name, obj->transform.position.x, obj->transform.position.y, obj->transform.position.z);
 		LIST_APPEND(shader_file->uniform_begin, strdup(line));
-		sprintf(line, "uniform vec3 %s_rotation = vec3(%f, %f, %f);", obj->name, obj->transform.rotation.x, obj->transform.rotation.y, obj->transform.rotation.z);
+		sprintf(line, "uniform vec3 %s_rotation = vec3(%f, %f, %f);", obj->name, obj->transform.euler_angles.x, obj->transform.euler_angles.y, obj->transform.euler_angles.z);
 		LIST_APPEND(shader_file->uniform_begin, strdup(line));
 	}
 	if (ISLIGHT)
@@ -229,7 +201,6 @@ static void		tree_march(t_shader_file *shader_file, t_object *obj)
 {
 	while (obj)
 	{
-		format_name(obj->name);
 		append_uniforms(shader_file, obj);
 		LIST_APPEND(shader_file->scene_begin, generate_scene_line(obj));
 		if (obj->children)
@@ -283,79 +254,64 @@ static char		*build_path(char *dir, char *file)
 
 static unsigned char	*load_image(char *path, int *width, int *height, int *channels)
 {
-	unsigned char *ret = SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO);
+	unsigned char *ret;
 
-	return ret;
+	ret = SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO);
+	return (ret);
 }
 
-#define LOAD_TEXTURE(m, p, o) printf("texture: %s\n", #p); if (m->has_##p && m->p.file[0]) m->p.data = load_image(build_path(scene_directory, m->p.file), &m->p.width, &m->p.height, &m->p.channels); else m->p.data = generate_image_from_data(m->o, &m->p.width, &m->p.height);
-#define LOAD_TEXTURE_ATLAS(m, p, o, aw, ah) LOAD_TEXTURE(m, p, o); *aw += m->p.width; *ah = MAX(*ah, m->p.height);
-
-unsigned int		channelToMask(int chan)
+unsigned int		channeltomask(int chan)
 {
-	unsigned int		ret = 0;
+	unsigned int	ret;
 
+	ret = 0;
 	if (chan == 0)
-		return -1;
-		while (chan--)
-			ret |= 255 << ((8 * chan));
-		return ret;
+		return (-1);
+	while (chan--)
+		ret |= 255 << ((8 * chan));
+	return (ret);
 }
 
 unsigned int		apply_channel_mask_pixel(unsigned int pixel, int chans)
 {
-	pixel &= channelToMask(chans);
-
+	pixel &= channeltomask(chans);
 	if (chans == 3)
 	{
 		pixel |= 0xFF000000;
 	}
-	return pixel;
+	return (pixel);
 }
-#define TEXTURE_REPEAT(tex, x, y) ({int _x = x % tex->width; int _y = y % tex->height; apply_channel_mask_pixel((*(unsigned int *)(tex->data + _y * tex->width * tex->channels + _x * tex->channels)), tex->channels);})
 
-#define MIN(x, y) ((x) < (y)) ? (x) : (y)
+static void			fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_mask, int *new_tex_width, int *new_tex_height)
+{
+	int					x;
+	int					y;
+	unsigned char		*img_dst;
+	unsigned int		src_pixel;
+	unsigned int		dst_pixel;
+	unsigned int		result_pixel;
 
-#define OCTET(x, c) (((x) >> c) & 0xFF)
-#define FUSION_PIXEL_COMPONENT(p1, m1, p2, m2, c) (OCTET(m2, c) == 0x00) ? OCTET(p1, c) << c : (((OCTET(p2 & m2, c)) * (OCTET(p1 & m1, c)) / 255) << c)
-
-static void fusion_texture(t_image *dst, t_image *src, int dst_mask, int src_mask, int *new_tex_width, int *new_tex_height) {
 	*new_tex_width = MAX(dst->width, src->width);
 	*new_tex_height = MAX(dst->height, src->height);
-	int		x, y;
-
-	unsigned char	*img_dst;
-
 	img_dst = malloc(sizeof(unsigned char) * 4 * (*new_tex_height) * (*new_tex_width));
-
 	printf("tex size: %i/%i\n", *new_tex_width, *new_tex_height);
-
 	if (FOR(x = 0, x < *new_tex_width, x++))
 	{
 		if (FOR(y = 0, y < *new_tex_height, y++))
 		{
-			unsigned int src_pixel = TEXTURE_REPEAT(src, x, y);
-			unsigned int dst_pixel = TEXTURE_REPEAT(dst, x, y);
-
-			unsigned int result_pixel = 0;
+			src_pixel = TEXTURE_REPEAT(src, x, y);
+			dst_pixel = TEXTURE_REPEAT(dst, x, y);
+			result_pixel = 0;
 			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 0);
 			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 8);
 			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 16);
 			result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, src_pixel, src_mask, 24);
-
-			// printf("src: %08X, dst: %08X, pix: %08X\n", src_pixel, dst_pixel, result_pixel);
-
 			*(unsigned int *)(img_dst + (*new_tex_width) * y * 4 + x * 4) = result_pixel;
 		}
 	}
 	dst->channels = 4;
 	dst->data = img_dst;
 }
-
-#define FUSION_TEXTURE_ATLAS(m, p1, p2, aw, ah, m1, m2) { int new_x, new_y; *aw -= m->p1.width; fusion_texture(&m->p1, &m->p2, m1, m2, &new_x, &new_y); *aw += m->p1.width; *ah = MAX(*ah, m->p1.height); }
-
-#define W			0xFF000000
-#define XYZ		0xFFFFFFFF
 
 static void		load_textures_if_exists(t_material *m, char *scene_directory, int *atlas_width, int *atlas_height)
 {
@@ -364,10 +320,9 @@ static void		load_textures_if_exists(t_material *m, char *scene_directory, int *
 	LOAD_TEXTURE_ATLAS(m, emission_map, emission_color, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, highlight_map, highlight_color, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, reflection_map, reflection, atlas_width, atlas_height);
-	LOAD_TEXTURE_ATLAS(m, refraction_map, refraction/10, atlas_width, atlas_height);
+	LOAD_TEXTURE_ATLAS(m, refraction_map, refraction / 10, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, opacity_map, opacity, atlas_width, atlas_height);
 	LOAD_TEXTURE_ATLAS(m, specular_map, specular, atlas_width, atlas_height);
-
 	FUSION_TEXTURE_ATLAS(m, texture, opacity_map, atlas_width, atlas_height, XYZ, W);
 }
 
@@ -375,7 +330,6 @@ static void		load_atlas(t_object *obj, char *scene_directory, int *atlas_width, 
 {
 	while (obj)
 	{
-		format_name(obj->name);
 		printf("\033[38;5;42mobj: %s\033[0m\n", obj->name);
 		load_textures_if_exists(&obj->material, scene_directory, atlas_width, atlas_height);
 		if (obj->children)
@@ -390,6 +344,7 @@ static void		add_subimage(t_atlas *atlas, int offset_x, int offset_y, t_image *i
 	unsigned char	*imgdata;
 	int				x;
 	int				y;
+	unsigned int	color;
 
 	imgdata = img->data;
 	x = 0;
@@ -401,12 +356,8 @@ static void		add_subimage(t_atlas *atlas, int offset_x, int offset_y, t_image *i
 		x = 0;
 		while (x < img->width)
 		{
-			unsigned int color = (*(unsigned int *)imgdata) & channelToMask(img->channels);
-			// if (img->channels == 3)
-				// color <<= ;
-				// printf("ca: %08X\n", color);
+			color = (*(unsigned int *)imgdata) & channeltomask(img->channels);
 			*(unsigned int *)begin = color;
-			// printf("chess: %i/%i: \e]4;1;rgb:%2hhx/%2hhx/%2hhx\e\\\e[31m██ = #FF0000\e[m\n\n", x, y, RED(*(unsigned int *)begin), GREEN(*(unsigned int *)begin), BLUE(*(unsigned int *)begin));
 			begin += 4;
 			imgdata += img->channels;
 			x++;
@@ -415,9 +366,6 @@ static void		add_subimage(t_atlas *atlas, int offset_x, int offset_y, t_image *i
 	}
 	free(img->data);
 }
-
-#define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / (float)atlas->width, (float)*offset_y / (float)atlas->height, (float)(*offset_x + m->p.width) / (float)atlas->width, (float)(*offset_y + m->p.height) / (float)atlas->height}
-#define ADD_TEXTURE_ATLAS(m, p) add_subimage(atlas, *offset_x, *offset_y, &m->p); m->p.atlas_uv = COMPUTE_OFFSET(m, p); *offset_x += m->p.width; printf("uv: %f/%f - %f/%f\n", m->p.atlas_uv.x, m->p.atlas_uv.y, m->p.atlas_uv.z, m->p.atlas_uv.w)
 
 static void		add_object_textures_to_atlas(t_material *mat, t_atlas *atlas, int *offset_x, int *offset_y)
 {
@@ -459,7 +407,6 @@ static unsigned int	build_atlas(t_object *obj, int atlas_width, int atlas_height
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas_width, atlas_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.data);
 	return (atlas.id);
 }

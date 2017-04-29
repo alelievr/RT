@@ -7,9 +7,12 @@ vec3 rotate(vec3 point, vec3 rot, int t)
 {
 	rot = rot * M_PI / 180;
 
-	mat3 rotation = mat3(cos(rot.z) * cos(rot.y),-1 * cos(rot.y) * sin(rot.z),sin(rot.y),
-						sin(rot.z) * cos(rot.x) + sin(rot.y) * sin(rot.x) * cos(rot.z),-1 * sin(rot.x) * sin(rot.y) * sin(rot.z) + cos(rot.x) * cos(rot.z),-1 * sin(rot.x) * cos(rot.y),
-						-1 * sin(rot.y) * cos(rot.z) * cos(rot.x) + sin(rot.x) * sin(rot.z),cos(rot.x) * sin(rot.y) * sin(rot.z) + sin(rot.x) * cos(rot.z), cos(rot.x) * cos(rot.y));
+    float cx = cos(rot.x); float cy = cos(rot.y); float cz = cos(rot.z);
+    float sx = sin(rot.x); float sy = sin(rot.y); float sz = sin(rot.z);
+
+	mat3 rotation = mat3(cz * cy,-1 * cy * sz,sy,
+						sz * cx + sy * sx * cz,-1 * sx * sy * sz + cx * cz,-1 * sx * cy,
+						-1 * sy * cz * cx + sx * sz,cx * sy * sz + sx * cz, cx * cy);
 	if (t == 1)
 		return (point * rotation);
 	return (point * inverse(rotation));

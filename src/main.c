@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/25 23:30:02 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 19:18:13 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 04:13:55 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,14 @@ t_selected	g_selected_object = {.dir_uniform = -1, .pos_uniform = -1};
 int			g_selected_object_index = 0;
 
 static void		usage(const char *n) __attribute__((noreturn));
+
 static void		usage(const char *n)
 {
 	printf("usage: %s <shader>\n", n);
 	exit(0);
 }
 
-GLuint		createVBO(void)
+GLuint		create_vbo(void)
 {
 	float points[] = {
    		-1.0f,  -1.0f,
@@ -64,7 +65,7 @@ GLuint		createVBO(void)
 	return vbo;
 }
 
-GLuint		createVAO(GLuint vbo, int program)
+GLuint		create_vao(GLuint vbo, int program)
 {
 	GLint		frag_pos;
 	GLuint		vao = 0;
@@ -362,6 +363,116 @@ static void load_scene_directory(char *scene_file)
 	get_scene_directory(path);
 }
 
+t_vec3		scale(t_vec3 vect, float f)
+{
+	vect.x *= f;
+	vect.y *= f;
+	vect.z *= f;
+
+	return (vect);
+}
+
+t_vec3		mat_rotate(t_vec3 point, t_vec3 rot)
+{
+	float	d = M_PI / 180;
+	rot = scale(rot, d);
+	t_vec3	res;
+
+	float	sx = sin(rot.x);
+	float	sy = sin(rot.y);
+	float	sz = sin(rot.z);
+	float	cx = cos(rot.x);
+	float	cy = cos(rot.y);
+	float	cz = cos(rot.z);
+	float	mat[3][3] = {
+		{cz * cy, -1 * cy * sz, sy},
+		{sz * cx + sy * sx *cz, -1 *sx * sy * sz + cx * cz, -1 * sx * cy},
+		{-1 * sy * cz * cx + sx * sz, cx * sy * sz + sx * cz, cx * cy}
+	};
+
+	res.x = point.x * mat[0][0] + point.y * mat[0][1] + point.z * mat[0][2];
+	res.y = point.x * mat[1][0] + point.y * mat[1][1] + point.z * mat[1][2];
+	res.z = point.x * mat[2][0] + point.y * mat[2][1] + point.z * mat[2][2];
+
+	return (res);
+}
+
+#define LENGTH(v) (sqrt(v.x * v.x + v.y * v.y + v.z * v.z))
+#define VEC3(v) (t_vec3){v.x, v.y, v.z}
+#define VEC3_MULT(v1, v2) (t_vec3){v1.x * v2, v1.y * v2, v1.z * v2}
+t_vec3	normalize(t_vec3 v)
+{
+	float l = LENGTH(v);
+	return (t_vec3){v.x / l, v.y / l, v.z / l};
+}
+
+t_vec3		get_object_position(t_object *obj)
+{
+	const t_vec3	mask_x = normalize((t_vec3){0, 1, 1});
+	const t_vec3	mask_y = normalize((t_vec3){1, 0, 1});
+	const t_vec3	mask_z = normalize((t_vec3){1, 1, 0});
+	t_vec3	pos = (t_vec3){0, 0, 0};
+	t_vec3	rotate;
+
+	if (obj->move.x == 0 && obj->move.y == 0 && obj->move.z == 0)
+		return obj->transform.initial_position;
+
+	pos.x = obj->transform.initial_position.x + mask_x.x * obj->move.x + mask_y.x * obj->move.y + mask_z.x * obj->move.z;
+	pos.y = obj->transform.initial_position.y + mask_x.y * obj->move.x + mask_y.y * obj->move.y + mask_z.y * obj->move.z;
+	pos.z = obj->transform.initial_position.z + mask_x.z * obj->move.x + mask_y.z * obj->move.y + mask_z.z * obj->move.z;
+
+//	printf("pos: %f/%f/%f\n", pos.x, pos.y, pos.z);
+	rotate = mat_rotate(pos, VEC3_MULT(normalize(VEC3(obj->move)), obj->laps));
+
+	obj->laps += obj->move.w;
+	VEC3_ADD_DIV(rotate, obj->transform.initial_position, 1);
+//	printf("object %s position: %f/%f/%f, laps: %f, move: %f/%f/%f\n", obj->name, rotate.x, rotate.y, rotate.z, obj->laps, obj->move.x, obj->move.y, obj->move.z);
+	return rotate;
+}
+
+t_vec3		get_object_rotation(t_object *obj)
+{
+	t_vec3	*rot;
+
+	rot = &obj->transform.euler_angles;
+	if (obj->rotate.x != 0)
+		rot->x += obj->rotate.w;
+	if (obj->rotate.y != 0)
+		rot->y += obj->rotate.w;
+	if (obj->rotate.z != 0)
+		rot->z += obj->rotate.w;
+
+//	printf("object %s roration: %f/%f/%f\n", obj->name, obj->transform.euler_angles.x, obj->transform.euler_angles.y, obj->transform.euler_angles.z);
+	return *rot;
+}
+
+void		update_object_transform()
+{
+	const t_scene		*scene = get_scene(NULL);
+	t_object			*obj;
+	char				buff[0xF00];
+
+	obj = scene->root_view;
+	while (obj)
+	{
+		if (obj->primitive.type == CAMERA + 1)
+		{
+			obj = obj->brother_of_children;
+			continue ;
+		}
+
+		obj->transform.position = get_object_position(obj);
+		obj->transform.euler_angles = get_object_rotation(obj);
+
+		sprintf(buff, "%s_euler_angles", obj->name);
+		glUniform3fv(glGetUniformLocation(get_program(-1), buff), 1, &obj->transform.normal.x);
+		sprintf(buff, "%s_position", obj->name);
+		glUniform3fv(glGetUniformLocation(get_program(-1), buff), 1, &obj->transform.position.x);
+
+		obj = obj->brother_of_children;
+	}
+}
+
 int			main(int ac, char **av)
 {
 	static t_file	sources[0xF00];
@@ -370,6 +481,11 @@ int			main(int ac, char **av)
 	t_scene			scene;
 	char			*program_source;
 	int				atlas_id;
+    GLint		*images;
+	GLuint		program;
+	GLuint		vbo;
+	GLuint		vao;
+   	GLint		*unis;
 
 	if (ac < 1)
 		usage(*av);
@@ -385,17 +501,18 @@ int			main(int ac, char **av)
 
 	initSourceFiles(sources, 0xF00, &num);
 
-	GLuint		program = create_program(program_source, true);
-	GLuint		vbo = createVBO();
-	GLuint		vao = createVAO(vbo, program);
-    GLint		*unis = getUniformLocation(program);
-    GLint		*images = (int[]){atlas_id};
+	program = create_program(program_source, true);
+	vbo = create_vbo();
+	vao = create_vao(vbo, program);
+    unis = getUniformLocation(program);
+    images = (int[]){atlas_id};
 
 	get_program(program);
-
 	while ((t1 = glfwGetTime()), !glfwWindowShouldClose(win))
 	{
 		checkFileChanged(&program, sources, num);
+		if (!g_input_pause)
+			update_object_transform();
 		loop(win, program, vao, unis, images);
 		display_window_fps(win);
 	}

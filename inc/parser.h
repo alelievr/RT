@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/08/08 14:47:27 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/28 17:40:30 by avially          ###   ########.fr       */
+/*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
+/*   Updated: 2017/04/29 01:24:29 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,9 @@
 # define LF_RT_MASK "\\spost_processing_mask:\\s%s\\s"
 # define LF_RT_ILLUM "\\sillum:\\s%s\\s"
 # define LF_RT_TYPE "\\stype:\\s%s\\s"
+
+# define LF_RT_MOVE		"\\smoving:\\s%w\\s%f\\s%f\\s"
+# define LF_RT_ROTATE	"\\srotate:\\s%w\\s%f\\s%f\\s"
 
 # define LF_RT_MTL			"\\smtl:\\sfiles/%w\\s"
 # define LF_RT_AMBIANCE	"\\sambiance:\\s%w\\s%f\\s"
@@ -166,7 +169,9 @@ typedef	struct  s_primitive
 typedef struct			s_transform
 {
 	t_vec3		position;
-	t_vec3		rotation;
+	t_vec3		initial_position;
+	t_vec3		euler_angles;
+	t_vec3		normal;
 }						t_transform;
 
 typedef struct			s_image
@@ -252,8 +257,8 @@ typedef struct			s_object
 	char		name[256];
 	int			indent_level;
 	t_transform	transform;
+	t_light			light_prop;
 	union {
-		t_light			light_prop;
 		t_material		material;
 		t_camera		camera;
 	};
@@ -262,6 +267,9 @@ typedef struct			s_object
 		t_primitive	primitive;
 	};
 	bool		is_primitive;
+	t_vec4		move;
+	t_vec4		rotate;
+	float		laps;
 	t_object	*children;
 	t_object	*parent;
 	t_object	*brother_of_children;

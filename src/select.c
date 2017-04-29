@@ -6,32 +6,12 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/28 05:53:41 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/28 19:04:34 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 01:26:16 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "shaderpixel.h"
 #include "parser.h"
-/*
-void		save_object_transform(void)
-{
-	t_scene		*scene = get_scene(NULL);
-	t_object	*obj;
-	int			i;
-
-	obj = scene->root_view;
-	i = 0;
-	while (obj)
-	{
-		if (g_selected_object_index == i)
-		{
-			obj->transform.position = g_selected_object.pos;
-			obj->transform.rotation = g_selected_object.dir;
-		}
-		obj = obj->brother_of_children;
-		i++;
-	}
-}*/
 
 void		select_object()
 {
@@ -54,8 +34,8 @@ void		select_object()
 			if (obj->primitive.type == CAMERA + 1)
 				return g_selected_object_index++, select_object();
 
-			g_selected_object.pos = &obj->transform.position;
-			g_selected_object.dir = &obj->transform.rotation;
+			g_selected_object.pos = &obj->transform.initial_position;
+			g_selected_object.dir = &obj->transform.euler_angles;
 
 			sprintf(buff, "%s_position", obj->name);
 			g_selected_object.pos_uniform = glGetUniformLocation(get_program(-1), buff);

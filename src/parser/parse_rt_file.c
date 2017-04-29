@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/28 17:24:06 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 01:27:34 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,30 @@
 #include <sys/stat.h>
 #include "keywords.h"
 
-#define NEW_OBJECT(var, n) var = (t_object *)malloc(sizeof(t_object)); if (!var) ft_exit("malloc error"); bzero(var, sizeof(t_object)); init_default_material(&var->material); strcpy(var->name, n);
+#define NEW_OBJECT(var, n) var = (t_object *)malloc(sizeof(t_object)); if (!var) ft_exit("malloc error"); bzero(var, sizeof(t_object)); init_default_object(var); strcpy(var->name, format_name(n));
 #define SS(t) while(*t&&ft_isspace(*t))t++;
 #define SKIP_EMPTY_LINE(l) {char*t=l;SS(t);if (*t==0)continue;}
-#define FILL_PROP(X, line) _Generic((X), t_light *: fill_prop_light, t_transform *: fill_prop_transform, t_material *:fill_prop_material, t_camera *:fill_prop_camera, t_primitive *:fill_prop_primitive) (X, line)
+#define FILL_PROP(X, line) _Generic((X), t_light *: fill_prop_light, t_transform *: fill_prop_transform, t_material *:fill_prop_material, t_camera *:fill_prop_camera, t_primitive *:fill_prop_primitive, t_vec4 *: fill_prop_vec4) (X, line)
 #define A(c, line, p1) FILL_PROP(&c-> p1, line);// FILL_PROP(&c-> p2, line, #p2);
+
+static char		*format_name(char *name)
+{
+	char	*ret = name;
+
+	while (*name)
+	{
+		if (*name == ':')
+		{
+			*name = 0;
+			break ;
+		}
+		if (!isalnum(*name))
+			*name = '_';
+		name++;
+	}
+	return ret;
+}
+
 
 bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 {
@@ -59,12 +78,44 @@ bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 		return (false);
 }
 
-static void		init_default_material(t_material *o)
+static void		init_default_object(t_object *o)
 {
-	o->color = (t_vec3){1, 0, 1};
-	o->specular = 0;
-	o->opacity = 1;
-	o->refraction = 1;
+	o->light_prop.color = (t_vec3){255, 255, 255};
+	o->material.color = (t_vec3){255, 0, 255};
+	o->material.specular = 0;
+	o->material.opacity = 1;
+	o->material.refraction = 1;
+}
+
+void			fill_prop_vec4(t_vec4 *data, char *line)
+{
+	char	word[256];
+	float	radius;
+	float	speed;
+
+	if (!ft_sscanf(LF_RT_MOVE, line, word, 256, &radius, &speed))
+	{
+		if (strchr(word, 'X'))
+			data->x = radius;
+		if (strchr(word, 'Y'))
+			data->y = radius;
+		if (strchr(word, 'Z'))
+			data->z = radius;
+		data->w = speed;
+	}
+	if (!ft_sscanf(LF_RT_ROTATE, line, word, 256, &speed))
+	{
+		printf("word: %s\n", word);
+		if (strchr(word, 'X'))
+			data->x = 1;
+		if (strchr(word, 'Y'))
+			data->y = 1;
+		if (strchr(word, 'Z'))
+			data->z = 1;
+		printf("rotate: %f\n", speed);
+		printf("rotate: %f/%f/%f\n", data->x, data->y, data->z);
+		data->w = speed;
+	}
 }
 
 void			fill_prop_camera(t_camera *cam, char *line)
@@ -124,8 +175,9 @@ void			fill_prop_light(t_light *light, char *line)
 
 void			fill_prop_transform(t_transform *tsf, char *line)
 {
-	ft_sscanf(LF_RT_POS, line, &tsf->position.x, &tsf->position.y, &tsf->position.z);
-	ft_sscanf(LF_RT_ROT, line, &tsf->rotation.x, &tsf->rotation.y, &tsf->rotation.z);
+	if (!ft_sscanf(LF_RT_POS, line, &tsf->position.x, &tsf->position.y, &tsf->position.z))
+		tsf->initial_position = tsf->position;
+	ft_sscanf(LF_RT_ROT, line, &tsf->euler_angles.x, &tsf->euler_angles.y, &tsf->euler_angles.z);
 }
 
 void			fill_prop_material(t_material *mtl, char *line)
@@ -212,6 +264,25 @@ void			display_objects(t_object *lst_obj)
 	}
 }
 
+bool		name_already_exists(t_object *objs, char *name)
+{
+	/*char			*verif;
+	t_object		*verif_obj;
+
+	while (lst_obj)
+	{
+		verif = lst_obj->name;
+		verif_obj = lst_obj;
+		while (ft_strcmp(verif_obj && verif_obj->name, verif_obj)
+			verif_obj = verif_obj->brother_of_children;
+		if (verif_obj)
+			return (verif_obj->name);
+		lst_obj = lst_obj->brother_of_children;
+	}
+	return (NULL);*/
+	return false;
+}
+
 void			parse_rt_file(char *file, t_scene *scene)
 {
 	int			fd;
@@ -266,6 +337,8 @@ void			parse_rt_file(char *file, t_scene *scene)
 		{
 			A(current_object, line, primitive);
 			A(current_object, line, transform);
+			A(current_object, line, move);
+			A(current_object, line, rotate);
 			if (current_object->primitive.type >= 10)
 				A(current_object, line, light_prop);
 			if (current_object->primitive.type == 9)
@@ -276,7 +349,8 @@ void			parse_rt_file(char *file, t_scene *scene)
 		else
 			ft_exit("bad indentation at line %i\n", line_count);
 	}
-
+	if (current_object != NULL && name_already_exists(scene->root_view, current_object->name))
+		ft_exit("name already exist: %s", current_object->name);
 	display_objects(scene->root_view);
 	close(fd);
 }
