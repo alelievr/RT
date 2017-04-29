@@ -3,7 +3,6 @@ void tore_de_sphere(vec3 pos, vec3 rot, float data, Material mat, Ray r,inout Hi
   vec3 initial = pos + data * vec3(0,0,1);
   Coupes c;
   Hit hit = h;
-  rot = rot * iGlobalTime;
   r.pos = rotate(r.pos - pos, rot, 1);
 	r.dir = rotate(r.dir, rot, 1);
   int i = -1;
