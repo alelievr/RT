@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/12/19 14:02:21 by alelievr          #+#    #+#             */
-/*   Updated: 2017/01/08 20:29:42 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/29 10:22:32 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@
 
 # define FT_ARGS(...)	__VA_ARGS__
 # define INIT(x, y, z)		x y = z
+# define IINIT(x, y, ...) x y = __VA_ARGS__
 # define IFRET__(x, y)	if (x) return (y)
 # define EIFRET__(x, y)	else if (x) return (y)
 # define ERET__(y)		else return (y)

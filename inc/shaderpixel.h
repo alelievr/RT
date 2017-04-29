@@ -36,6 +36,7 @@
 //# define DOUBLE_PRECISION 1
 
 typedef struct s_scene	t_scene;
+typedef struct s_object	t_object;
 
 typedef	struct			s_vec2
 {
@@ -139,6 +140,13 @@ typedef struct		s_selected
 #define BIT_GET(i, pos) (i >> pos) & 1
 #define g_move_AMOUNT 0.05f;
 
+#define VEC3_ADD_DIV(v1, v2, f) {v1.x+=v2.x/(f);v1.y+=v2.y/(f);v1.z+=v2.z/(f);}
+#define VEC3_UP ((t_vec3){0, 1, 0})
+#define VEC3(v) (t_vec3){v.x, v.y, v.z}
+#define VEC3_MULT(v1, v2) (t_vec3){v1.x * v2, v1.y * v2, v1.z * v2}
+#define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
+
+
 extern t_vec4		g_mouse;
 extern t_vec4		g_move;
 extern t_vec2		g_window;
@@ -155,14 +163,36 @@ extern int			g_selected_object_index;
 
 GLFWwindow		*init(char *fname);
 GLuint			create_program(char *file, bool fatal);
-float			getCurrentTime(void);
+float			get_current_time(void);
 bool			file_is_regular(int fd) __attribute__((overloadable));
 bool			file_is_regular(char *fd) __attribute__((overloadable));
 char			*build_shader(t_scene *scene, char *scene_directory, int *atlas_id, t_file *sources);
 t_scene			*get_scene(t_scene *scene);
-int				get_program(int p);
 void			save_object_transform(void);
 void			select_object(void);
+
+GLuint			create_vbo(void);
+GLuint			create_vao(GLuint vbo, int program);
+void			check_file_changed(GLuint *program, t_file *files, size_t num);
+void			recompile_program(t_file *files, GLuint *program);
+void			init_source_file(t_file *files, size_t max, size_t *num);
+
+t_vec3			vec3_cross(t_vec3 v1, t_vec3 v2);
+t_vec3			scale(t_vec3 vect, float f);
+t_vec3			mat_rotate(t_vec3 point, t_vec3 rot);
+t_vec3			normalize(t_vec3 v);
+
+int				heck_file_extension(char *file, char **exts);
+void			display_window_fps(GLFWwindow *win);
+char			*get_scene_directory(char *scene_dir);
+int				get_program(int p);
+GLint			*get_uniform_location(GLuint program);
+t_scene			*get_scene(t_scene *scene);
+t_vec3			get_object_position(t_object *obj);
+
+void			update_uniforms(GLint *unis, GLint *images);
+void			update_keys(void);
+void			update_object_transform(void);
 
 static const char* vertex_shader_text =
 "#version 330\n"

@@ -77,9 +77,9 @@ static void		key_callback(GLFWwindow *g_window, int key,int scancode, int action
 	{
 		g_input_pause ^= action;
 		if (g_input_pause)
-			lastPausedTime = getCurrentTime();
+			lastPausedTime = get_current_time();
 		else
-			g_paused_time += getCurrentTime() - lastPausedTime;
+			g_paused_time += get_current_time() - lastPausedTime;
 	}
 	if (key == GLFW_KEY_C)
 		cursor_mode ^= action == GLFW_PRESS;
