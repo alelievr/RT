@@ -12,7 +12,6 @@ vec3	black_white(vec3 color)
 	return vec3(t, t, t);
 }
 
-/* Encore quelques bugs avec le calculs de contours */
 vec3	cartoon(vec3 color, vec3 lpos, Hit h, Ray r)
 {
     vec3	ldir = normalize(lpos - h.pos);
