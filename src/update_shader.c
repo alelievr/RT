@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 10:51:06 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 11:06:47 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/29 12:55:16 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ void			update_object_transform(void)
 		obj->transform.euler_angles = get_object_rotation(obj);
 		sprintf(buff, "%s_euler_angles", obj->name);
 		glUniform3fv(glGetUniformLocation(get_program(-1), buff), 1,
-				&obj->transform.normal.x);
+				&obj->transform.euler_angles.x);
 		sprintf(buff, "%s_position", obj->name);
 		glUniform3fv(glGetUniformLocation(get_program(-1), buff), 1,
 				&obj->transform.position.x);

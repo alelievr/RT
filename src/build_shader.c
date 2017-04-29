@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 13:39:08 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/29 14:47:34 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/04/29 14:52:17 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "build_shader_include.h"
+#include <errno.h>
 
 static void		init_shader_file(t_shader_file *shader_file)
 {
@@ -59,7 +60,7 @@ static void		load_essencial_files(t_shader_file *shader_file,
 	{
 		if ((fd = open(*files, O_RDONLY)) == -1)
 		{
-			perror("open");
+			printf("open error on [%s]: %s", *files, strerror(errno));
 			exit(-1);
 		}
 		if (!file_is_regular(fd))
