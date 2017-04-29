@@ -46,3 +46,12 @@ vec3	nightvision(vec3 color)
 	float	t = max(max(color.r, color.g), color.b);
 	return vec3(0.0, t, 0.0);
 }
+
+vec3	vignetting(vec3 color, vec2 coord)
+{
+	vec2	pos = coord;
+	float	len = length(pos);
+	float	vignette = smoothstep(0.9, 0.9 - 0.45, len);
+	color = mix(color, color * vignette, 0.5);
+	return color;
+}
