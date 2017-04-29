@@ -14,7 +14,6 @@ vec3	black_white(vec3 color)
 
 vec3	cartoon(vec3 color, vec3 lpos, Hit h, Ray r)
 {
-<<<<<<< HEAD
     vec3	ldir = normalize(lpos - h.pos);
     float	intensity = dot(normalize(ldir), h.norm);
     float	factor = 0.5;
@@ -40,33 +39,6 @@ vec3	cartoon(vec3 color, vec3 lpos, Hit h, Ray r)
     float	edge = (dot(V, h.norm) > 0.5) ? 1 : 0;
     color *= edge;
     return color;
-=======
-	vec3	ldir = normalize(lpos - h.pos);
-	float	intensity = dot(normalize(ldir), h.norm);
-	float	factor = 0.5;
-
-	if (intensity > 0.9)
-		factor = 1.0;
-	else if (intensity > 0.6)
-		factor = 0.7;
-	else if (intensity > 0.4)
-		factor = 0.5;
-	else if (intensity > 0.2)
-		factor = 0.3;
-	else if (intensity > 0.0)
-		factor = 0.1;
-	else
-		factor = 0;
-	color *= vec3(factor, factor, factor);
-
-	vec3	L = (lpos - h.pos);
-	vec3	V = normalize(r.pos - h.pos);
-	vec3	H = normalize(L + V);
-
-	float	edge = (dot(V, h.norm) > 0.5) ? 1 : 0;
-	color *= edge;
-	return color;
->>>>>>> a5f413e289b15533d946bebd723a801aa25759e8
 }
 
 vec3	nightvision(vec3 color)
