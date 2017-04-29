@@ -6,12 +6,11 @@
 /*   By: alelievr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/03 18:55:17 by alelievr          #+#    #+#             */
-/*   Updated: 2016/10/01 20:11:19 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/28 20:27:02 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
 
 void	*ft_memcpy(void *d, void const *s, size_t n)
 {
@@ -23,11 +22,8 @@ void	*ft_memcpy(void *d, void const *s, size_t n)
 	src = (unsigned char *)s;
 	if (n >= 8)
 	{
-		while ((n % 8))
-		{
+		while ((n-- % 8))
 			*dst++ = *src++;
-			n--;
-		}
 		len = n / 8;
 		while (len--)
 		{

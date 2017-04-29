@@ -6,13 +6,13 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/07 01:32:14 by alelievr          #+#    #+#             */
-/*   Updated: 2016/12/21 20:43:42 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/28 20:29:35 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_sprintf.h"
-
 #include <stdio.h>
+
 size_t	ft_uintlen_base(unsigned long long int val, const int flag)
 {
 	size_t				ret;

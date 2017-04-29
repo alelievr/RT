@@ -6,7 +6,7 @@
 /*   By: alelievr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 09:29:52 by alelievr          #+#    #+#             */
-/*   Updated: 2016/12/22 15:36:35 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/28 20:27:56 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,8 @@ int		ft_memcmp(void const *s1, void const *s2, size_t n)
 	if (n >= 8)
 	{
 		while (!(n % 8) && n--)
-		{
 			if (*u1++ != *u2++)
 				return (*--u1 - *--u2);
-		}
 		len = n / 8;
 		while (len--)
 		{

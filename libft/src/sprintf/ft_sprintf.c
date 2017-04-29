@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/19 18:41:31 by alelievr          #+#    #+#             */
-/*   Updated: 2017/01/17 20:12:18 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/04/28 20:35:21 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int	printf_wrapper(const char *format, va_list *args, char *buff)
 			*buff++ = *format++;
 	}
 	*buff++ = 0;
-	return buff - b;
+	return (buff - b);
 }
 
 int			ft_printf(const char *format, ...)
@@ -79,7 +79,7 @@ int			ft_vprintf(const char *format, va_list *ap)
 {
 	char	buff[0xF000];
 	int		ret;
-	
+
 	ret = printf_wrapper(format, ap, buff);
 	write(1, buff, ret);
 	return (ret);
