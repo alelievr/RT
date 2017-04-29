@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/29 01:27:34 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 06:18:17 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ void			fill_prop_camera(t_camera *cam, char *line)
 	ft_sscanf(LF_RT_AMBIENT, line, &cam->ambient);
 	if (!ft_sscanf(LF_RT_MASK, line, str, 256))
 	{
+		printf("line: %s\n", line);
 		while ((get_next_word(&str, word)))
 		{
 			i = 0;
@@ -141,8 +142,9 @@ void			fill_prop_camera(t_camera *cam, char *line)
 				i++;
 			}
 		}
+		printf("post processing mask: %i\n", ret);
+		cam->post_processing_mask = ret;
 	}
-	cam->post_processing_mask = ret;
 }
 
 void			fill_prop_primitive(t_primitive *prim, char *line)

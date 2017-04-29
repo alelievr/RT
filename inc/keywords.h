@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 00:14:55 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 19:38:34 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 06:28:40 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ const char * g_restricted_keywords[] = {
 	"highlight color:", "opacity:", "reflection:", "refraction:",
 	"bumpmap:", "illum:", "emission color map:", "highlight color map:",
 	"refraction map:", "reflection map:", "ambiant color:", "rotate:",
-	"moving:", NULL
+	"moving:", "effect:", NULL
 };
 
 #define END -1
@@ -29,8 +29,8 @@ const struct { char *name; int value; } illum_restricted_keywords[] = {
 };
 
 const struct {char *name; int value; } mask_restricted_keywords[] = {
-	V(SEPIA), V(CARTOON), V(ANTIALIASING), V(DEPTH_OF_FIELD), V(BLOOM),
-	V(LENS_FLARE), V(ACES_TONEMAPPING), V(VIGNETTING), V(DALTONIZE),
+	V(SEPIA), V(CARTOON), V(BLACK_AND_WHITE), V(DEPTH_OF_FIELD),
+	V(ACES_TONEMAPPING), V(VIGNETTING), V(DALTONIZE),
 	V(NIGHT_VISION), V(END)
 };
 

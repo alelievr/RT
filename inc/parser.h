@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 01:24:29 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 06:19:23 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@
 # define LF_RT_REFLECTION_MAP "\\sreflection map map:\\s%s\\s"
 
 # define LF_RT_NAME "\\sname:\\s%s\\s"
-# define LF_RT_MASK "\\spost_processing_mask:\\s%s\\s"
+# define LF_RT_MASK "\\seffect:\\s%s\\s"
 # define LF_RT_ILLUM "\\sillum:\\s%s\\s"
 # define LF_RT_TYPE "\\stype:\\s%s\\s"
 
@@ -138,8 +138,6 @@ enum					e_post_processing
 	CARTOON =			0x0004,
 	ANTIALIASING =		0x0008,
 	DEPTH_OF_FIELD =	0x0010,
-	BLOOM =				0x0020,
-	LENS_FLARE =		0x0040,
 	ACES_TONEMAPPING =	0x0080,
 	VIGNETTING =		0x0100,
 	DALTONIZE =			0x0200,

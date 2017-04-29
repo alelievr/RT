@@ -17,7 +17,7 @@ vec3	cartoon(vec3 color, vec3 lpos, Hit h, Ray r)
     vec3	ldir = normalize(lpos - h.pos);
     float	intensity = dot(normalize(ldir), h.norm);
     float	factor = 0.5;
-    
+
     if (intensity > 0.9)
         factor = 1.0;
     else if (intensity > 0.6)
@@ -31,11 +31,11 @@ vec3	cartoon(vec3 color, vec3 lpos, Hit h, Ray r)
     else
         factor = 0;
     color *= vec3(factor, factor, factor);
-    
+
     vec3	L = (lpos - h.pos);
     vec3	V = normalize(r.pos - h.pos);
     vec3	H = normalize(L + V);
-    
+
     float	edge = (dot(V, h.norm) > 0.5) ? 1 : 0;
     color *= edge;
     return color;

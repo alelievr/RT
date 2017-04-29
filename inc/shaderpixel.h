@@ -79,6 +79,7 @@ typedef struct	s_shader_file
 	t_line_list		*raytrace_lights;
 	t_line_list		*scene_begin;
 	t_line_list		*scene_end;
+	t_line_list		*post_processing;
 }				t_shader_file;
 
 typedef struct		s_atlas

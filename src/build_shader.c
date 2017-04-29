@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 19:50:38 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 01:25:59 by avially          ###   ########.fr       */
+/*   Updated: 2017/04/29 06:23:01 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ static void	init_shader_file(t_shader_file *shader_file)
 	shader_file->raytrace_lights = shader_file->scene_end;
 	LIST_APPEND(shader_file->raytrace_lights, strdup(raytrace_start_text));
 	LIST_INSERT(shader_file->raytrace_lights, strdup(raytrace_end_text));
+	shader_file->post_processing = shader_file->raytrace_lights;
 	LIST_APPEND(shader_file->main_image_begin, strdup("\n/* Static MainImage */\n"));
 	LIST_APPEND(shader_file->main_image_begin, strdup(main_image_start_text));
 	LIST_APPEND(shader_file->uniform_begin, strdup("/* Generated uniforms */\n"));
@@ -65,7 +66,7 @@ static void	init_shader_file(t_shader_file *shader_file)
 
 static void	load_essencial_files(t_shader_file *shader_file, t_file *sources)
 {
-	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/cubetroue.glsl", "shaders/tri/glass.glsl", "shaders/tri/disk.glsl", "shaders/tri/light.glsl", NULL};
+	const char *const	*files = (const char *const[]){"shaders/tri/scene.glsl", "shaders/tri/plane.glsl", "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", "shaders/tri/cubetroue.glsl", "shaders/tri/glass.glsl", "shaders/tri/disk.glsl", "shaders/tri/light.glsl", "shaders/tri/pproc.glsl", NULL};
 	int					fd;
 	char				line[0xF000];
 	int					i;
@@ -197,10 +198,25 @@ static void		append_uniforms(t_shader_file *shader_file, t_object *obj)
 	}
 }
 
+static void		append_post_processing(t_shader_file *shader_file, t_camera *c)
+{
+	if (c->post_processing_mask & BLACK_AND_WHITE)
+		LIST_APPEND(shader_file->post_processing, strdup("\tcolor = black_white(color);"));
+	if (c->post_processing_mask & CARTOON)
+		LIST_APPEND(shader_file->post_processing, strdup("\tcolor = cartoon(color, vec3(0, 0, 0), h, r);"));
+	if (c->post_processing_mask & NIGHT_VISION)
+		LIST_APPEND(shader_file->post_processing, strdup("\tcolor = nightvision(color);"));
+	if (c->post_processing_mask & SEPIA)
+		LIST_APPEND(shader_file->post_processing, strdup("\tcolor = sepia(color);"));
+	printf("post processing mask: %i\n", c->post_processing_mask);
+}
+
 static void		tree_march(t_shader_file *shader_file, t_object *obj)
 {
 	while (obj)
 	{
+		if (obj->primitive.type == CAMERA + 1)
+			append_post_processing(shader_file, &obj->camera);
 		append_uniforms(shader_file, obj);
 		LIST_APPEND(shader_file->scene_begin, generate_scene_line(obj));
 		if (obj->children)
