@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/02 16:46:32 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 20:23:06 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define PARSER_H
 
 # include "shaderpixel.h"
-
 # include "libft.h"
 # include <fcntl.h>
 # include <math.h>
@@ -23,10 +22,6 @@
 # include <limits.h>
 # include <stdarg.h>
 # include <stdbool.h>
-
-/*
-	.RT format defines
-*/
 
 # define LF_RT_POS		"\\spos:\\s%f\\s%f\\s%f\\s"
 # define LF_RT_ROT		"\\srot:\\s%f\\s%f\\s%f\\s"
@@ -76,45 +71,10 @@
 # define LF_RT_GATE_OR
 # define LF_RT_GATE_AND
 # define LF_RT_GATE_NAND
-/*
-	.OBJ format defines
-*/
 
-# define LF_V "\\sv\\s%f\\s%f\\s%f\\s"
-# define LF_VN "\\svn\\s%f\\s%f\\s%f\\s"
-# define LF_VT "\\svt\\s%f\\s%f\\s"
-# define LF_VT2 "\\svt\\s%f\\s%f\\s%f\\s"
-# define LF_F3 "\\sf\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s"
-# define LF_F4 "\\sf\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s%d\\s"
-# define LF_F4S "\\sf\\s%d//%d\\s%d//%d\\s%d//%d\\s%d//%d\\s"
-# define LF_MTL "\\smtllib\\s%w\\s"
-# define LF_USEMTL "\\susemtl\\s%w\\s"
-
-/*
-	.MTL format defines
-*/
-
-# define LF_NEWMTL "\\snewmtl\\s%w\\s"
-# define LF_NS "\\sNs\\s%f\\s"
-# define LF_NI "\\sNi\\s%f\\s"
-# define LF_D "\\sd\\s%f\\s"
-# define LF_TR "\\sTr\\s%f\\s%f\\s%f\\s"
-# define LF_TF "\\sTf\\s%f\\s%f\\s%f\\s"
-# define LF_ILLUM "\\sillum\\s%d\\s"
-# define LF_KA "\\sKa\\s%f\\s%f\\s%f\\s"
-# define LF_KD "\\sKd\\s%f\\s%f\\s%f\\s"
-# define LF_KS "\\sKs\\s%f\\s%f\\s%f\\s"
-# define LF_KE "\\sKe\\s%f\\s%f\\s%f\\s"
-# define LF_MAP_KA "\\smap_Ka\\s%w\\s"
-# define LF_MAP_KD "\\smap_Kd\\s%w\\s"
-# define LF_MAP_REFL "\\smap_refl\\s%w\\s"
-
-#define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
-#define FTRGB float *r, float *g, float
-
-/*
-	Other
-*/
+# define LOL1(x) ft_strrchr(x, '.') != NULL
+# define FILE_CHECK_EXT(x, y) (LOL1(x) && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
+# define FTRGB float *r, float *g, float
 
 enum		e_primitive_type
 {
@@ -281,22 +241,6 @@ typedef struct			s_scene
 	t_object			*root_view;
 }						t_scene;
 
-/*
-GLSL uniform construction:
-vec4 positon = vec3(position) + primitive spec value
-vec4 rotaion = vec3(rotaion) + illum value
-
-sampler2D textureAtlas;
-sampler2D textureAtlasUvs;
-
-...
-
-*/
-
-/*
-	Parsing
-*/
-
 void					parse_obj(char *file, t_mesh **mesh);
 void					parse_mtl(t_mesh *mesh);
 int						gl(char *dst, int *fd);
@@ -305,10 +249,6 @@ void					parse_obj_file(char *file, t_mesh *mesh);
 int						get_next_word(char **str, char *res);
 int						parse(int ac, char **av);
 
-
-/*
-	Parsing
-*/
 
 void					skip_space(char **format, char **str);
 int						skip_string(char **format, char **str);
