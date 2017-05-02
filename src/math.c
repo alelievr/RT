@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 10:45:41 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 11:05:47 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 18:21:35 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,3 @@ t_vec3			normalize(t_vec3 v)
 
 	return ((t_vec3){v.x / l, v.y / l, v.z / l});
 }
-

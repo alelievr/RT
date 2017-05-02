@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 17:03:04 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/25 23:36:27 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 18:23:19 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ static static void	my_draw_bitmap(FT_Bitmap *b, int _x, int _y, FT_GlyphSlot _sl
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, b->width, b->rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
 	glPushMatrix();

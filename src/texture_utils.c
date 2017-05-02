@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:14:54 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/29 14:27:01 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 18:19:15 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ unsigned int		apply_channel_mask_pixel(unsigned int pixel, int chans)
 	return (pixel);
 }
 
-unsigned int	texture_repeat(t_image *tex, int x, int y)
+unsigned int		texture_repeat(t_image *tex, int x, int y)
 {
 	if (tex->width == 0 || tex->height == 0)
 		return (0);
@@ -49,11 +49,11 @@ unsigned int	texture_repeat(t_image *tex, int x, int y)
 	}
 }
 
-unsigned int	fusion_pixel(int src_mask, int dst_mask, FTN4 *dst)
+unsigned int		fusion_pixel(int src_mask, int dst_mask, FTN4 *dst)
 {
-	unsigned int		src_pixel;
-	unsigned int		dst_pixel;
-	unsigned int		result_pixel;
+	unsigned int	src_pixel;
+	unsigned int	dst_pixel;
+	unsigned int	result_pixel;
 
 	src_pixel = texture_repeat(src, x, y);
 	dst_pixel = texture_repeat(dst, x, y);
@@ -66,16 +66,16 @@ unsigned int	fusion_pixel(int src_mask, int dst_mask, FTN4 *dst)
 	src_pixel, src_mask, 16);
 	result_pixel |= FUSION_PIXEL_COMPONENT(dst_pixel, dst_mask, \
 	src_pixel, src_mask, 24);
-	return result_pixel;
+	return (result_pixel);
 }
 
-void			fusion_texture(t_image *dst, t_image *src,
+void				fusion_texture(t_image *dst, t_image *src,
 		int dst_mask, FTN3 *new_tex_height)
 {
-	int					x;
-	int					y;
-	unsigned char		*img_dst;
-	unsigned int		result_pixel;
+	int				x;
+	int				y;
+	unsigned char	*img_dst;
+	unsigned int	result_pixel;
 
 	*new_tex_width = MAX(dst->width, src->width);
 	*new_tex_height = MAX(dst->height, src->height);
@@ -95,4 +95,3 @@ void			fusion_texture(t_image *dst, t_image *src,
 	free(dst->data);
 	dst->data = img_dst;
 }
-

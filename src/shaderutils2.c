@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 10:58:21 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 11:07:15 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 18:11:35 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,3 @@ t_vec3			get_object_position(t_object *obj)
 	VEC3_ADD_DIV(rotate, obj->transform.initial_position, 1);
 	return (rotate);
 }
-

@@ -14,9 +14,9 @@
 #include <math.h>
 
 static t_vec2	angleAmount;
-static int	cursor_mode;
-static float lastPausedTime;
-int			gl_ssNbr = 1;
+static int		cursor_mode;
+static float	lastPausedTime;
+int				gl_ssNbr = 1;
 
 static void		error_callback(int error, const char *description)
 {
@@ -38,7 +38,6 @@ static void		key_callback(GLFWwindow *g_window, int key,int scancode, int action
 		BIT_SET(g_keys, FORWARD, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_DOWN)
 		BIT_SET(g_keys, BACK, action == GLFW_PRESS || action == GLFW_REPEAT);
-
 	if (key == GLFW_KEY_D)
 		BIT_SET(g_keys, SOBJ_POS_RIGHT, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_A)
@@ -51,18 +50,12 @@ static void		key_callback(GLFWwindow *g_window, int key,int scancode, int action
 		BIT_SET(g_keys, SOBJ_POS_UP, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_E)
 		BIT_SET(g_keys, SOBJ_POS_DOWN, action == GLFW_PRESS || action == GLFW_REPEAT);
-
 	if (key == GLFW_KEY_X)
 		BIT_SET(g_keys, SOBJ_DIR_X, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_Y)
 		BIT_SET(g_keys, SOBJ_DIR_Y, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_Z)
 		BIT_SET(g_keys, SOBJ_DIR_Z, action == GLFW_PRESS || action == GLFW_REPEAT);
-
-//	if (key == GLFW_KEY_Q)
-//		BIT_SET(g_keys, UP, action == GLFW_PRESS || action == GLFW_REPEAT);
-//	if (key == GLFW_KEY_E)
-//		BIT_SET(g_keys, DOWN, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_KP_ADD || key == GLFW_KEY_EQUAL)
 		BIT_SET(g_keys, PLUS, action == GLFW_PRESS || action == GLFW_REPEAT);
 	if (key == GLFW_KEY_KP_SUBTRACT || key == GLFW_KEY_MINUS)

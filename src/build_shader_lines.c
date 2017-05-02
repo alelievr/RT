@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:28:45 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/29 14:45:12 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 18:22:42 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,7 @@ char			*generate_scene_line(t_object *obj)
 	if (ISTYPE(SPHERE))
 		sprintf(line, "\tsphere(%s_position, %s_rotation, %f, Coupes(%s), \
 Material(%s), r, hit);", obj->name, obj->name, obj->primitive.radius, \
-generate_coupes_line(&obj->primitive),\
-generate_material_line(&obj->material));
+generate_coupes_line(&obj->primitive), generate_material_line(&obj->material));
 	else if (ISTYPE(PLANE))
 		sprintf(line, "\tplane(%s_rotation, %s_position, 0, Coupes(%s), \
 Material(%s), r, hit);", obj->name, obj->name, \

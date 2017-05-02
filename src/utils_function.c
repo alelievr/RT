@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 10:48:01 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 11:02:30 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 18:16:34 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 int				check_file_extension(char *file, char **exts)
 {
-	char	*ext;
+	char			*ext;
 
 	ext = file + strlen(file) - 1;
 	while (ext != file && *ext != '.')
@@ -70,7 +70,7 @@ int				get_program(int p)
 	return (program);
 }
 
-char		*get_scene_directory(char *scene_dir)
+char			*get_scene_directory(char *scene_dir)
 {
 	static char		*scene_directory = NULL;
 

@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/25 23:30:02 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 11:23:53 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 18:20:42 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,10 +98,11 @@ int				main(int ac, char **av)
 {
 	static t_file	sources[0xF00];
 	size_t			num;
-	t_scene			scene = (t_scene){.root_view = NULL};
+	t_scene			scene;
 	int				atlas_id;
 	GLint			*unis;
 
+	scene = (t_scene){.root_view = NULL};
 	if (ac < 1)
 		usage(*av);
 	parse_rt_file(av[1], &scene);
