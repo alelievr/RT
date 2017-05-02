@@ -67,7 +67,7 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 		normalNoise(h.norm, h.uv);
 	else if (h.normal_effect == 2)
 		normalMovingNoise(h.norm, h.uv);
-	else
+	else if (h.normal_effect == 3)
 		normalFBM(h.norm, h.uv);
  	coef = (limit(dot(h.norm, d), 0.0, 1.0));
 	color = coef * col;

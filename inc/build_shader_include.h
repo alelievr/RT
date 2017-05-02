@@ -3,28 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   build_shader_include.h                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:13:23 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 19:57:59 by alelievr         ###   ########.fr       */
+/*   Created: 2017/05/02 20:06:39 by yalaouf           #+#    #+#             */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BUILD_SHADER_INCLUDE
-# define BUILD_SHADER_INCLUDE
+#ifndef BUILD_SHADER_INCLUDE_H
+# define BUILD_SHADER_INCLUDE_H
 
 # define MAX_TEXTURES	512
 # define N_L_L2 m->next = NULL; m->line = NULL; m;})
 # define N_L_L (sizeof(t_line_list)))) ft_exit("malloc error !"); N_L_L2
 # define NEW_LINE_LIST ({t_line_list *m; if (!(m = (t_line_list *)malloc N_L_L
 # define YO(l) tmp->next = l->next; l->next = tmp;}
-# define LIST_INSERT(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s;YO(l)
+# define LIST_INSERT(l,s) {t_line_list *tmp=NEW_LINE_LIST; tmp->line = s;YO(l)
 # define Y2(l) tmp->next = l->next; l->next = tmp; l = tmp;}
-# define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line = s;Y2(l)
+# define LIST_APPEND(l, s) {t_line_list *tmp = NEW_LINE_LIST; tmp->line=s;Y2(l)
 # define ISTYPE(x) (obj->primitive.type == x + 1)
 # define PRM2 ISTYPE(GLASS) || ISTYPE(DISK))
 # define PRM ISTYPE(CONE) || ISTYPE(CUBE) || ISTYPE(CUBE_TROUE) || PRM2
-# define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) || PRM
+# define ISPRIMITIVE (ISTYPE(SPHERE) || ISTYPE(PLANE) || ISTYPE(CYLINDRE) ||PRM
 # define TPE ISTYPE(SPOT_LIGHT))
 # define ISLIGHT (ISTYPE(POINT_LIGHT) || ISTYPE(DIRECTIONAL_LIGHT) || TPE
 # define MAX(x, y) ((x > y) ? x : y)
@@ -52,7 +52,7 @@
 # define FA6(m,p1,p2,aw,ah,m1,m2) m->p1.width; *ah = MAX(*ah, m->p1.height); }
 # define FA5(m,p1,p2,aw,ah,m1,m2) &new_y); *aw += FA6(m,p1,p2,aw,ah,m1,m2)
 # define FA4(m,p1,p2,aw,ah,m1,m2) &m->p2,m1,m2,&new_x, FA5(m,p1,p2,aw,ah,m1,m2)
-# define FA3(m,p1,p2,aw,ah,m1,m2) fusion_texture(&m->p1, FA4(m,p1,p2,aw,ah,m1,m2)
+# define FA3(m,p1,p2,aw,ah,m1,m2) fusion_texture(&m->p1,FA4(m,p1,p2,aw,ah,m1,m2)
 # define FA2(m,p1,p2,aw,ah,m1,m2) *aw -= m->p1.width; FA3(m,p1,p2,aw,ah,m1,m2)
 # define FA(m,p1,p2,aw,ah,m1,m2) { int new_x, new_y; FA2(m,p1,p2,aw,ah,m1,m2)
 # define FUSION_TEXTURE_ATLAS(m,p1,p2,aw,ah,m1,m2) FA(m,p1,p2,aw,ah,m1,m2)
@@ -60,7 +60,7 @@
 # define XYZ		0xFFFFFFFF
 # define COF4(m,p) m->p.height) / (float)atlas->height}
 # define COF3(m,p) / (float)atlas->width, (float)(*offset_y + COF4(m,p)
-# define COF2(m,p) (float)atlas->height, (float)(*offset_x + m->p.width)COF3(m,p)
+# define COF2(m,p) (float)atlas->height, (float)(*offset_x +m->p.width)COF3(m,p)
 # define COF(m,p) (float)atlas->width, (float)*offset_y / COF2(m,p)
 # define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / COF(m,p)
 # define ADD_TEXTURE_ATLAS(m, p) add_subimage(atlas, ATA(m,p)
