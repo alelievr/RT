@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 21:54:21 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 21:54:26 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 23:09:36 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,8 +250,8 @@ void			fill_prop_material(t_material *mtl, char *line)
 	ret = 0;
 	i = 0;
 	PALIAS(mtl->color, c);
-	PALIAS(mtl->emission_color, e)
-	PALIAS(mtl->highlight_color, h)
+	PALIAS(mtl->emission_color, e);
+	PALIAS(mtl->highlight_color, h);
 	if (ft_sscanf(LF_RT_COLOR_F, line, &c->x, &c->y, &c->z))
 		ft_sscanf(LF_RT_COLOR_V, line, &c->x, &c->y, &c->z);
 	if (!ft_sscanf(LF_RT_EMISSION_COLOR_F, line, &e->x, &e->y, &e->z))
