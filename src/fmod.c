@@ -3,27 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   fmod.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created  2016/07/31 20:44:24 by alelievr          #+#    #+#             */
-/*   Updated  2016/07/31 20:44:24 by alelievr         ###   ########.fr       */
+/*   Created: 2017/05/02 20:00:01 by pmartine          #+#    #+#             */
+/*   Updated: 2017/05/02 20:20:14 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "shaderpixel.h"
 #include <dlfcn.h>
-#define LOAD_SYM(x) x##1 = dlsym(fmod_handler, #x); if (!x) puts(dlerror()), exit(-1);
+#define EX exit(-1);
+#define LOAD_SYM(x) x##1 = dlsym(fmod_handler, #x); if (!x) puts(dlerror()), EX
 #define PROTO_SYM(x) typeof(x) *x##1
 
-static FMOD_SYSTEM	*fmod_system;
-static void			*fmod_handler;
-PROTO_SYM(FMOD_System_Create);
-PROTO_SYM(FMOD_System_Init);
-PROTO_SYM(FMOD_System_CreateSound);
-PROTO_SYM(FMOD_Sound_SetLoopCount);
-PROTO_SYM(FMOD_System_PlaySound);
-PROTO_SYM(FMOD_System_Close);
-PROTO_SYM(FMOD_System_Release);
+static FMOD_SYSTEM	*g_fmod_system;
+static void			*g_fmod_handler;
+PROTO_SYM(g_fmod_system_sreate);
+PROTO_SYM(g_fmod_system_init);
+PROTO_SYM(g_fmod_system_createsound);
+PROTO_SYM(g_fmod_sound_setloopcount);
+PROTO_SYM(g_fmod_system_playsound);
+PROTO_SYM(g_fmod_system_close);
+PROTO_SYM(g_fmod_system_release);
 
 void			fmod_init(void)
 {
@@ -33,18 +34,18 @@ void			fmod_init(void)
 		puts(dlerror());
 		exit(-1);
 	}
-	LOAD_SYM(FMOD_System_Create);
-	LOAD_SYM(FMOD_System_Init);
-	LOAD_SYM(FMOD_System_CreateSound);
-	LOAD_SYM(FMOD_Sound_SetLoopCount);
-	LOAD_SYM(FMOD_System_PlaySound);
-	LOAD_SYM(FMOD_System_Close);
-	LOAD_SYM(FMOD_System_Release);
+	LOAD_SYM(g_fmod_system_create);
+	LOAD_SYM(g_fmod_system_init);
+	LOAD_SYM(g_fmod_system_createsound);
+	LOAD_SYM(g_fmod_sound_setloopcount);
+	LOAD_SYM(g_fmod_system_playsound);
+	LOAD_SYM(g_fmod_system_close);
+	LOAD_SYM(g_fmod_system_release);
 	FMOD_System_Create1(&fmod_system);
 	FMOD_System_Init1(fmod_system, 1, FMOD_INIT_NORMAL, NULL);
 }
 
-FMOD_SOUND			*load_sound(char *fname)
+FMOD_SOUND		*load_sound(char *fname)
 {
 	FMOD_SOUND *music;
 

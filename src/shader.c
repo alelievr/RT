@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/21 19:15:54 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/21 19:15:58 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 21:28:31 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static GLuint	compile_shader_vertex(bool fatal)
 	GLuint			ret;
 
 	ret = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(ret, 1, &vertex_shader_text, NULL);
+	glShaderSource(ret, 1, &g_vertex_shader_text, NULL);
 	glCompileShader(ret);
 	check_compilation(ret, fatal);
 	return (ret);

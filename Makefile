@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/05/02 16:47:37 by pmartine         ###   ########.fr        #
+#    Updated: 2017/05/02 20:43:29 by pmartine         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@
 SRCDIR		=	src
 SRC			=	main.c						\
 				glfw_init.c					\
+				glfw_init2.c					\
 				shader.c					\
 				build_shader.c				\
 				select.c					\

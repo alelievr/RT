@@ -3,90 +3,48 @@
 /*                                                        :::      ::::::::   */
 /*   glfw_init.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created  2016/07/21 00:12:11 by alelievr          #+#    #+#             */
-/*   Updated  2016/07/21 17:56:22 by alelievr         ###   ########.fr       */
+/*   Created: 2017/05/02 20:31:30 by pmartine          #+#    #+#             */
+/*   Updated: 2017/05/02 21:21:25 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "shaderpixel.h"
 #include <math.h>
 
-static t_vec2	angleAmount;
-static int		cursor_mode;
-static float	lastPausedTime;
-int				gl_ssNbr = 1;
+static t_vec2	g_angleamount;
+static int		g_cursormode;
+static float	g_lastpausedtime;
+int				g_gl_ssnbr = 1;
 
-static void		error_callback(int error, const char *description)
+static void		key_callback(GLFWwindow *g_window, int key, int scancode, int a, int mods)
 {
-	(void)error;
-	fprintf(stderr, "Error: %s\n", description);
-}
+	char	*name;
+	(void)scancode;
 
-static void		key_callback(GLFWwindow *g_window, int key,int scancode, int action, int mods)
-{
-	(void) scancode;
-	(void) mods;
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(g_window, GLFW_TRUE);
-	if (key == GLFW_KEY_RIGHT)
-		BIT_SET(g_keys, RIGHT, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_LEFT)
-		BIT_SET(g_keys, LEFT, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_UP)
-		BIT_SET(g_keys, FORWARD, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_DOWN)
-		BIT_SET(g_keys, BACK, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_D)
-		BIT_SET(g_keys, SOBJ_POS_RIGHT, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_A)
-		BIT_SET(g_keys, SOBJ_POS_LEFT, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_W)
-		BIT_SET(g_keys, SOBJ_POS_FORWARD, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_S)
-		BIT_SET(g_keys, SOBJ_POS_BACK, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_Q)
-		BIT_SET(g_keys, SOBJ_POS_UP, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_E)
-		BIT_SET(g_keys, SOBJ_POS_DOWN, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_X)
-		BIT_SET(g_keys, SOBJ_DIR_X, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_Y)
-		BIT_SET(g_keys, SOBJ_DIR_Y, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_Z)
-		BIT_SET(g_keys, SOBJ_DIR_Z, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_KP_ADD || key == GLFW_KEY_EQUAL)
-		BIT_SET(g_keys, PLUS, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_KP_SUBTRACT || key == GLFW_KEY_MINUS)
-		BIT_SET(g_keys, MOIN, action == GLFW_PRESS || action == GLFW_REPEAT);
-	if (key == GLFW_KEY_TAB && !(mods & GLFW_MOD_SHIFT) && action == GLFW_PRESS)
-		g_selected_object_index++, select_object();
-	if (key == GLFW_KEY_TAB && (mods & GLFW_MOD_SHIFT) && action == GLFW_PRESS)
-		g_selected_object_index--, select_object();
-	if (key == GLFW_KEY_O && action == GLFW_PRESS)
-		g_shadow ^= action;
-	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	key_callback2(g_window, key, a, mods);
+	if (key == GLFW_KEY_SPACE && a == GLFW_PRESS)
 	{
-		g_input_pause ^= action;
+		g_input_pause ^= a;
 		if (g_input_pause)
-			lastPausedTime = get_current_time();
+			g_lastpausedtime = get_current_time();
 		else
-			g_paused_time += get_current_time() - lastPausedTime;
+			g_paused_time += get_current_time() - g_lastpausedtime;
 	}
 	if (key == GLFW_KEY_C)
-		cursor_mode ^= action == GLFW_PRESS;
-	glfwSetInputMode(g_window, GLFW_CURSOR, (cursor_mode) ? GLFW_CURSOR_NORMAL \
-	: GLFW_CURSOR_DISABLED);
-	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+		g_cursormode ^= a == GLFW_PRESS;
+	glfwSetInputMode(g_window, GLFW_CURSOR, (g_cursormode) ? \
+		GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+	if (key == GLFW_KEY_P && a == GLFW_PRESS)
 	{
-		char	*name = (char *)malloc(sizeof(char) * 50);
+		name = (char *)malloc(sizeof(char) * 50);
 		name = ft_strjoin(name, "screenshot_");
-		name = ft_strjoin(name, ft_itoa(gl_ssNbr));
+		name = ft_strjoin(name, ft_itoa(g_gl_ssnbr));
 		name = ft_strjoin(name, ".png");
 		SOIL_save_screenshot(name, SOIL_SAVE_TYPE_PNG, 0, 0, 1080, 720);
 		free(name);
-		gl_ssNbr++;
+		g_gl_ssnbr++;
 	}
 }
 
@@ -97,15 +55,15 @@ static void		g_mouse_callback(GLFWwindow *win, double x, double y)
 	g_mouse.y = y;
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
 	{
-		angleAmount.x += ((g_window.x / 2.) - g_mouse.x) / 200;
-		angleAmount.y += ((g_window.y / 2.) - g_mouse.y) / 200;
-		if (angleAmount.y > 1.5f)
-			angleAmount.y = 1.5f;
-		if (angleAmount.y < -1.5f)
-			angleAmount.y = -1.5f;
-		g_forward.x = cos(angleAmount.y) * sin(angleAmount.x);
-		g_forward.y = sin(angleAmount.y);
-		g_forward.z = cos(angleAmount.y) * cos(angleAmount.x);
+		g_angleamount.x += ((g_window.x / 2.) - g_mouse.x) / 200;
+		g_angleamount.y += ((g_window.y / 2.) - g_mouse.y) / 200;
+		if (g_angleamount.y > 1.5f)
+			g_angleamount.y = 1.5f;
+		if (g_angleamount.y < -1.5f)
+			g_angleamount.y = -1.5f;
+		g_forward.x = cos(g_angleamount.y) * sin(g_angleamount.x);
+		g_forward.y = sin(g_angleamount.y);
+		g_forward.z = cos(g_angleamount.y) * cos(g_angleamount.x);
 	}
 }
 

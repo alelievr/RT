@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/05/02 17:48:06 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 21:49:24 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,9 +162,9 @@ void			fill_prop_primitive(t_primitive *prim, char *line)
 	ft_sscanf(LF_RT_HEIGHT, line, &prim->height);
 	ft_sscanf(LF_RT_ANGLE, line, &prim->angle);
 	if (!ft_sscanf(LF_RT_TYPE, line, str, 256))
-		if (FOR(i = 0, type_restricted_keywords[i], i++))
+		if (FOR(i = 0, g_type_restricted_keywords[i], i++))
 		{
-			if (!ft_strcmp(type_restricted_keywords[i], ft_strupcase(str)))
+			if (!ft_strcmp(g_type_restricted_keywords[i], ft_strupcase(str)))
 				prim->type = i + 1;
 		}
 	if (!prim->type)

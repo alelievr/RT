@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/06 20:28:54 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 23:28:58 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 19:57:22 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@
 # define TYPEIFY(type, data)
 # define T(x, y, z) ((ft_strstr(x, tc) != NULL) ? (y) : (z))
 # define P(v, x, y) ((type == v) ? (x) : (y))
-/*# define CHAR_TO_TRUE_TYPE_CAST(x, y) (T("c", (char)(x), T("diouxXDOUC", (unsigned long long)(x), T("s", (char *)(x), T("S", (wchar_t *)(x), T("p", (void *)(x), (x)))))))*/
 # define CHAR_TO_TRUE_TYPE_CAST(x) (P(T_CHAR, DO((char)(x)), P(T_INTEGER, DO((unsigned long long int)(x)), P(T_POINTER, DO((unsigned long long int)(x)), P(T_WSTRING, DO((wchar_t *)(unsigned long long int)(x)), P(T_LONG, DO((unsigned long long int)(x)), P(T_WCHAR, DO((wchar_t)(x)), DO((char *)(x)))))))))
 # define CHAR_TO_TYPE(tc) (T("c", T_CHAR, T("diouxX", T_INTEGER, T("DOU", T_LONG, T("p", T_POINTER, T("s", T_STRING, T("S", T_WSTRING, T("C", T_WCHAR, -1))))))))
 # define GET_NEXT_ARG(ap, type) CHAR_TO_TRUE_TYPE_CAST(get_next_arg(ap, type))

@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 10:51:06 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 12:55:16 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 21:48:13 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ void			update_keys(void)
 		VEC3_ADD_DIV(g_move, -g_forward, 10 / g_move.w);
 	update_selected_keys();
 	if (BIT_GET(g_keys, PLUS))
-		g_move.w *= 1 + g_move_AMOUNT;
+		g_move.w *= 1 + G_MOVE_AMOUNT;
 	if (BIT_GET(g_keys, MOIN))
-		g_move.w *= 1 - g_move_AMOUNT;
+		g_move.w *= 1 - G_MOVE_AMOUNT;
 }
 
 static t_vec3	get_object_rotation(t_object *obj)
