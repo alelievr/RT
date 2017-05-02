@@ -20,11 +20,13 @@ void plane (vec3 rot, vec3 pos, float data, Coupes coupe, Material mat, Ray r, i
 		h.dist = t;
 		h.pos = r.pos + r.dir * h.dist;
 		h.norm = faceforward(norm, norm, r.dir);
-    h.mat = mat;
+    	h.mat = mat;
 		vec3	u = vec3(norm.y, norm.z, -1 * norm.x );
 		vec3	v = cross(u, norm);
 		h.uv = vec2(dot(h.pos, u), dot(h.pos, v));
-  }
+		h.color_effect = mat.color_effect;
+		h.normal_effect = mat.normal_effect;
+  	}
 	if (data == 0)
 		return;
 	else if(h.pos.x > plus.x || h.pos.x < moin.x || h.pos.y > plus.y || h.pos.y < moin.y || h.pos.z > plus.z || h.pos.z < moin.z)

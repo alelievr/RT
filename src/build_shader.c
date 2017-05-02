@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 13:39:08 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 17:37:51 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 19:52:38 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ static char		*concat_line_list(t_shader_file *shader_file)
 		DBA(prev, line, line, line->next);
 		free(prev);
 	}
+	write(1, buff, strlen(buff));
 	return (buff);
 }
 

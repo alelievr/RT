@@ -5,14 +5,14 @@ float		limit(float value, float min, float max)
 
 vec3      refraction(vec3 dir, vec3 norm, float r)
 {
-  float k = 1.0 - r * r * (1.0 - dot(norm, dir) * dot(norm, dir));
-  vec3 ref;
+  	float k = 1.0 - r * r * (1.0 - dot(norm, dir) * dot(norm, dir));
+  	vec3 ref;
 
-  if (k < 0.0)
-      ref = vec3(0);
-  else
-      ref = r * dir - (r * dot(norm, dir) + sqrt(k)) * norm;
-  return (ref);
+  	if (k < 0.0)
+      	ref = vec3(0);
+  	else
+      	ref = r * dir - (r * dot(norm, dir) + sqrt(k)) * norm;
+  	return (ref);
 }
 
 vec4		shadows(vec3 pos, vec3 d, vec3 color_light, Hit h)
@@ -50,11 +50,11 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 	vec3 v1 = pos - h.pos;
 	vec3 v3 = v1 * v1;
 	vec3 d = normalize(v1);
-  float coef = 0;
-  vec3 color = vec3(0);
-  vec3 col = atlas_fetch(h.mat.texture, h.uv).xyz;
-  vec3 bump = atlas_fetch(h.mat.bump, h.uv).xyz;
-  vec3 spec = vec3(1);
+  	float coef = 0;
+  	vec3 color = vec3(0);
+  	vec3 col = atlas_fetch(h.mat.texture, h.uv).xyz;
+  	vec3 bump = atlas_fetch(h.mat.bump, h.uv).xyz;
+  	vec3 spec = vec3(1);
 	vec3 specularColor = vec3(0);
 	float specu = 0;
 
@@ -63,6 +63,12 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 		return (color);
 	if (!h.inside)
 		h.norm = normalize(normalize(h.norm) + bump);
+	if (h.normal_effect == 1)
+		normalNoise(h.norm, h.uv);
+	else if (h.normal_effect == 2)
+		normalMovingNoise(h.norm, h.uv);
+	else
+		normalFBM(h.norm, h.uv);
  	coef = (limit(dot(h.norm, d), 0.0, 1.0));
 	color = coef * col;
 	vec3 v = d - h.norm * (2 * dot(h.norm, d));
@@ -77,50 +83,63 @@ vec3		light(vec3 pos, vec3 light_color, Ray r, Hit h)
 
 vec3	 calc_color(Ray r, vec3 pos_light, vec3 light_color, float intensity)
 {
-  Hit h;
-  float   reflection;
-  float   opacity;
-  int     i = -1;
-  float   limit = 1;
-  vec3    color_hit = vec3(0);
-  vec3    color = vec3(0);
+  	Hit h;
+  	float   reflection;
+  	float   opacity;
+  	int     i = -1;
+  	float   limit = 1;
+  	vec3    color_hit = vec3(0);
+  	vec3    color = vec3(0);
 	float refrac;
 
 	light_color *= (intensity / 10);
-//light_color /= 2;;
-  while (++i < 10)
-  {
+	//light_color /= 2;;
+  	while (++i < 10)
+  	{
 		h.dist = 0;
-    h = scene(r);
+    	h = scene(r);
 
-    reflection = atlas_fetch(h.mat.reflection, h.uv).x;
-    opacity = atlas_fetch(h.mat.texture, h.uv).w;
+    	reflection = atlas_fetch(h.mat.reflection, h.uv).x;
+    	opacity = atlas_fetch(h.mat.texture, h.uv).w;
 
-    color_hit = atlas_fetch(h.mat.texture, h.uv).xyz * opacity;
+    	color_hit = atlas_fetch(h.mat.texture, h.uv).xyz * opacity;
 
 		color += light(pos_light, light_color, r, h) * limit;
-    color += iAmbient * color_hit * limit;
+    	color += iAmbient * color_hit * limit;
 		//color *= opacity;
 
-    if (opacity < 1)
-    {
-				refrac = atlas_fetch(h.mat.refraction, h.uv).x * 10;
-				if (refrac > 1)
+    	if (opacity < 1)
+    	{
+			refrac = atlas_fetch(h.mat.refraction, h.uv).x * 10;
+			if (refrac > 1)
 				r.dir = refraction(r.dir, h.norm , (1 / refrac));
-				r.pos = h.pos + r.dir * EPSI;
-				limit *= (1 - opacity);
-				if (limit < 0.1)
-					return color;
+			r.pos = h.pos + r.dir * EPSI;
+			limit *= (1 - opacity);
+			if (limit < 0.1)
+				return color;
 		}
-    else if (reflection > 0)
-    {
-        r.dir = normalize(r.dir - 2.0 * dot(normalize(h.norm), r.dir) * normalize(h.norm));
-				r.pos = h.pos + r.dir * EPSI;
-				limit *= reflection;
-				if (limit < 0.1)
-					return color;
-    }
-    else
-        return (color);
-  }
+    	else if (reflection > 0)
+    	{
+        	r.dir = normalize(r.dir - 2.0 * dot(normalize(h.norm), r.dir) * normalize(h.norm));
+			r.pos = h.pos + r.dir * EPSI;
+			limit *= reflection;
+			if (limit < 0.1)
+				return color;
+    	}
+    	else
+    	{
+    		if (h.color_effect == 0)
+        		return (color);
+        	else if (h.color_effect == 1)
+        		return (color * damier(h.uv));
+        	else if (h.color_effect == 2)
+        		return (color * brick(h.uv));
+        	else if (h.color_effect == 3)
+        		return (color * noise(h.uv));
+        	else if (h.color_effect == 4)
+        		return (color * movingNoise(h.uv));
+        	else
+        		return (color * fbm(h.uv));
+    	}
+  	}
 }

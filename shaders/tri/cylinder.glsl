@@ -35,6 +35,8 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 		d = rotate(d, rot, 1);
 		h.uv = vec2(-(0.5 + (atan(d.y, d.x) / M_PI)), -((d.z / M_PI) - floor(d.z / M_PI)));
 		h.inside = false;
+		h.color_effect = mat.color_effect;
+		h.normal_effect = mat.normal_effect;
 		return;
 	}
 
@@ -50,6 +52,8 @@ void cyl (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, ino
 			d = rotate(d, rot, 1);
 			h.uv = vec2(-(0.5 + (atan(d.y, d.x) / M_PI)), -((d.z / M_PI) - floor(d.z / M_PI)));
 			h.inside = true;
+			h.color_effect = mat.color_effect;
+			h.normal_effect = mat.normal_effect;
 		}
 		return;
 	}

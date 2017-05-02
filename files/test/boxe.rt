@@ -54,6 +54,12 @@ sphere3.5:
     bumpmap: ../../textures/normal.jpg
 	specular: 1
 
+sphere3.75:
+    type: sphere
+    pos: 40 00 -30
+    radius: 4
+    color: 0 0 255
+    color_effect: MOVING_NOISE
 
 sphere4:
     type: sphere

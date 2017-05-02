@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:13:23 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/29 14:14:27 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 19:57:59 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,11 @@
 # define ATA2(m,p) COMPUTE_OFFSET(m, p); *offset_x += m->p.width; ATA3(m,p)
 # define ATA3(m,p) printf("uv: %f/%f - %f/%f\n", m->p.atlas_uv.x, ATA4(m,p)
 # define ATA4(m,p) m->p.atlas_uv.y, m->p.atlas_uv.z, m->p.atlas_uv.w)
-# define SHA4 "shaders/tri/disk.glsl", "shaders/tri/light.glsl", NULL
+# define SHA5 "shaders/tri/cube.glsl", "shaders/tri/light.glsl", NULL
+# define SHA4 "shaders/tri/disk.glsl", SHA5
 # define SHA3 "shaders/tri/cubetroue.glsl", "shaders/tri/glass.glsl", SHA4
-# define SHA2 "shaders/tri/cone.glsl", "shaders/tri/cube.glsl", SHA3
+# define SHA2 "shaders/tri/cone.glsl", "shaders/tri/plane.glsl", SHA3
 # define SHA "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", SHA2
-# define SHADERS "shaders/tri/scene.glsl", "shaders/tri/plane.glsl", SHA
+# define SHADERS "shaders/tri/scene.glsl", "shaders/tri/noise.glsl", SHA
 
 #endif

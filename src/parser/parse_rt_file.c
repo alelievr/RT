@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/05/02 17:48:06 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 20:31:35 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,10 +140,10 @@ void			fill_prop_camera(t_camera *cam, char *line)
 		while ((get_next_word(&str, word)))
 		{
 			i = 0;
-			while (ft_strcmp(mask_restricted_keywords[i].name, "END"))
+			while (ft_strcmp(g_mask_restricted_keywords[i].name, "END"))
 			{
-				if (!ft_strcmp(mask_restricted_keywords[i].name, word))
-					ret |= mask_restricted_keywords[i].value;
+				if (!ft_strcmp(g_mask_restricted_keywords[i].name, word))
+					ret |= g_mask_restricted_keywords[i].value;
 				i++;
 			}
 		}
@@ -211,9 +211,9 @@ void			fill_prop_material_map(t_material *mtl, char *line, char *word, char *str
 	if (!ft_sscanf(LF_RT_ILLUM, line, str, 256))
 	{
 		while (get_next_word(&str, word))
-			if (FOR(i = 0, illum_restricted_keywords[i].value != END, i++))
-				if (!ft_strcmp(illum_restricted_keywords[i].name, word))
-					ret |= illum_restricted_keywords[i].value;
+			if (FOR(i = 0, g_illum_restricted_keywords[i].value != END, i++))
+				if (!ft_strcmp(g_illum_restricted_keywords[i].name, word))
+					ret |= g_illum_restricted_keywords[i].value;
 		mtl->illum = ret;
 	}
 }
@@ -237,6 +237,20 @@ void			fill_prop_material(t_material *mtl, char *line)
 		ft_sscanf(LF_RT_EMISSION_COLOR_V, line, &e->x, &e->y, &e->z);
 	if (!ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &h->x, &h->y, &h->z))
 		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &h->x, &h->y, &h->z);
+
+	if (!ft_sscanf(LF_RT_COLOR_EFFECT, line, word, 256))
+	{
+		if (FOR(i = 0, g_color_effect_restricted_keywords[i].value != END, i++))
+			if (!ft_strcmp(g_color_effect_restricted_keywords[i].name, word))
+				mtl->color_effect = g_color_effect_restricted_keywords[i].value + 1;
+	}
+
+	if (!ft_sscanf(LF_RT_NORMAL_EFFECT, line, word, 256))
+	{
+		if (FOR(i = 0, g_normal_effect_restricted_keywords[i].value != END, i++))
+			if (!ft_strcmp(g_normal_effect_restricted_keywords[i].name, word))
+				mtl->normal_effect = g_normal_effect_restricted_keywords[i].value;
+	}
 
 	ft_sscanf(LF_RT_OPACITY, line, &mtl->opacity);
 	ft_sscanf(LF_RT_SPECULAR, line, &mtl->specular);

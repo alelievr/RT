@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:32:36 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/29 14:45:52 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 20:31:57 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,15 @@ char			*generate_material_line(t_material *mat)
 
 	sprintf(line, "vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), \
 vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), vec4(%f, %f, %f, %f), \
-vec4(%f, %f, %f, %f)",
+vec4(%f, %f, %f, %f), %i, %i",
 			GET_UVS(mat->texture),
 			GET_UVS(mat->emission_map),
 			GET_UVS(mat->specular_map),
 			GET_UVS(mat->reflection_map),
 			GET_UVS(mat->refraction_map),
-			GET_UVS(mat->bumpmap));
+			GET_UVS(mat->bumpmap),
+			mat->color_effect,
+			mat->normal_effect);
 	return (line);
 }
 
