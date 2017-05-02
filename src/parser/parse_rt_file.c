@@ -6,7 +6,7 @@
 /*   By: pmartine <pmartine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 21:54:21 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/03 01:13:35 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 01:30:15 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ void			fill_prop_vec4(t_vec4 *data, char *line)
 	float	radius;
 	float	speed;
 
-	if (!ft_sscanf(LF_RT_MOVE, line, word, 256, &radius, &speed))
+	if (!ft_sscanf(MOVE, line, word, 256, &radius, &speed))
 	{
 		if (strchr(word, 'X'))
 			data->x = radius;
@@ -112,7 +112,7 @@ void			fill_prop_vec4(t_vec4 *data, char *line)
 			data->z = radius;
 		data->w = speed;
 	}
-	if (!ft_sscanf(LF_RT_ROTATE, line, word, 256, &speed))
+	if (!ft_sscanf(ROTATE, line, word, 256, &speed))
 	{
 		if (strchr(word, 'X'))
 			data->x = 1;
@@ -133,9 +133,9 @@ void			fill_prop_camera(t_camera *cam, char *line)
 
 	str = (char *)(char[256]){0};
 	ret = 0;
-	ft_sscanf(LF_RT_FOV, line, &cam->fov);
-	ft_sscanf(LF_RT_AMBIENT, line, &cam->ambient);
-	if (!ft_sscanf(LF_RT_MASK, line, str, 256))
+	ft_sscanf(FOV, line, &cam->fov);
+	ft_sscanf(AMBIENT, line, &cam->ambient);
+	if (!ft_sscanf(MASK, line, str, 256))
 	{
 		printf("line: %s\n", line);
 		while ((get_next_word(&str, word)))
@@ -159,10 +159,10 @@ void			fill_prop_primitive(t_primitive *p, char *line)
 	int		i;
 
 	str = (char *)(char[256]){0};
-	ft_sscanf(LF_RT_RADIUS, line, &p->radius);
-	ft_sscanf(LF_RT_HEIGHT, line, &p->height);
-	ft_sscanf(LF_RT_ANGLE, line, &p->angle);
-	if (!ft_sscanf(LF_RT_TYPE, line, str, 256))
+	ft_sscanf(RADIUS, line, &p->radius);
+	ft_sscanf(HEIGHT, line, &p->height);
+	ft_sscanf(ANGLE, line, &p->angle);
+	if (!ft_sscanf(TYPE, line, str, 256))
 		if (FOR(i = 0, g_type_restricted_keywords[i], i++))
 		{
 			if (!ft_strcmp(g_type_restricted_keywords[i], ft_strupcase(str)))
@@ -170,41 +170,41 @@ void			fill_prop_primitive(t_primitive *p, char *line)
 		}
 	if (!p->type)
 		ft_exit("mauvais type pour un objet\n");
-	if (p->nsl < 5 && !ft_sscanf(LF_RT_SLICE, line, &p->slice[p->nsl].x,\
+	if (p->nsl < 5 && !ft_sscanf(SLICE, line, &p->slice[p->nsl].x,\
 		&p->slice[p->nsl].y, &p->slice[p->nsl].z, &p->slice[p->nsl].w))
 		p->nsl++;
 }
 
 void			fill_prop_light(t_light *l, char *line)
 {
-	if (ft_sscanf(LF_RT_COLOR_F, line, &l->color.x, &l->color.y, &l->color.z))
-		ft_sscanf(LF_RT_COLOR_V, line, &l->color.x, &l->color.y, &l->color.z);
-	ft_sscanf(LF_RT_INTENSITY, line, &l->intensity);
+	if (ft_sscanf(COLOR_F, line, &l->color.x, &l->color.y, &l->color.z))
+		ft_sscanf(COLOR_V, line, &l->color.x, &l->color.y, &l->color.z);
+	ft_sscanf(INTENSITY, line, &l->intensity);
 }
 
 void			fill_prop_transform(t_transform *t, char *line)
 {
-	if (!ft_sscanf(LF_RT_POS, line, &t->position.x, &t->position.y,\
+	if (!ft_sscanf(POS, line, &t->position.x, &t->position.y,\
 		&t->position.z))
 		t->initial_position = t->position;
-	ft_sscanf(LF_RT_ROT, line, &t->euler_angles.x, &t->euler_angles.y,\
+	ft_sscanf(ROT, line, &t->euler_angles.x, &t->euler_angles.y,\
 		&t->euler_angles.z);
 }
 
-void			fill_prop_material_map(t_material *mtl, char *line, char *word, char *str)
+void			fill_prop_material_map(t_material *m, char *line, char *word, char *str)
 {
 	int		i;
 	int		ret;
-	
+
 	IINIT(char *, maps[8][3], (char *[8][3]){
-		{LF_RT_BUMPMAP, (char *)&mtl->bumpmap, (char *)&mtl->has_bumpmap},
-		{LF_RT_TEXTURE, (char *)&mtl->texture, (char *)&mtl->has_texture},
-		{LF_RT_EMISSION_MAP, (char *)&mtl->texture, (char *)&mtl->has_emission_map},
-		{LF_RT_HIGHLIGHT_MAP,(char *)&mtl->emission_map, (char *)&mtl->has_highlight_map},
-		{LF_RT_OPACITY_MAP, (char *)&mtl->opacity_map, (char *)&mtl->has_opacity_map},
-		{LF_RT_SPECULAR_MAP, (char *)&mtl->specular_map, (char *)&mtl->has_specular_map},
-		{LF_RT_REFLECTION_MAP, (char *)&mtl->reflection_map, (char *)&mtl->has_reflection_map},
-		{LF_RT_REFRACTION_MAP, (char *)&mtl->refraction_map, (char *)&mtl->has_refraction_map},
+		{BUMPMAP, (char *)&m->bumpmap, (char *)&m->has_bumpmap},
+		{TEXTURE, (char *)&m->texture, (char *)&m->has_texture},
+		{EMISSION_MAP, (char *)&m->texture, (char *)&m->has_emission_map},
+		{HIGHLIGHT_MAP, (char *)&m->emission_map, (char *)&m->has_highlight_map},
+		{OPACITY_MAP, (char *)&m->opacity_map, (char *)&m->has_opacity_map},
+		{SPECULAR_MAP, (char *)&m->specular_map, (char *)&m->has_specular_map},
+		{REFL_MAP, (char *)&m->reflection_map, (char *)&m->has_reflection_map},
+		{REFR_MAP, (char *)&m->refraction_map, (char *)&m->has_refraction_map},
 	});
 	ret = 0;
 	str = (char *)(char[256]){0};
@@ -213,13 +213,13 @@ void			fill_prop_material_map(t_material *mtl, char *line, char *word, char *str
 		if (ft_sscanf(maps[i][0], line, maps[i][1], 1024))
 			*(maps[i][2]) = true;
 	}
-	if (!ft_sscanf(LF_RT_ILLUM, line, str, 256))
+	if (!ft_sscanf(ILLUM, line, str, 256))
 	{
 		while (get_next_word(&str, word))
 			if (FOR(i = 0, g_illum_restricted_keywords[i].value != END, i++))
 				if (!ft_strcmp(g_illum_restricted_keywords[i].name, word))
 					ret |= g_illum_restricted_keywords[i].value;
-		mtl->illum = ret;
+		m->illum = ret;
 	}
 }
 
@@ -228,13 +228,13 @@ void			fill_prop_material_effect(t_material *mtl, char *line)
 	char	word[256];
 	int		i;
 
-	if (!ft_sscanf(LF_RT_COLOR_EFFECT, line, word, 256))
+	if (!ft_sscanf(COLOR_EFFECT, line, word, 256))
 	{
 		if (FOR(i = 0, g_color_effect_r_k[i].value != END, i++))
 			if (!ft_strcmp(g_color_effect_r_k[i].name, word))
 				mtl->color_effect = g_color_effect_r_k[i].value + 1;
 	}
-	if (!ft_sscanf(LF_RT_NORMAL_EFFECT, line, word, 256))
+	if (!ft_sscanf(NORMAL_EFFECT, line, word, 256))
 	{
 		if (FOR(i = 0, g_normal_effect_r_k[i].value != END, i++))
 			if (!ft_strcmp(g_normal_effect_r_k[i].name, word))
@@ -255,17 +255,17 @@ void			fill_prop_material(t_material *mtl, char *line)
 	PALIAS(mtl->color, c);
 	PALIAS(mtl->emission_color, e);
 	PALIAS(mtl->highlight_color, h);
-	if (ft_sscanf(LF_RT_COLOR_F, line, &c->x, &c->y, &c->z))
-		ft_sscanf(LF_RT_COLOR_V, line, &c->x, &c->y, &c->z);
-	if (!ft_sscanf(LF_RT_EMISSION_COLOR_F, line, &e->x, &e->y, &e->z))
-		ft_sscanf(LF_RT_EMISSION_COLOR_V, line, &e->x, &e->y, &e->z);
-	if (!ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &h->x, &h->y, &h->z))
-		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &h->x, &h->y, &h->z);
+	if (ft_sscanf(COLOR_F, line, &c->x, &c->y, &c->z))
+		ft_sscanf(COLOR_V, line, &c->x, &c->y, &c->z);
+	if (!ft_sscanf(EMISSION_COLOR_F, line, &e->x, &e->y, &e->z))
+		ft_sscanf(EMISSION_COLOR_V, line, &e->x, &e->y, &e->z);
+	if (!ft_sscanf(HIGHLIGHT_COLOR_F, line, &h->x, &h->y, &h->z))
+		ft_sscanf(HIGHLIGHT_COLOR_V, line, &h->x, &h->y, &h->z);
 	fill_prop_material_effect(mtl, line);
-	ft_sscanf(LF_RT_OPACITY, line, &mtl->opacity);
-	ft_sscanf(LF_RT_SPECULAR, line, &mtl->specular);
-	ft_sscanf(LF_RT_REFLECTION, line, &mtl->reflection);
-	ft_sscanf(LF_RT_REFRACTION, line, &mtl->refraction);
+	ft_sscanf(OPACITY, line, &mtl->opacity);
+	ft_sscanf(SPECULAR, line, &mtl->specular);
+	ft_sscanf(REFL, line, &mtl->reflection);
+	ft_sscanf(REFR, line, &mtl->refraction);
 	fill_prop_material_map(mtl, line, word, str);
 }
 

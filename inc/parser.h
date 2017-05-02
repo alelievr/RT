@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/03 00:55:14 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 01:29:14 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,57 +23,56 @@
 # include <stdarg.h>
 # include <stdbool.h>
 
-# define LF_RT_POS		"\\spos:\\s%f\\s%f\\s%f\\s"
-# define LF_RT_ROT		"\\srot:\\s%f\\s%f\\s%f\\s"
-# define LF_RT_SCALE	"\\sscale:\\s%f\\s%f\\s%f\\s"
+# define POS		"\\spos:\\s%f\\s%f\\s%f\\s"
+# define ROT		"\\srot:\\s%f\\s%f\\s%f\\s"
 
-# define LF_RT_COLOR_F	"\\scolor:\\s%f\\s%f\\s%f\\s"
-# define LF_RT_COLOR_V	"\\scolor:\\s%z\\s"
-# define LF_RT_EMISSION_COLOR_F "\\semission color:\\s%f\\s%f\\s%f\\s"
-# define LF_RT_EMISSION_COLOR_V "\\semission color:\\s%z\\s"
-# define LF_RT_HIGHLIGHT_COLOR_F "\\shighlight color:\\s%f\\s%f\\s%f\\s"
-# define LF_RT_HIGHLIGHT_COLOR_V "\\shighlight color:\\s%z\\s"
+# define COLOR_F	"\\scolor:\\s%f\\s%f\\s%f\\s"
+# define COLOR_V	"\\scolor:\\s%z\\s"
+# define EMISSION_COLOR_F "\\semission color:\\s%f\\s%f\\s%f\\s"
+# define EMISSION_COLOR_V "\\semission color:\\s%z\\s"
+# define HIGHLIGHT_COLOR_F "\\shighlight color:\\s%f\\s%f\\s%f\\s"
+# define HIGHLIGHT_COLOR_V "\\shighlight color:\\s%z\\s"
 
-# define LF_RT_OPACITY "\\sopacity:\\s%f\\s"
-# define LF_RT_SPECULAR "\\sspecular:\\s%f\\s"
-# define LF_RT_REFLECTION "\\sreflection:\\s%f\\s"
-# define LF_RT_REFRACTION "\\srefraction:\\s%f\\s"
-# define LF_RT_INTENSITY "\\sintensity:\\s%f\\s"
-# define LF_RT_ANGLE "\\sangle:\\s%f\\s"
-# define LF_RT_RADIUS "\\sradius:\\s%f\\s"
-# define LF_RT_HEIGHT "\\sheight:\\s%f\\s"
+# define OPACITY "\\sopacity:\\s%f\\s"
+# define SPECULAR "\\sspecular:\\s%f\\s"
+# define REFL "\\sreflection:\\s%f\\s"
+# define REFR "\\srefraction:\\s%f\\s"
+# define INTENSITY "\\sintensity:\\s%f\\s"
+# define ANGLE "\\sangle:\\s%f\\s"
+# define RADIUS "\\sradius:\\s%f\\s"
+# define HEIGHT "\\sheight:\\s%f\\s"
 
-# define LF_RT_FOV "\\sfov:\\s%f\\s"
-# define LF_RT_AMBIENT "\\sambient:\\s%f\\s"
+# define FOV "\\sfov:\\s%f\\s"
+# define AMBIENT "\\sambient:\\s%f\\s"
 
-# define LF_RT_SLICE "\\sslice:\\s%f\\s%f\\s%f\\s%f\\s"
+# define SLICE "\\sslice:\\s%f\\s%f\\s%f\\s%f\\s"
 
-# define LF_RT_TEXTURE	"\\stexture:\\s%s\\s"
-# define LF_RT_BUMPMAP	"\\sbumpmap:\\s%s\\s"
-# define LF_RT_EMISSION_MAP	"\\semission color map:\\s%s\\s"
-# define LF_RT_HIGHLIGHT_MAP "\\shighlight color map:\\s%s\\s"
-# define LF_RT_REFRACTION_MAP	"\\srefraction map:\\s%s\\s"
-# define LF_RT_OPACITY_MAP "\\sopacity map:\\s%s\\s"
-# define LF_RT_SPECULAR_MAP "\\sspecular map:\\s%s\\s"
-# define LF_RT_REFLECTION_MAP "\\sreflection map map:\\s%s\\s"
+# define TEXTURE	"\\stexture:\\s%s\\s"
+# define BUMPMAP	"\\sbumpmap:\\s%s\\s"
+# define EMISSION_MAP	"\\semission color map:\\s%s\\s"
+# define HIGHLIGHT_MAP "\\shighlight color map:\\s%s\\s"
+# define REFR_MAP	"\\srefraction map:\\s%s\\s"
+# define OPACITY_MAP "\\sopacity map:\\s%s\\s"
+# define SPECULAR_MAP "\\sspecular map:\\s%s\\s"
+# define REFL_MAP "\\sreflection map map:\\s%s\\s"
 
-# define LF_RT_NAME "\\sname:\\s%s\\s"
-# define LF_RT_MASK "\\seffect:\\s%s\\s"
-# define LF_RT_ILLUM "\\sillum:\\s%s\\s"
-# define LF_RT_TYPE "\\stype:\\s%s\\s"
+# define NAME "\\sname:\\s%s\\s"
+# define MASK "\\seffect:\\s%s\\s"
+# define ILLUM "\\sillum:\\s%s\\s"
+# define TYPE "\\stype:\\s%s\\s"
 
-# define LF_RT_MOVE		"\\smoving:\\s%w\\s%f\\s%f\\s"
-# define LF_RT_ROTATE	"\\srotate:\\s%w\\s%f\\s%f\\s"
+# define MOVE		"\\smoving:\\s%w\\s%f\\s%f\\s"
+# define ROTATE	"\\srotate:\\s%w\\s%f\\s%f\\s"
 
-# define LF_RT_COLOR_EFFECT		"\\scolor_effect:\\s%w\\s"
-# define LF_RT_NORMAL_EFFECT	"\\snormal_effect:\\s%w\\s"
+# define COLOR_EFFECT		"\\scolor_effect:\\s%w\\s"
+# define NORMAL_EFFECT	"\\snormal_effect:\\s%w\\s"
 
-# define LF_RT_MTL			"\\smtl:\\sfiles/%w\\s"
-# define LF_RT_AMBIANCE	"\\sambiance:\\s%w\\s%f\\s"
-# define LF_RT_GATE_XOR "\\scsg:\\s%w\\s"
-# define LF_RT_GATE_OR
-# define LF_RT_GATE_AND
-# define LF_RT_GATE_NAND
+# define MTL			"\\smtl:\\sfiles/%w\\s"
+# define AMBIANCE	"\\sambiance:\\s%w\\s%f\\s"
+# define GATE_XOR "\\scsg:\\s%w\\s"
+# define GATE_OR
+# define GATE_AND
+# define GATE_NAND
 
 # define LOL1(x) ft_strrchr(x, '.') != NULL
 # define FILE_CHECK_EXT(x, y) (LOL1(x) && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
