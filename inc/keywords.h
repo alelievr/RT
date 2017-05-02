@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   keywords.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
+/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 00:14:55 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/02 22:08:11 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 00:23:04 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ const t_keypair g_illum_restricted_keywords[] = {
 	V(AMBIANT), V(CAST_SHADOW), V(RECEIVE_SHADOW), V(REFLECT), V(END)
 };
 
-const t_keypair	g_color_effect_restricted_keywords[] = {
+const t_keypair	g_color_effect_r_k[] = {
 	V(CHECKERBOARD),
 	V(BRICK),
 	V(NOISE),
@@ -59,7 +59,7 @@ const t_keypair	g_color_effect_restricted_keywords[] = {
 	V(END)
 };
 
-const t_keypair g_normal_effect_restricted_keywords[] = {
+const t_keypair g_normal_effect_r_k[] = {
 	V(N_NOISE),
 	V(N_MOVING_NOISE),
 	V(N_FBM),

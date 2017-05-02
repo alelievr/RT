@@ -6,7 +6,7 @@
 /*   By: pmartine <pmartine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 21:54:21 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 23:48:23 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 00:22:17 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "keywords.h"
 
 #define NO4(var, n)(scene->root_view, n)) ft_exit("name already exist: %s\n",n);
-#define NO3(var, n)if (current_object != NULL && name_already_exists NO4(var, n)
+#define NO3(var, n)if (c != NULL && name_already_exists NO4(var, n)
 #define NO2(var, n)strcpy(var->name, format_name(n)); NO3(var, n)
 #define NO1(var, n)sizeof(t_object)); init_default_object(var); NO2(var, n)
 #define NO(var, n)if (!var) ft_exit("malloc error"); bzero(var, NO1(var, n)
@@ -230,18 +230,16 @@ void			fill_prop_material_effect(t_material *mtl, char *line)
 
 	if (!ft_sscanf(LF_RT_COLOR_EFFECT, line, word, 256))
 	{
-		if (FOR(i = 0, g_color_effect_restricted_keywords[i].value != END, i++))
-			if (!ft_strcmp(g_color_effect_restricted_keywords[i].name, word))
-				mtl->color_effect = g_color_effect_restricted_keywords[i].value + 1;
+		if (FOR(i = 0, g_color_effect_r_k[i].value != END, i++))
+			if (!ft_strcmp(g_color_effect_r_k[i].name, word))
+				mtl->color_effect = g_color_effect_r_k[i].value + 1;
 	}
-
 	if (!ft_sscanf(LF_RT_NORMAL_EFFECT, line, word, 256))
 	{
-		if (FOR(i = 0, g_normal_effect_restricted_keywords[i].value != END, i++))
-			if (!ft_strcmp(g_normal_effect_restricted_keywords[i].name, word))
-				mtl->normal_effect = g_normal_effect_restricted_keywords[i].value + 1;
+		if (FOR(i = 0, g_normal_effect_r_k[i].value != END, i++))
+			if (!ft_strcmp(g_normal_effect_r_k[i].name, word))
+				mtl->normal_effect = g_normal_effect_r_k[i].value + 1;
 	}
-
 }
 
 void			fill_prop_material(t_material *mtl, char *line)
@@ -263,14 +261,11 @@ void			fill_prop_material(t_material *mtl, char *line)
 		ft_sscanf(LF_RT_EMISSION_COLOR_V, line, &e->x, &e->y, &e->z);
 	if (!ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &h->x, &h->y, &h->z))
 		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &h->x, &h->y, &h->z);
-
 	fill_prop_material_effect(mtl, line);
-
 	ft_sscanf(LF_RT_OPACITY, line, &mtl->opacity);
 	ft_sscanf(LF_RT_SPECULAR, line, &mtl->specular);
 	ft_sscanf(LF_RT_REFLECTION, line, &mtl->reflection);
 	ft_sscanf(LF_RT_REFRACTION, line, &mtl->refraction);
-
 	fill_prop_material_map(mtl, line, word, str);
 }
 
@@ -278,8 +273,6 @@ void			display_objects(t_object *lst_obj)
 {
 	while (lst_obj)
 	{
-		printf("\033[34;01mname: %s\033[00m\n", lst_obj->name);
-		printf("pos x : %f ,pos y : %f ,pos z : %f\n", lst_obj->transform.position.x, lst_obj->transform.position.y, lst_obj->transform.position.z);
 		if (lst_obj->children)
 			display_objects(lst_obj->children);
 		lst_obj = lst_obj->brother_of_children;
@@ -289,14 +282,14 @@ void			display_objects(t_object *lst_obj)
 bool		name_already_exists(t_object *obj, char *name)
 {
 	if (obj != NULL)
-		return false;
+		return (false);
 	while (obj)
 	{
 		if (!ft_strcmp(obj->name, name))
-			return true;
+			return (true);
 		obj = obj->brother_of_children;
 	}
-	return false;
+	return (false);
 }
 
 void			parse_rt_file(char *file, t_scene *scene)
@@ -306,9 +299,10 @@ void			parse_rt_file(char *file, t_scene *scene)
 	char		obj_name[256];
 	int			indent_level;
 	int			nb_object;
-	t_object	*current_object = NULL;
-	t_object	*old_object;
+	t_object	*c;
+	t_object	*o;
 
+	c = NULL;
 	nb_object = 0;
 	INIT(int, line_count, 0);
 	if ((fd = open(file, O_RDONLY)) == -1)
@@ -320,47 +314,47 @@ void			parse_rt_file(char *file, t_scene *scene)
 		SKIP_EMPTY_LINE(line);
 		if (check_obj_line(line, obj_name, &indent_level))
 		{
-			NEW_OBJECT(current_object, obj_name);
-			current_object->indent_level = indent_level;
+			NEW_OBJECT(c, obj_name);
+			c->indent_level = indent_level;
 			scene->nb_object = ++nb_object;
 			if (scene->nb_object == 1)
 			{
-				scene->root_view = current_object;
-				old_object = current_object;
+				scene->root_view = c;
+				o = c;
 			}
-			else if (old_object->indent_level < current_object->indent_level)
+			else if (o->indent_level < c->indent_level)
 			{
-				old_object->children = current_object;
-				current_object->parent = old_object;
+				o->children = c;
+				c->parent = o;
 			}
-			while (old_object->indent_level > current_object->indent_level)
-				old_object = old_object->parent;
-			if (scene->nb_object != 1 && old_object->indent_level == current_object->indent_level)
+			while (o->indent_level > c->indent_level)
+				o = o->parent;
+			if (scene->nb_object != 1 && o->indent_level == c->indent_level)
 			{
-				old_object->brother_of_children = current_object;
-				current_object->parent = old_object->parent;
+				o->brother_of_children = c;
+				c->parent = o->parent;
 			}
-			old_object = current_object;
+			o = c;
 			continue ;
 		}
 		if (indent_level >= 2)
 			ft_exit("max indentation reached at line: %i\n", line_count);
 		if (nb_object > 300)
 			ft_exit("nb max object reached at line: %i\n", line_count);
-		if (current_object == NULL)
+		if (c == NULL)
 			ft_exit("unexpected property without object: %s\n", line);
-		if (indent_level == current_object->indent_level + 1)
+		if (indent_level == c->indent_level + 1)
 		{
-			A(current_object, line, primitive);
-			A(current_object, line, transform);
-			A(current_object, line, move);
-			A(current_object, line, rotate);
-			if (current_object->primitive.type >= 11)
-				A(current_object, line, light_prop);
-			if (current_object->primitive.type == 10)
-				A(current_object, line, camera);
-			if (current_object->primitive.type <= 9)
-				A(current_object, line, material);
+			A(c, line, primitive);
+			A(c, line, transform);
+			A(c, line, move);
+			A(c, line, rotate);
+			if (c->primitive.type >= 11)
+				A(c, line, light_prop);
+			if (c->primitive.type == 10)
+				A(c, line, camera);
+			if (c->primitive.type <= 9)
+				A(c, line, material);
 		}
 		else
 			ft_exit("bad indentation at line %i\n", line_count);
