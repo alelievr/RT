@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/29 14:41:03 by pmartine         ###   ########.fr        #
+#    Updated: 2017/05/02 16:47:37 by pmartine         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,6 +35,8 @@ SRC			=	main.c						\
 				parser/parse_rt_file.c		\
 				parser/utils.c				\
 				parser/ft_sscanf.c			\
+				parser/ft_sscanf2.c			\
+				parser/ft_sscanf3.c			\
 				parser/get_next_word.c  	\
 				parser/u.c					\
 

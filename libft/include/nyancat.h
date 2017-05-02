@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/12 23:52:18 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/28 23:18:45 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 17:35:18 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # define CONCAT(x, y)	x##y
 # define STRINGYFY(x)	#x
 # define ALIAS(x, y)	typeof(x) y = x;
+# define PALIAS(x, y)	typeof(x) *y = &(x);
 # define FOR(a, b, c)	0){;} for ((a); (b); (c)
 # define FOREACH(x,y) 0){;}int __##x=0;typeof(*x)y;for(y=*x;(y=x[__##x]);__##x++
 # define SHORTIFY(c)	((long)c | ((long)c << 8))

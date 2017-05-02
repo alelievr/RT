@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 13:08:48 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 16:46:32 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@
 # define LF_MAP_REFL "\\smap_refl\\s%w\\s"
 
 #define	FILE_CHECK_EXT(x, y) (ft_strrchr(x, '.') != NULL && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
+#define FTRGB float *r, float *g, float
 
 /*
 	Other
@@ -298,11 +299,27 @@ sampler2D textureAtlasUvs;
 
 void					parse_obj(char *file, t_mesh **mesh);
 void					parse_mtl(t_mesh *mesh);
-int						ft_sscanf(char *format, char *str, ...);
 int						gl(char *dst, int *fd);
 void					parse_rt_file(char *file, t_scene *prim);
 void					parse_obj_file(char *file, t_mesh *mesh);
 int						get_next_word(char **str, char *res);
 int						parse(int ac, char **av);
+
+
+/*
+	Parsing
+*/
+
+void					skip_space(char **format, char **str);
+int						skip_string(char **format, char **str);
+int						convert_float(char **format, char **str, float *f);
+int						convert_int(char **format, char **str, int *i);
+int						convert_word(char **format, char **str, char *ptr, int buffsize);
+int						convert_str(char **format, char **str, char *ptr, int buffsize);
+void					rgbcolor(int color, float *r, float *g, float *b);
+int						hexa(char *str);
+int						convert_color(char **format, char **str, FTRGB *b);
+int						sscanf_return(int value, va_list *vargs);
+int						ft_sscanf(char *format, char *str, ...);
 
 #endif

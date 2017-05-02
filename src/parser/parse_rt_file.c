@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 22:01:00 by vdaviot           #+#    #+#             */
-/*   Updated: 2017/04/29 13:17:32 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 17:48:06 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ static char		*format_name(char *name)
 	}
 	return ret;
 }
-
 
 bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 {
@@ -229,15 +228,15 @@ void			fill_prop_material(t_material *mtl, char *line)
 	str = (char *)(char[256]){0};
 	ret = 0;
 	i = 0;
-	ALIAS(mtl->color, c);
-	ALIAS(mtl->emission_color, e)
-	ALIAS(mtl->highlight_color, h)
-	if (ft_sscanf(LF_RT_COLOR_F, line, &c.x, &c.y, &c.z))
-		ft_sscanf(LF_RT_COLOR_V, line, &c.x, &c.y, &c.z);
-	if (ft_sscanf(LF_RT_EMISSION_COLOR_F, line, &e.x, &e.y, &e.z))
-		ft_sscanf(LF_RT_EMISSION_COLOR_V, line, &e.x, &e.y, &e.z);
-	if (ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &h.x, &h.y, &h.z))
-		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &h.x, &h.y, &h.z);
+	PALIAS(mtl->color, c);
+	PALIAS(mtl->emission_color, e)
+	PALIAS(mtl->highlight_color, h)
+	if (ft_sscanf(LF_RT_COLOR_F, line, &c->x, &c->y, &c->z))
+		ft_sscanf(LF_RT_COLOR_V, line, &c->x, &c->y, &c->z);
+	if (!ft_sscanf(LF_RT_EMISSION_COLOR_F, line, &e->x, &e->y, &e->z))
+		ft_sscanf(LF_RT_EMISSION_COLOR_V, line, &e->x, &e->y, &e->z);
+	if (!ft_sscanf(LF_RT_HIGHLIGHT_COLOR_F, line, &h->x, &h->y, &h->z))
+		ft_sscanf(LF_RT_HIGHLIGHT_COLOR_V, line, &h->x, &h->y, &h->z);
 
 	ft_sscanf(LF_RT_OPACITY, line, &mtl->opacity);
 	ft_sscanf(LF_RT_SPECULAR, line, &mtl->specular);
@@ -253,28 +252,6 @@ void			display_objects(t_object *lst_obj)
 	{
 		printf("\033[34;01mname: %s\033[00m\n", lst_obj->name);
 		printf("pos x : %f ,pos y : %f ,pos z : %f\n", lst_obj->transform.position.x, lst_obj->transform.position.y, lst_obj->transform.position.z);
-/*		printf("transparency: %f\n", lst_obj->material.transparency);
-		printf("reflection: %f\n", lst_obj->material.reflection);
-		printf("refraction: %f\n", lst_obj->material.refraction);
-		printf("specular: %f\n", lst_obj->material.specular);
-		printf("light intensity: %f\n", lst_obj->light_prop.intensity);
-		printf("FOV: %f\n", lst_obj->camera.fov);
-		printf("primitive radius: %f\n", lst_obj->primitive.radius);
-		printf("primitive height: %f\n", lst_obj->primitive.height);
-		printf("primitive angle: %f\n", lst_obj->primitive.angle);
-		printf("rot x : %f ,rot y : %f ,rot z : %f\n", lst_obj->transform.rotation.x,lst_obj->transform.rotation.y,lst_obj->transform.rotation.z);
-		while (++i < lst_obj->primitive.nsl)
-			printf("slice.x : %f ,slice.y : %f , slice.z : %f , slice.w : %f , nbsl : %d\n", lst_obj->primitive.slice[i].x, lst_obj->primitive.slice[i].y, lst_obj->primitive.slice[i].z, lst_obj->primitive.slice[i].w, lst_obj->primitive.nsl);
-		printf("color : %f,%f,%f\n", lst_obj->material.color.x,lst_obj->material.color.y,lst_obj->material.color.z);
-		printf("light_color : %f,%f,%f\n", lst_obj->light_prop.color.x, lst_obj->light_prop.color.y , lst_obj->light_prop.color.z);
-		printf("emission_color : %f,%f,%f\n", lst_obj->material.emission_color.x,lst_obj->material.emission_color.y,lst_obj->material.emission_color.z);
-		printf("highlight_color : %f,%f,%f\n", lst_obj->material.highlight_color.x,lst_obj->material.highlight_color.y,lst_obj->material.highlight_color.z);
-		if (lst_obj->primitive.type == 6)
-			printf("mask: %d\n", lst_obj->camera.post_processing_mask);
-		printf("illum: %d\n", lst_obj->material.illum);
-		printf("type : %d\n", lst_obj->primitive.type);
-		printf("fichier : %s, ID : %d\n", lst_obj->material.bumpmap.file, lst_obj->material.bumpmap.opengl_id);
-*/
 		if (lst_obj->children)
 			display_objects(lst_obj->children);
 		lst_obj = lst_obj->brother_of_children;
