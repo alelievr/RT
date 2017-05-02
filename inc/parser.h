@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/02 23:48:02 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 00:55:14 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,13 @@ enum					e_illumination
 	RECEIVE_SHADOW =	0x004,
 	REFLECT =			0x008,
 };
+
+typedef	struct	s_map
+{
+	char			*fmt;
+	t_image		*img;
+	bool			*active;
+}								t_map;
 
 typedef	struct  s_primitive
 {

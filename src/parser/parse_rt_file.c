@@ -6,7 +6,7 @@
 /*   By: pmartine <pmartine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 21:54:21 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/03 00:22:17 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 01:13:35 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,23 +195,23 @@ void			fill_prop_material_map(t_material *mtl, char *line, char *word, char *str
 {
 	int		i;
 	int		ret;
-
+	
+	IINIT(char *, maps[8][3], (char *[8][3]){
+		{LF_RT_BUMPMAP, (char *)&mtl->bumpmap, (char *)&mtl->has_bumpmap},
+		{LF_RT_TEXTURE, (char *)&mtl->texture, (char *)&mtl->has_texture},
+		{LF_RT_EMISSION_MAP, (char *)&mtl->texture, (char *)&mtl->has_emission_map},
+		{LF_RT_HIGHLIGHT_MAP,(char *)&mtl->emission_map, (char *)&mtl->has_highlight_map},
+		{LF_RT_OPACITY_MAP, (char *)&mtl->opacity_map, (char *)&mtl->has_opacity_map},
+		{LF_RT_SPECULAR_MAP, (char *)&mtl->specular_map, (char *)&mtl->has_specular_map},
+		{LF_RT_REFLECTION_MAP, (char *)&mtl->reflection_map, (char *)&mtl->has_reflection_map},
+		{LF_RT_REFRACTION_MAP, (char *)&mtl->refraction_map, (char *)&mtl->has_refraction_map},
+	});
 	ret = 0;
 	str = (char *)(char[256]){0};
 	if (FOR(i = 0, i < 2, i++))
 	{
-		struct {char *fmt; t_image *img; bool *active;} maps[8] = {
-			{LF_RT_BUMPMAP, &mtl->bumpmap, &mtl->has_bumpmap},
-			{LF_RT_TEXTURE, &mtl->texture, &mtl->has_texture},
-			{LF_RT_EMISSION_MAP, &mtl->texture, &mtl->has_emission_map},
-			{LF_RT_HIGHLIGHT_MAP, &mtl->emission_map, &mtl->has_highlight_map},
-			{LF_RT_OPACITY_MAP, &mtl->opacity_map, &mtl->has_opacity_map},
-			{LF_RT_SPECULAR_MAP, &mtl->specular_map, &mtl->has_specular_map},
-			{LF_RT_REFLECTION_MAP, &mtl->reflection_map, &mtl->has_reflection_map},
-			{LF_RT_REFRACTION_MAP, &mtl->refraction_map, &mtl->has_refraction_map},
-		};
-		if (ft_sscanf(maps[i].fmt, line, maps[i].img->file, 1024))
-			*(maps[i].active) = true;
+		if (ft_sscanf(maps[i][0], line, maps[i][1], 1024))
+			*(maps[i][2]) = true;
 	}
 	if (!ft_sscanf(LF_RT_ILLUM, line, str, 256))
 	{
