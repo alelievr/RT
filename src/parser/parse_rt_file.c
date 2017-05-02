@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_rt_file.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: pmartine <pmartine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 21:54:21 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 23:09:36 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/02 23:48:23 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,13 @@
 #define FP2(X, line)fill_prop_material, t_camera *:fill_prop_camera, FP3(X,line)
 #define FP1(X, line)t_transform *: fill_prop_transform, t_material *:FP2(X,line)
 #define FILL_PROP(X, line) _Generic((X), t_light *: fill_prop_light, FP1(X,line)
-#define A(c, line, p1) FILL_PROP(&c-> p1, line);// FILL_PROP(&c-> p2, line, #p2);
+#define A(c, line, p1) FILL_PROP(&c-> p1, line);
 
 static char		*format_name(char *name)
 {
-	char	*ret = name;
+	char	*ret;
 
+	ret = name;
 	while (*name)
 	{
 		if (*name == ':')
@@ -47,7 +48,7 @@ static char		*format_name(char *name)
 			*name = '_';
 		name++;
 	}
-	return ret;
+	return (ret);
 }
 
 bool			check_obj_line(char *line, char *obj_name, int *indent_level)
@@ -152,46 +153,50 @@ void			fill_prop_camera(t_camera *cam, char *line)
 	}
 }
 
-void			fill_prop_primitive(t_primitive *prim, char *line)
+void			fill_prop_primitive(t_primitive *p, char *line)
 {
 	char	*str;
 	int		i;
 
 	str = (char *)(char[256]){0};
-	ft_sscanf(LF_RT_RADIUS, line, &prim->radius);
-	ft_sscanf(LF_RT_HEIGHT, line, &prim->height);
-	ft_sscanf(LF_RT_ANGLE, line, &prim->angle);
+	ft_sscanf(LF_RT_RADIUS, line, &p->radius);
+	ft_sscanf(LF_RT_HEIGHT, line, &p->height);
+	ft_sscanf(LF_RT_ANGLE, line, &p->angle);
 	if (!ft_sscanf(LF_RT_TYPE, line, str, 256))
 		if (FOR(i = 0, g_type_restricted_keywords[i], i++))
 		{
 			if (!ft_strcmp(g_type_restricted_keywords[i], ft_strupcase(str)))
-				prim->type = i + 1;
+				p->type = i + 1;
 		}
-	if (!prim->type)
+	if (!p->type)
 		ft_exit("mauvais type pour un objet\n");
-	if (prim->nsl < 5 && !ft_sscanf(LF_RT_SLICE, line, &prim->slice[prim->nsl].x, &prim->slice[prim->nsl].y, &prim->slice[prim->nsl].z, &prim->slice[prim->nsl].w))
-		prim->nsl++;
+	if (p->nsl < 5 && !ft_sscanf(LF_RT_SLICE, line, &p->slice[p->nsl].x,\
+		&p->slice[p->nsl].y, &p->slice[p->nsl].z, &p->slice[p->nsl].w))
+		p->nsl++;
 }
 
-void			fill_prop_light(t_light *light, char *line)
+void			fill_prop_light(t_light *l, char *line)
 {
-	if (ft_sscanf(LF_RT_COLOR_F, line, &light->color.x, &light->color.y, &light->color.z))
-		ft_sscanf(LF_RT_COLOR_V, line, &light->color.x, &light->color.y, &light->color.z);
-	ft_sscanf(LF_RT_INTENSITY, line, &light->intensity);
+	if (ft_sscanf(LF_RT_COLOR_F, line, &l->color.x, &l->color.y, &l->color.z))
+		ft_sscanf(LF_RT_COLOR_V, line, &l->color.x, &l->color.y, &l->color.z);
+	ft_sscanf(LF_RT_INTENSITY, line, &l->intensity);
 }
 
-void			fill_prop_transform(t_transform *tsf, char *line)
+void			fill_prop_transform(t_transform *t, char *line)
 {
-	if (!ft_sscanf(LF_RT_POS, line, &tsf->position.x, &tsf->position.y, &tsf->position.z))
-		tsf->initial_position = tsf->position;
-	ft_sscanf(LF_RT_ROT, line, &tsf->euler_angles.x, &tsf->euler_angles.y, &tsf->euler_angles.z);
+	if (!ft_sscanf(LF_RT_POS, line, &t->position.x, &t->position.y,\
+		&t->position.z))
+		t->initial_position = t->position;
+	ft_sscanf(LF_RT_ROT, line, &t->euler_angles.x, &t->euler_angles.y,\
+		&t->euler_angles.z);
 }
 
 void			fill_prop_material_map(t_material *mtl, char *line, char *word, char *str)
 {
 	int		i;
-	int		ret = 0;
+	int		ret;
 
+	ret = 0;
 	str = (char *)(char[256]){0};
 	if (FOR(i = 0, i < 2, i++))
 	{
