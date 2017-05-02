@@ -31,6 +31,8 @@ void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, 
 		h.uv = vec2(atan(n.x, n.z) / (M_PI) + 0.5, -(n.y * 0.5 + 0.5));
 		h.norm = h.pos - pos;
 		h.inside = false;
+		h.color_effect = mat.color_effect;
+		h.normal_effect = mat.normal_effect;
 		return;
 	}
 
@@ -44,6 +46,8 @@ void sphere (vec3 pos, vec3 rot, float data, Coupes coupe, Material mat, Ray r, 
 			h.uv = vec2(atan(n.x, n.z) / (2 * M_PI) + 0.5, -(n.y * 0.5 + 0.5));
 			h.mat = mat;
 			h.inside = true;
+			h.color_effect = mat.color_effect;
+			h.normal_effect = mat.normal_effect;
 		}
 		return;
 	}

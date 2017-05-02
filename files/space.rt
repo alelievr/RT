@@ -42,7 +42,7 @@ venus:
 
 earth:
 	type: sphere
-	pos: -45 0 0
+	moving: Y 45 1
 	radius: 4
 	texture: ../textures/earth.jpg
 

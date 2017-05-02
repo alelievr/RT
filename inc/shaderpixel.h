@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shaderpixel.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created  2016/07/11 18:11:58 by alelievr          #+#    #+#             */
-/*   Updated  2016/07/25 19:04:51 by alelievr         ###   ########.fr       */
+/*   Created: 2017/05/02 19:37:07 by yalaouf           #+#    #+#             */
+/*   Updated: 2017/05/02 22:05:11 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ float					get_current_time(void);
 bool					file_is_regular(int fd) __attribute__((overloadable));
 bool					file_is_regular(char *fd) __attribute__((overloadable));
 char					*build_shader(t_scene *scene, char *scene_directory,
-		int *atlas_id, t_file *sources);
+										int *atlas_id, t_file *sources);
 t_scene					*get_scene(t_scene *scene);
 void					save_object_transform(void);
 void					select_object(void);
@@ -178,10 +178,10 @@ void					select_object(void);
 GLuint					create_vbo(void);
 GLuint					create_vao(GLuint vbo, int program);
 void					check_file_changed(GLuint *program, t_file *files,
-		size_t num);
+											size_t num);
 void					recompile_program(t_file *files, GLuint *program);
 void					init_source_file(t_file *files, size_t max,
-		size_t *num);
+										size_t *num);
 
 t_vec3					vec3_cross(t_vec3 v1, t_vec3 v2);
 t_vec3					scale(t_vec3 vect, float f);
@@ -207,45 +207,46 @@ unsigned int			channeltomask(int chan);
 # define FTN3 int src_mask, int *new_tex_width, int
 
 void					fusion_texture(t_image *dst, t_image *src,
-		int dst_mask, FTN3 *new_tex_height);
+						int dst_mask, FTN3 *new_tex_height);
 
 #define FTN4 int x, int y, t_image *src, t_image
 
 unsigned int			fusion_pixel(int src_mask, int dst_mask, FTN4 *dst);
 
 unsigned int			build_atlas(t_object *obj, int atlas_w,
-		int atlas_h, bool first);
+										int atlas_h, bool first);
 GLuint					new_opengl_texture(int width, int height,
-		unsigned char *data);
+											unsigned char *data);
 void					load_atlas(t_object *obj, char *scene_directory,
-		int *atlas_width, int *atlas_height);
+									int *atlas_width, int *atlas_height);
 void					add_object_textures_to_atlas(t_material *mat,
-		t_atlas *atlas,
-		int *offset_x, int *offset_y);
+												t_atlas *atlas,
+												int *offset_x, int *offset_y);
 void					add_subimage(t_atlas *atlas, int off_x, int off_y,
-		t_image *img);
+									t_image *img);
 
 void					append_uniforms(t_shader_file *shader_file,
-		t_object *obj);
+										t_object *obj);
 char					*generate_coupes_line(t_primitive *prim);
 char					*generate_scene_line(t_object *obj);
 char					*generate_material_line(t_material *mat);
 unsigned char			*generate_image_from_data(float data, \
-		int *width, int *height) __attribute__((overloadable));
+						int *width, int *height) __attribute__((overloadable));
 unsigned char			*generate_image_from_data(t_vec3 data, \
-		int *width, int *height) __attribute__((overloadable));
+						int *width, int *height) __attribute__((overloadable));
 unsigned char			*load_image(char *path, int *width, int *height, \
-		int *channels);
+									int *channels);
 char					*build_path(char *dir, char *file);
 
 void					append_post_processing(t_shader_file *shader_file,
-		t_camera *c);
+												t_camera *c);
 void					load_textures_if_exists(t_material *m,
-		char *scene_directory,
-		int *atlas_width, int *atlas_height);
+										char *scene_directory,
+										int *atlas_width, int *atlas_height);
 
-void	error_callback(int error, const char *description);
-void	key_callback2(GLFWwindow *g_window, int key, int a, int mods);
+void					error_callback(int error, const char *description);
+void					key_callback3(GLFWwindow *g_window, int key, int a, int mods);
+void					key_callback2(GLFWwindow *g_window, int key, int a, int mods);
 
 static const char		*g_vertex_shader_text =
 "#version 330\n"
@@ -349,7 +350,7 @@ static const char		*g_scene_start_text =
 "Hit     scene(Ray r)\n"
 "{\n"
 "	int i = -1;\n"
-"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0)),vec2(0,0),false);\n";
+"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0), 0, 0),vec2(0,0),false, 0, 0);\n";
 
 static const char		*g_scene_end_text =
 "    return hit;\n"
@@ -376,6 +377,8 @@ static const char		*g_shader_header_text =
 "	vec4		reflection;\n"
 "	vec4		refraction;\n"
 "	vec4		bump;\n"
+"	int			color_effect;\n"
+"	int			normal_effect;\n"
 "};\n"
 "\n"
 "struct      Hit\n"
@@ -386,6 +389,8 @@ static const char		*g_shader_header_text =
 "	Material	mat;\n"
 "	vec2		uv;\n"
 "	bool		inside;\n"
+"	int			color_effect;\n"
+"	int			normal_effect;\n"
 "};\n"
 "\n"
 "Hit       scene(Ray r);\n"

@@ -6,7 +6,7 @@
 /*   By: avially <avially@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/02 21:18:48 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/02 21:56:14 by pmartine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,9 @@
 # define LF_RT_MOVE		"\\smoving:\\s%w\\s%f\\s%f\\s"
 # define LF_RT_ROTATE	"\\srotate:\\s%w\\s%f\\s%f\\s"
 
+# define LF_RT_COLOR_EFFECT		"\\scolor_effect:\\s%w\\s"
+# define LF_RT_NORMAL_EFFECT	"\\snormal_effect:\\s%w\\s"
+
 # define LF_RT_MTL			"\\smtl:\\sfiles/%w\\s"
 # define LF_RT_AMBIANCE	"\\sambiance:\\s%w\\s%f\\s"
 # define LF_RT_GATE_XOR "\\scsg:\\s%w\\s"
@@ -104,6 +107,22 @@ enum					e_post_processing
 	VIGNETTING =		0x0100,
 	DALTONIZE =			0x0200,
 	NIGHT_VISION =		0x0400,
+};
+
+enum					e_color_effect
+{
+	CHECKERBOARD,
+	BRICK,
+	NOISE,
+	MOVING_NOISE,
+	FBM
+};
+
+enum					e_normal_effect
+{
+	N_NOISE,
+	N_MOVING_NOISE,
+	N_FBM,
 };
 
 enum					e_illumination
@@ -172,6 +191,8 @@ typedef	struct 			s_material
 	bool				has_refraction_map;
 	bool				has_opacity_map;
 	bool				has_specular_map;
+	int					color_effect;
+	int					normal_effect;
 }						t_material;
 
 typedef struct			s_submesh
