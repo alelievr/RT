@@ -46,7 +46,8 @@ sphere3.5:
     pos: 40 20 -30
     radius: 4
     color: 0 0 255
-    bumpmap: ../../textures/normal.jpg
+    opacity: 0.5
+	bumpmap: ../../textures/normal.jpg
 	specular: 1
 
 sphere3.75:
