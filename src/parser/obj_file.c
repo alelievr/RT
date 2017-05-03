@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   obj_file.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/03 17:51:28 by yalaouf           #+#    #+#             */
+/*   Updated: 2017/05/03 20:49:13 by yalaouf          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shaderpixel.h"
 #include "parser.h"
 #include <unistd.h>
@@ -32,7 +44,7 @@ bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 		return (false);
 }
 
-char		*format_name(char *name)
+char			*format_name(char *name)
 {
 	char	*ret;
 
@@ -44,7 +56,7 @@ char		*format_name(char *name)
 			*name = 0;
 			break ;
 		}
-		if (!isalnum(*name))
+		if (!ft_isalnum(*name))
 			*name = '_';
 		name++;
 	}
@@ -61,7 +73,7 @@ void			display_objects(t_object *lst_obj)
 	}
 }
 
-bool		name_already_exists(t_object *obj, char *name)
+bool			name_already_exists(t_object *obj, char *name)
 {
 	if (obj != NULL)
 		return (false);

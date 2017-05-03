@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 16:48:41 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 18:36:30 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 20:44:07 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,39 +43,38 @@ int				sscanf_return(int value, va_list *vargs)
 	return (value);
 }
 
-int				ft_sscanf(char *format, char *str, ...)
-{
-	va_list	vargs;
+#define V va_arg
+#define INIT_VARGS va_list s;va_start(s, str);
+#define FMT_STR *f == '%' && f[1] == 's'
+#define FMT_WORD *f == '%' && f[1] == 'w'
+#define FMT_INT	*f == '%' && f[1] == 'd'
+#define FMT_FLOAT *f == '%' && f[1] == 'f'
+#define FMT_COLOR *f == '%' && f[1] == 'z'
 
-	va_start(vargs, str);
+int				ft_sscanf(char *f, char *str, ...)
+{
+	INIT_VARGS;
 	while (42)
 	{
-		if (*format == '\\' && format[1] == 's')
-			skip_space(&format, &str);
+		if (*f == '\\' && f[1] == 's')
+			skip_space(&f, &str);
 		if (!*str)
 			break ;
-		if (*format == '%' && format[1] == 'f')
-			if (!convert_float(&format, &str, va_arg(vargs, float *)))
-				return (sscanf_return(-1, &vargs));
-		if (*format == '%' && format[1] == 'd')
-			if (!convert_int(&format, &str, va_arg(vargs, int *)))
-				return (sscanf_return(-1, &vargs));
-		if (*format == '%' && format[1] == 'w')
-			if (!convert_word(&format, &str, va_arg(vargs, char *),
-						va_arg(vargs, int)))
-				return (sscanf_return(-1, &vargs));
-		if (*format == '%' && format[1] == 's')
-			if (!convert_str(&format, &str, va_arg(vargs, char *),
-						va_arg(vargs, int)))
-				return (sscanf_return(-1, &vargs));
-		if (*format == '%' && format[1] == 'z')
-			if (!convert_color(&format, &str, va_arg(vargs, float *),
-						va_arg(vargs, float *), va_arg(vargs, float *)))
-				return (sscanf_return(-1, &vargs));
-		if (!skip_string(&format, &str))
-			return (sscanf_return(-1, &vargs));
+		if (FMT_FLOAT && !convert_float(&f, &str, V(s, float *)))
+			return (sscanf_return(-1, &s));
+		if (FMT_INT && !convert_int(&f, &str, V(s, int *)))
+			return (sscanf_return(-1, &s));
+		if (FMT_WORD && !convert_word(&f, &str, V(s, char *), V(s, int)))
+			return (sscanf_return(-1, &s));
+		if (FMT_STR && !convert_str(&f, &str, V(s, char *), V(s, int)))
+			return (sscanf_return(-1, &s));
+		if (FMT_COLOR && !convert_color(&f, &str,
+					V(s, float *), V(s, float *), V(s, float *)))
+			return (sscanf_return(-1, &s));
+		if (!skip_string(&f, &str))
+			return (sscanf_return(-1, &s));
 	}
-	if (!*format)
-		return (sscanf_return(0, &vargs));
-	return (sscanf_return(-1, &vargs));
+	if (!*f)
+		return (sscanf_return(0, &s));
+	return (sscanf_return(-1, &s));
 }

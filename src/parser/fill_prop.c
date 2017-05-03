@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fill_prop.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/03 20:44:21 by yalaouf           #+#    #+#             */
+/*   Updated: 2017/05/03 21:56:20 by alelievr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shaderpixel.h"
 #include "parser.h"
 #include <unistd.h>
@@ -7,13 +19,13 @@
 
 bool			obj_file(char *obj_name, char *k)
 {
-		if (FOREACH(g_restricted_keywords, keyword))
-		{
-			if (!ft_strcmp(k, keyword))
-				return (false);
-		}
-		ft_strlcpy(obj_name, k, 256);
-		return (true);
+	if (FOREACH(g_restricted_keywords, keyword))
+	{
+		if (!ft_strcmp(k, keyword))
+			return (false);
+	}
+	ft_strlcpy(obj_name, k, 256);
+	return (true);
 }
 
 void			fill_prop_camera(t_camera *cam, char *line)
@@ -29,7 +41,6 @@ void			fill_prop_camera(t_camera *cam, char *line)
 	ft_sscanf(AMBIENT, line, &cam->ambient);
 	if (!ft_sscanf(MASK, line, str, 256))
 	{
-		printf("line: %s\n", line);
 		while ((get_next_word(&str, word)))
 		{
 			i = 0;
@@ -40,7 +51,6 @@ void			fill_prop_camera(t_camera *cam, char *line)
 				i++;
 			}
 		}
-		printf("post processing mask: %i\n", ret);
 		cam->post_processing_mask = ret;
 	}
 }
@@ -90,7 +100,7 @@ void			fill_prop_map(t_material *m, char *line, char *word, char *str)
 {
 	int		i;
 
-  INIT(int, ret, 0);
+	INIT(int, ret, 0);
 	IINIT(char *, maps[8][3], (char *[8][3]){
 		{BUMPMAP, (char *)&m->bumpmap, (char *)&m->has_bumpmap},
 		{TEXTURE, (char *)&m->texture, (char *)&m->has_texture},

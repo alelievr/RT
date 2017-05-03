@@ -6,7 +6,7 @@
 /*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:13:23 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 22:05:31 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 22:01:33 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
 # define LDTX3(m,p,o) m->p.file), &m->p.width, &m->p.height, LDTX4(m, p, o)
 # define LDTX2(m,p,o) load_image(build_path(scene_directory, LDTX3(m, p, o)
 # define LDTX(m,p,o) (m->has_##p && m->p.file[0]) m->p.data = LDTX2(m, p, o)
-# define LOAD_TEXTURE(m, p, o) printf("texture: %s\n", #p); if LDTX(m, p, o)
+# define LOAD_TEXTURE(m, p, o) if LDTX(m, p, o)
 # define LOAD_TEXTURE_ATLAS(m,p,o,aw,ah) LOAD_TEXTURE(m, p, o);LTA(m,p,o,aw,ah)
 # define LTA(m,p,o,aw,ah) *aw += m->p.width; *ah = MAX(*ah, m->p.height);
 # define T3(tex,x,y) * tex->channels + _x * tex->channels)), tex->channels);})
@@ -65,14 +65,13 @@
 # define COMPUTE_OFFSET(m, p) (t_vec4){(float)*offset_x / COF(m,p)
 # define ADD_TEXTURE_ATLAS(m, p) add_subimage(atlas, ATA(m,p)
 # define ATA(m,p) *offset_x, *offset_y, &m->p); m->p.atlas_uv = ATA2(m,p)
-# define ATA2(m,p) COMPUTE_OFFSET(m, p); *offset_x += m->p.width; ATA3(m,p)
-# define ATA3(m,p) printf("uv: %f/%f - %f/%f\n", m->p.atlas_uv.x, ATA4(m,p)
-# define ATA4(m,p) m->p.atlas_uv.y, m->p.atlas_uv.z, m->p.atlas_uv.w)
-# define SHA5 "shaders/tri/cube.glsl", "shaders/tri/light.glsl", NULL
-# define SHA4 "shaders/tri/disk.glsl", SHA5
-# define SHA3 "shaders/tri/cubetroue.glsl", "shaders/tri/glass.glsl", SHA4
-# define SHA2 "shaders/tri/cone.glsl", "shaders/tri/plane.glsl", SHA3
-# define SHA "shaders/tri/sphere.glsl", "shaders/tri/cylinder.glsl", SHA2
-# define SHADERS "shaders/tri/scene.glsl", "shaders/tri/noise.glsl", SHA
+# define ATA2(m,p) COMPUTE_OFFSET(m, p); *offset_x += m->p.width;
+# define SHA6 "shaders/pproc.glsl", NULL
+# define SHA5 "shaders/cube.glsl", "shaders/light.glsl", SHA6
+# define SHA4 "shaders/disk.glsl", "shaders/tore_de_sphere.glsl", SHA5
+# define SHA3 "shaders/cubetroue.glsl", "shaders/glass.glsl", SHA4
+# define SHA2 "shaders/cone.glsl", "shaders/plane.glsl", SHA3
+# define SHA "shaders/sphere.glsl", "shaders/cylinder.glsl", SHA2
+# define SHADERS "shaders/scene.glsl", "shaders/noise.glsl", SHA
 
 #endif

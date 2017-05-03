@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:14:54 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 18:19:15 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 21:57:06 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ void				fusion_texture(t_image *dst, t_image *src,
 	*new_tex_height = MAX(dst->height, src->height);
 	img_dst = malloc(sizeof(unsigned char) * 4 * (*new_tex_height) * \
 	(*new_tex_width));
-	printf("tex size: %i/%i\n", *new_tex_width, *new_tex_height);
 	if (FOR(x = 0, x < *new_tex_width, x++))
 	{
 		if (FOR(y = 0, y < *new_tex_height, y++))

@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:18:37 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/29 14:42:43 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 22:00:15 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,6 @@ void			add_subimage(t_atlas *atlas, int off_x, int off_y, t_image *img)
 	imgdata = img->data;
 	x = 0;
 	y = 0;
-	printf("channels: %i\n", img->channels);
 	while (y < img->height)
 	{
 		begin = atlas->data + (off_x * 4) + ((off_y + y) * atlas->width * 4);

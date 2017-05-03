@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:38:38 by pmartine          #+#    #+#             */
-/*   Updated: 2017/04/29 14:47:19 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 21:54:43 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void		append_post_processing(t_shader_file *shader_file, t_camera *c)
 	if (c->post_processing_mask & VIGNETTING)
 		LIST_APPEND(shader_file->post_processing, \
 	strdup("\tcolor = vignetting(color, gl_FragCoord.xy / iResolution.xy);"));
-	printf("post processing mask: %i\n", c->post_processing_mask);
 }
 
 void		load_textures_if_exists(t_material *m, char *scene_directory, \

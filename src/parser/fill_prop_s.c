@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fill_prop_s.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/03 17:49:39 by yalaouf           #+#    #+#             */
+/*   Updated: 2017/05/03 17:52:40 by yalaouf          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shaderpixel.h"
 #include "parser.h"
 #include <unistd.h>
@@ -32,7 +44,7 @@ void			fill_prop_vec4(t_vec4 *data, char *line)
 	}
 }
 
-void		init_default_object(t_object *o)
+void			init_default_object(t_object *o)
 {
 	o->light_prop.color = (t_vec3){255, 255, 255};
 	o->material.color = (t_vec3){255, 0, 255};

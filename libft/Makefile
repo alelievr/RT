@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/04/04 19:22:36 by alelievr          #+#    #+#              #
-#    Updated: 2017/04/09 18:06:07 by alelievr         ###   ########.fr        #
+#    Updated: 2017/05/03 20:38:58 by yalaouf          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,12 +57,6 @@ SRC			=	btree/btree_apply_infix.c	\
 				print/ft_putstrcpos.c	\
 				print/ft_putstrcpos_fd.c	\
 				print/ft_putstrpos.c	\
-				sprintf/ft_args.c	\
-				sprintf/ft_concat.c	\
-				sprintf/ft_sprintf.c	\
-				sprintf/ft_wchar.c	\
-				sprintf/ft_write_padd.c	\
-				sprintf/ft_write_padd_utils.c	\
 				string/ft_atof.c	\
 				string/ft_atoi.c	\
 				string/ft_atoll.c	\

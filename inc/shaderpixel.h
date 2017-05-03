@@ -6,7 +6,7 @@
 /*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 19:37:07 by yalaouf           #+#    #+#             */
-/*   Updated: 2017/05/03 22:39:39 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/03 22:40:11 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,7 @@ unsigned int			channeltomask(int chan);
 void					fusion_texture(t_image *dst, t_image *src,
 						int dst_mask, FTN3 *new_tex_height);
 
-#define FTN4 int x, int y, t_image *src, t_image
+# define FTN4 int x, int y, t_image *src, t_image
 
 unsigned int			fusion_pixel(int src_mask, int dst_mask, FTN4 *dst);
 
@@ -246,8 +246,10 @@ void					load_textures_if_exists(t_material *m,
 										int *atlas_width, int *atlas_height);
 
 void					error_callback(int error, const char *description);
-void					key_callback3(GLFWwindow *g_window, int key, int a, int mods);
-void					key_callback2(GLFWwindow *g_window, int key, int a, int mods);
+void					key_callback3(GLFWwindow *g_window, int key, int a,
+										int mods);
+void					key_callback2(GLFWwindow *g_window, int key, int a,
+										int mods);
 
 static const char		*g_vertex_shader_text =
 "#version 330\n"
@@ -351,7 +353,9 @@ static const char		*g_scene_start_text =
 "Hit     scene(Ray r)\n"
 "{\n"
 "	int i = -1;\n"
-"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0), 0, 0),vec2(0,0),false, 0, 0);\n";
+"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(0,0,0,0),"
+"vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0)"
+", 0, 0),vec2(0,0),false, 0, 0);\n";
 
 static const char		*g_scene_end_text =
 "    return hit;\n"

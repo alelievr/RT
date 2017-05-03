@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/12/19 14:02:21 by alelievr          #+#    #+#             */
-/*   Updated: 2017/04/29 10:22:32 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/03 20:39:23 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 # include <stdint.h>
 # include "nyancat.h"
 # include "term_strings.h"
-# include "ft_sprintf.h"
+# include <string.h>
 # define BUFF_SIZE		4096
 # define ABS(x)			(x < 0) ? -x : x
 # define FT_DEBUG		ft_printf("Debug:%s:%d\n",__FILE__,__LINE__)
