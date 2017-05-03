@@ -42,9 +42,9 @@ venus:
 
 earth:
 	type: sphere
-	moving: Y 45 1
 	radius: 4
 	texture: ../textures/earth.jpg
+	opacity: 1
 
 moon:
 	type: sphere
