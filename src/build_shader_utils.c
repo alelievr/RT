@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:32:36 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/03 22:02:08 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/03 22:26:31 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,6 @@ unsigned char	*load_image(char *path, int *width, int *height, \
 
 	ret = SOIL_load_image(path, width, height, channels, SOIL_LOAD_AUTO);
 	if (ret != NULL)
- 	 	 printf("loaded texture: %s\n", path);
+		printf("loaded texture: %s\n", path);
 	return (ret);
 }
