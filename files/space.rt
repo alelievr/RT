@@ -24,60 +24,61 @@ space2:
 
 sun:
 	type: sphere
-	pos: -130 0 0
 	radius: 15
 	texture: ../textures/sun.jpg
 
 mercure:
 	type: sphere
-	pos: -90 0 0
 	radius: 3
 	texture: ../textures/mercure.jpg
+	moving: Y 30 8
 
 venus:
 	type: sphere
-	pos: -70 0 0
 	radius: 3.5
 	texture: ../textures/venus.jpg
+	moving: Y 60 7
 
 earth:
 	type: sphere
 	radius: 4
 	texture: ../textures/earth.jpg
 	opacity: 1
-
-moon:
-	type: sphere
-	pos: -30 0 0
-	radius: 2
-	color: 100 100 100
+	moving: Y 90 6
 
 mars:
 	type: sphere
-	pos: -15 0 0
 	radius: 3.5
 	texture: ../textures/mars.jpg
+	moving: Y 120 5
 
 jupiter:
 	type: sphere
-	pos: 30 0 0
 	radius: 10
 	texture: ../textures/jupiter.jpg
+	moving: Y 200 4
 
 saturne:
 	type: sphere
-	pos: 60 0 0
 	radius: 8
 	texture: ../textures/saturne.jpg
+	moving: Y 250 3
+
+anneau_saturne:
+	type: disk
+	color: 125 125 200
+	height: 300
+	rot: 0 90 0
+	moving: Y 250 3
 
 uranus:
 	type: sphere
-	pos: 95 0 0
 	radius: 5.5
 	texture: ../textures/uranus.jpg
+	moving: Y 300 2
 
 neptune:
 	type: sphere
-	pos: 115 0 0
 	radius: 6
 	texture: ../textures/neptune.jpg
+	moving: Y 350 1
