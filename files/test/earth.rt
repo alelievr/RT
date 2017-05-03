@@ -6,7 +6,7 @@ camera:
 
 earth:
 	type: sphere
-	texture: ../textures/earth-16k.jpg
+	texture: ../../textures/earth-16k.jpg
     radius: 4
     pos: 0 0 0
     rot: 0 90 0

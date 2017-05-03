@@ -6,7 +6,7 @@
 /*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/03 20:44:21 by yalaouf           #+#    #+#             */
-/*   Updated: 2017/05/03 20:44:26 by yalaouf          ###   ########.fr       */
+/*   Updated: 2017/05/03 21:56:20 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ void			fill_prop_camera(t_camera *cam, char *line)
 	ft_sscanf(AMBIENT, line, &cam->ambient);
 	if (!ft_sscanf(MASK, line, str, 256))
 	{
-		printf("line: %s\n", line);
 		while ((get_next_word(&str, word)))
 		{
 			i = 0;
@@ -52,7 +51,6 @@ void			fill_prop_camera(t_camera *cam, char *line)
 				i++;
 			}
 		}
-		printf("post processing mask: %i\n", ret);
 		cam->post_processing_mask = ret;
 	}
 }
