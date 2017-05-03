@@ -1,6 +1,10 @@
 cam:
 	type: camera
 
+l2:
+	type: point_light
+	pos: 0 -50 0
+
 refl:
 	type: sphere
 	refllection: 1

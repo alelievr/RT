@@ -14,8 +14,12 @@ camera:
 
 light:
     type: point_light
-    intensity: 3
     pos: 0 0 0
+	color: 255 255 255
+
+light2:
+	type: point_light
+	pos: -50 0 0
 	color: 255 255 255
 
 sphere1:
@@ -40,8 +44,6 @@ sphere3:
     pos: 20 10 -20
     radius: 4
     color: 255 0 0
-    opacity: 1
-    refraction: 1
     bumpmap: ../../textures/normal.jpg
 
 sphere3.5:
@@ -49,14 +51,12 @@ sphere3.5:
     pos: 40 20 -30
     radius: 4
     color: 0 0 255
-    opacity: 0.5
-    refraction: 1
     bumpmap: ../../textures/normal.jpg
 	specular: 1
 
 sphere3.75:
     type: sphere
-    pos: 40 00 -30
+    pos: 40 0 -30
     radius: 4
     color: 0 0 255
     color_effect: MOVING_NOISE
