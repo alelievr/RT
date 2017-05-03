@@ -6,7 +6,7 @@
 /*   By: pmartine <pmartine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 21:54:21 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/03 03:20:14 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 03:36:56 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,45 +16,45 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-void      parse_rt_file_end(int indent_level, int nb_object, int line_count, t_object *c, char *line)
+void			parse_rt_file_end(FT_ARGS(int il, int no, int lt, t_object *c, char *l))
 {
-	if (indent_level >= 2)
-		ft_exit("max indentation reached at line: %i\n", line_count);
-	if (nb_object > 300)
-		ft_exit("nb max object reached at line: %i\n", line_count);
+	if (il >= 2)
+		ft_exit("max indentation reached at line: %i\n", lt);
+	if (no > 300)
+		ft_exit("nb max object reached at line: %i\n", lt);
 	if (c == NULL)
-		ft_exit("unexpected property without object: %s\n", line);
-	if (indent_level == c->indent_level + 1)
+		ft_exit("unexpected property without object: %s\n", l);
+	if (il == c->indent_level + 1)
 	{
-		A(c, line, primitive);
-		A(c, line, transform);
-		A(c, line, move);
-		A(c, line, rotate);
+		A(c, l, primitive);
+		A(c, l, transform);
+		A(c, l, move);
+		A(c, l, rotate);
 		if (c->primitive.type >= 11)
-			A(c, line, light_prop);
+			A(c, l, light_prop);
 		if (c->primitive.type == 10)
-			A(c, line, camera);
+			A(c, l, camera);
 		if (c->primitive.type <= 9)
-			A(c, line, material);
+			A(c, l, material);
 	}
 	else
-		ft_exit("bad indentation at line %i\n", line_count);
+		ft_exit("bad indentation at line %i\n", lt);
 }
 
-bool      parse_rt_file_boucle(char *line, t_scene **scene, int *indent_level, t_object **c, int *nb_object)
+bool			bouc(FT_ARGS(char *l, t_scene **s, int *il, t_object **c, int *no))
 {
 	char		obj_name[256];
 	t_object	*o;
 
 	o = *c;
-	if (check_obj_line(line, obj_name, indent_level))
+	if (check_obj_line(l, obj_name, il))
 	{
 		NEW_OBJECT((*c), obj_name);
-		(*c)->indent_level = (*indent_level);
-		(*scene)->nb_object = ++(*nb_object);
-		if ((*scene)->nb_object == 1)
+		(*c)->indent_level = (*il);
+		(*s)->nb_object = ++(*no);
+		if ((*s)->nb_object == 1)
 		{
-			(*scene)->root_view = (*c);
+			(*s)->root_view = (*c);
 			o = *c;
 		}
 		else
@@ -82,7 +82,7 @@ void			parse_rt_file(char *file, t_scene *scene)
 	while (gl(line, &fd))
 	{
 		SKIP_EMPTY_LINE(line);
-		if (parse_rt_file_boucle(line, &scene, &indent_level, &c, &nb_object))
+		if (bouc(line, &scene, &indent_level, &c, &nb_object))
 			continue ;
 		parse_rt_file_end(indent_level, nb_object, line_count, c, line);
 		close(fd);

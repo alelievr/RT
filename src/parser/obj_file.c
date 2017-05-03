@@ -27,7 +27,7 @@ bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 	while (*line && *line++ != ':')
 		;
 	if (!*line)
-	 return(obj_file(obj_name, k));
+		return (obj_file(obj_name, k));
 	else
 		return (false);
 }

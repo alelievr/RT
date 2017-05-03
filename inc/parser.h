@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/03 03:08:01 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 03:29:16 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@
 # define FILE_CHECK_EXT(x, y) (LOL1(x) && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
 # define FTRGB float *r, float *g, float
 
-#define NO4(var, n)((*scene)->root_view, n)) ft_exit("name already exist: %s\n",n);
+#define NO4(var, n)((*s)->root_view, n)) ft_exit("name already exist: %s\n",n);
 #define NO3(var, n)if (c != NULL && name_already_exists NO4(var, n)
 #define NO2(var, n)strcpy(var->name, format_name(n)); NO3(var, n)
 #define NO1(var, n)sizeof(t_object)); init_default_object(var); NO2(var, n)
