@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 00:14:55 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/03 01:53:25 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 17:44:51 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 typedef struct	s_keypair
 {
-	char	*name;
-	int		value;
+	char		*name;
+	int			value;
 }				t_keypair;
 
 const char		*g_restricted_keywords[] = {
@@ -28,13 +28,13 @@ const char		*g_restricted_keywords[] = {
 	"moving:", "effect:", "color_effect:", "normal_effect:", NULL
 };
 
-const struct {
-	char	*name;
-	int		value;
+const struct 	{
+	char		*name;
+	int			value;
 }
 
-#define END -1
-#define V(x) {#x, x}
+# define END -1
+# define V(x) {#x, x}
 
 illum_restricted_keywords[] = {
 	V(AMBIANT), V(CAST_SHADOW), V(RECEIVE_SHADOW), V(REFLECT), V(END)
@@ -59,14 +59,14 @@ const t_keypair	g_color_effect_r_k[] = {
 	V(END)
 };
 
-const t_keypair g_normal_effect_r_k[] = {
+const t_keypair	g_normal_effect_r_k[] = {
 	V(N_NOISE),
 	V(N_MOVING_NOISE),
 	V(N_FBM),
 	V(END)
 };
 
-const char	*g_type_restricted_keywords[] = {
+const char		*g_type_restricted_keywords[] = {
 	"SPHERE", "PLANE", "CYLINDRE", "CONE", "CUBE", "GLASS", "DISK",
 	"CUBE_TROUE", "TORE_DE_SPHERE", "CAMERA", "POINT_LIGHT", "SPOT_LIGHT",
 	"DIRECTIONAL_LIGHT", NULL

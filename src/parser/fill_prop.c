@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fill_prop.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/05/03 17:50:01 by yalaouf           #+#    #+#             */
+/*   Updated: 2017/05/03 17:51:11 by yalaouf          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shaderpixel.h"
 #include "parser.h"
 #include <unistd.h>
@@ -7,13 +19,13 @@
 
 bool			obj_file(char *obj_name, char *k)
 {
-		if (FOREACH(g_restricted_keywords, keyword))
-		{
-			if (!ft_strcmp(k, keyword))
-				return (false);
-		}
-		ft_strlcpy(obj_name, k, 256);
-		return (true);
+	if (FOREACH(g_restricted_keywords, keyword))
+	{
+		if (!ft_strcmp(k, keyword))
+			return (false);
+	}
+	ft_strlcpy(obj_name, k, 256);
+	return (true);
 }
 
 void			fill_prop_camera(t_camera *cam, char *line)
@@ -90,7 +102,7 @@ void			fill_prop_map(t_material *m, char *line, char *word, char *str)
 {
 	int		i;
 
-  INIT(int, ret, 0);
+	INIT(int, ret, 0);
 	IINIT(char *, maps[8][3], (char *[8][3]){
 		{BUMPMAP, (char *)&m->bumpmap, (char *)&m->has_bumpmap},
 		{TEXTURE, (char *)&m->texture, (char *)&m->has_texture},

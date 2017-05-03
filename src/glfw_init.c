@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 20:31:30 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 21:21:25 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 18:02:03 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,12 @@ static int		g_cursormode;
 static float	g_lastpausedtime;
 int				g_gl_ssnbr = 1;
 
-static void		key_callback(GLFWwindow *g_window, int key, int scancode, int a, int mods)
+static void		key_callback(GLFWwindow *g_window, int key, int scancode, int a,
+							int mods)
 {
 	char	*name;
-	(void)scancode;
 
+	(void)scancode;
 	key_callback2(g_window, key, a, mods);
 	if (key == GLFW_KEY_SPACE && a == GLFW_PRESS)
 	{

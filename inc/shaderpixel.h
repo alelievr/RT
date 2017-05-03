@@ -6,7 +6,7 @@
 /*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 19:37:07 by yalaouf           #+#    #+#             */
-/*   Updated: 2017/05/02 22:05:11 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 16:31:32 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,8 +245,10 @@ void					load_textures_if_exists(t_material *m,
 										int *atlas_width, int *atlas_height);
 
 void					error_callback(int error, const char *description);
-void					key_callback3(GLFWwindow *g_window, int key, int a, int mods);
-void					key_callback2(GLFWwindow *g_window, int key, int a, int mods);
+void					key_callback3(GLFWwindow *g_window, int key, int a,
+										int mods);
+void					key_callback2(GLFWwindow *g_window, int key, int a,
+										int mods);
 
 static const char		*g_vertex_shader_text =
 "#version 330\n"
