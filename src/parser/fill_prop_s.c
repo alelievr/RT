@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-
 void			fill_prop_vec4(t_vec4 *data, char *line)
 {
 	char	word[256];
@@ -82,5 +81,5 @@ void			fill_prop_material(t_material *mtl, char *line)
 	ft_sscanf(SPECULAR, line, &mtl->specular);
 	ft_sscanf(REFL, line, &mtl->reflection);
 	ft_sscanf(REFR, line, &mtl->refraction);
-	fill_prop_material_map(mtl, line, word, str);
+	fill_prop_map(mtl, line, word, str);
 }

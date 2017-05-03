@@ -6,7 +6,7 @@
 #    By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2017/05/03 01:49:00 by avially          ###   ########.fr        #
+#    Updated: 2017/05/03 02:12:11 by avially          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,6 +42,7 @@ SRC			=	main.c						\
 				parser/u.c					\
 				parser/fill_prop.c\
 				parser/fill_prop_s.c\
+				parser/obj_file.c\
 
 #	Objects
 OBJDIR		=	obj

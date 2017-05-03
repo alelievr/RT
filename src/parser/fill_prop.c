@@ -5,30 +5,8 @@
 #include <sys/stat.h>
 #include "keywords.h"
 
-bool			check_obj_line(char *line, char *obj_name, int *indent_level)
+bool			obj_file(char *obj_name, char *k)
 {
-	char	*k;
-	int		space_number;
-
-	space_number = 0;
-	(*indent_level) = 0;
-	while (*line && (*line == '\t' || *line == ' '))
-	{
-		if (*line == '\t')
-			(*indent_level)++;
-		else if (*line == ' ')
-			space_number++;
-		if (space_number == 4 && !(space_number = 0))
-			(*indent_level)++;
-		line++;
-	}
-	if (!*line)
-		return (false);
-	k = line;
-	while (*line && *line++ != ':')
-		;
-	if (!*line)
-	{
 		if (FOREACH(g_restricted_keywords, keyword))
 		{
 			if (!ft_strcmp(k, keyword))
@@ -36,9 +14,6 @@ bool			check_obj_line(char *line, char *obj_name, int *indent_level)
 		}
 		ft_strlcpy(obj_name, k, 256);
 		return (true);
-	}
-	else
-		return (false);
 }
 
 void			fill_prop_camera(t_camera *cam, char *line)
@@ -111,28 +86,25 @@ void			fill_prop_material_effect(t_material *mtl, char *line)
 	}
 }
 
-void			fill_prop_material_map(t_material *m, char *line, char *word, char *str)
+void			fill_prop_map(t_material *m, char *line, char *word, char *str)
 {
 	int		i;
-	int		ret;
 
+  INIT(int, ret, 0);
 	IINIT(char *, maps[8][3], (char *[8][3]){
 		{BUMPMAP, (char *)&m->bumpmap, (char *)&m->has_bumpmap},
 		{TEXTURE, (char *)&m->texture, (char *)&m->has_texture},
 		{EMISSION_MAP, (char *)&m->texture, (char *)&m->has_emission_map},
-		{HIGHLIGHT_MAP, (char *)&m->emission_map, (char *)&m->has_highlight_map},
+		{HIGH_MAP, (char *)&m->emission_map, (char *)&m->has_highlight_map},
 		{OPACITY_MAP, (char *)&m->opacity_map, (char *)&m->has_opacity_map},
 		{SPECULAR_MAP, (char *)&m->specular_map, (char *)&m->has_specular_map},
 		{REFL_MAP, (char *)&m->reflection_map, (char *)&m->has_reflection_map},
 		{REFR_MAP, (char *)&m->refraction_map, (char *)&m->has_refraction_map},
 	});
-	ret = 0;
 	str = (char *)(char[256]){0};
 	if (FOR(i = 0, i < 2, i++))
-	{
 		if (ft_sscanf(maps[i][0], line, maps[i][1], 1024))
 			*(maps[i][2]) = true;
-	}
 	if (!ft_sscanf(ILLUM, line, str, 256))
 	{
 		while (get_next_word(&str, word))

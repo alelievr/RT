@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/08/08 14:47:27 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/03 01:47:17 by avially          ###   ########.fr       */
+/*   Updated: 2017/05/03 03:08:01 by avially          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@
 # define TEXTURE	"\\stexture:\\s%s\\s"
 # define BUMPMAP	"\\sbumpmap:\\s%s\\s"
 # define EMISSION_MAP	"\\semission color map:\\s%s\\s"
-# define HIGHLIGHT_MAP "\\shighlight color map:\\s%s\\s"
+# define HIGH_MAP "\\shighlight color map:\\s%s\\s"
 # define REFR_MAP	"\\srefraction map:\\s%s\\s"
 # define OPACITY_MAP "\\sopacity map:\\s%s\\s"
 # define SPECULAR_MAP "\\sspecular map:\\s%s\\s"
@@ -78,7 +78,7 @@
 # define FILE_CHECK_EXT(x, y) (LOL1(x) && !ft_strcmp(ft_strrchr(x, '.') + 1, y))
 # define FTRGB float *r, float *g, float
 
-#define NO4(var, n)(scene->root_view, n)) ft_exit("name already exist: %s\n",n);
+#define NO4(var, n)((*scene)->root_view, n)) ft_exit("name already exist: %s\n",n);
 #define NO3(var, n)if (c != NULL && name_already_exists NO4(var, n)
 #define NO2(var, n)strcpy(var->name, format_name(n)); NO3(var, n)
 #define NO1(var, n)sizeof(t_object)); init_default_object(var); NO2(var, n)
@@ -289,13 +289,12 @@ int						gl(char *dst, int *fd);
 void					parse_obj_file(char *file, t_mesh *mesh);
 int						get_next_word(char **str, char *res);
 int						parse(int ac, char **av);
-
 void					fill_prop_vec4(t_vec4 *data, char *line);
 void					fill_prop_camera(t_camera *cam, char *line);
 void					fill_prop_primitive(t_primitive *p, char *line);
 void					fill_prop_light(t_light *l, char *line);
 void					fill_prop_transform(t_transform *t, char *line);
-void					fill_prop_material_map(t_material *m, char *line, char *word, char *str);
+void					fill_prop_map(t_material *m, char *line, char *word, char *str);
 void					fill_prop_material(t_material *mtl, char *line);
 void					fill_prop_material_effect(t_material *mtl, char *line);
 void					init_default_object(t_object *o);
@@ -303,8 +302,11 @@ bool					check_obj_line(char *line, char *obj_name, int *indent_level);
 char					*format_name(char *name);
 void					display_objects(t_object *lst_obj);
 bool					name_already_exists(t_object *obj, char *name);
+bool					obj_file(char *obj_name, char *k);
+char					*format_name(char *name);
+void					display_objects(t_object *lst_obj);
+bool					name_already_exists(t_object *obj, char *name);
 void					parse_rt_file(char *file, t_scene *prim);
-
 void					skip_space(char **format, char **str);
 int						skip_string(char **format, char **str);
 int						convert_float(char **format, char **str, float *f);
