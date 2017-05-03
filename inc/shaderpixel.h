@@ -6,7 +6,7 @@
 /*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 19:37:07 by yalaouf           #+#    #+#             */
-/*   Updated: 2017/05/03 19:41:09 by yalaouf          ###   ########.fr       */
+/*   Updated: 2017/05/03 22:40:11 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ typedef struct			s_line_list
 
 typedef struct			s_shader_file
 {
+	t_line_list			*true_begin;
 	t_line_list			*begin;
 	t_line_list			*function_begin;
 	t_line_list			*uniform_begin;
