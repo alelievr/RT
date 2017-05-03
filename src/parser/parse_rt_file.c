@@ -6,7 +6,7 @@
 /*   By: pmartine <pmartine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 21:54:21 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/03 17:53:40 by yalaouf          ###   ########.fr       */
+/*   Updated: 2017/05/03 20:59:15 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-void			parse_rt_file_end(FT_ARGS(int il, int no, int lt, t_object *c,
-									char *l))
+#define ARGS2 t_object *c, char *l
+
+void			parse_rt_file_end(int il, int no, int lt, ARGS2)
 {
 	if (il >= 2)
 		ft_exit("max indentation reached at line: %i\n", lt);
@@ -42,11 +43,12 @@ void			parse_rt_file_end(FT_ARGS(int il, int no, int lt, t_object *c,
 		ft_exit("bad indentation at line %i\n", lt);
 }
 
-bool			bouc(FT_ARGS(char *l, t_scene **s, int *il, t_object **c,
-							int *no))
+#define ARGS t_object **c, int
+
+bool			bouc(char *l, t_scene **s, int *il, ARGS *no)
 {
-	char		obj_name[256];
 	t_object	*o;
+	char		obj_name[256];
 
 	o = *c;
 	if (check_obj_line(l, obj_name, il))

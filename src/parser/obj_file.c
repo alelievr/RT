@@ -6,7 +6,7 @@
 /*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/03 17:51:28 by yalaouf           #+#    #+#             */
-/*   Updated: 2017/05/03 17:52:10 by yalaouf          ###   ########.fr       */
+/*   Updated: 2017/05/03 20:49:13 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char			*format_name(char *name)
 			*name = 0;
 			break ;
 		}
-		if (!isalnum(*name))
+		if (!ft_isalnum(*name))
 			*name = '_';
 		name++;
 	}

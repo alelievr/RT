@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 14:32:36 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 20:31:57 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/03 20:48:56 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,10 @@ char			*build_path(char *dir, char *file)
 	char			*f;
 
 	f = file + strlen(file) - 1;
-	while (isspace(*f))
+	while (ft_isspace(*f))
 		*f-- = 0;
 	f = file;
-	while (isspace(*f))
+	while (ft_isspace(*f))
 		f++;
 	strcpy(path, dir);
 	strcat(path, file);

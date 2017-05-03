@@ -6,7 +6,7 @@
 /*   By: yalaouf <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 19:37:07 by yalaouf           #+#    #+#             */
-/*   Updated: 2017/05/03 16:31:32 by yalaouf          ###   ########.fr       */
+/*   Updated: 2017/05/03 19:41:09 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ unsigned int			channeltomask(int chan);
 void					fusion_texture(t_image *dst, t_image *src,
 						int dst_mask, FTN3 *new_tex_height);
 
-#define FTN4 int x, int y, t_image *src, t_image
+# define FTN4 int x, int y, t_image *src, t_image
 
 unsigned int			fusion_pixel(int src_mask, int dst_mask, FTN4 *dst);
 
@@ -352,7 +352,9 @@ static const char		*g_scene_start_text =
 "Hit     scene(Ray r)\n"
 "{\n"
 "	int i = -1;\n"
-"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0), 0, 0),vec2(0,0),false, 0, 0);\n";
+"Hit hit = Hit(1e20,vec3(0,0,0),vec3(0,0,0),Material(vec4(0,0,0,0),"
+"vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0),vec4(0,0,0,0)"
+", 0, 0),vec2(0,0),false, 0, 0);\n";
 
 static const char		*g_scene_end_text =
 "    return hit;\n"

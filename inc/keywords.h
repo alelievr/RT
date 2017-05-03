@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/17 00:14:55 by alelievr          #+#    #+#             */
-/*   Updated: 2017/05/03 17:44:51 by yalaouf          ###   ########.fr       */
+/*   Updated: 2017/05/03 20:07:48 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,14 @@ const char		*g_restricted_keywords[] = {
 	"moving:", "effect:", "color_effect:", "normal_effect:", NULL
 };
 
-const struct 	{
+# define END -1
+# define V(x) {#x, x}
+
+const struct	s_kek
+{
 	char		*name;
 	int			value;
 }
-
-# define END -1
-# define V(x) {#x, x}
 
 illum_restricted_keywords[] = {
 	V(AMBIANT), V(CAST_SHADOW), V(RECEIVE_SHADOW), V(REFLECT), V(END)

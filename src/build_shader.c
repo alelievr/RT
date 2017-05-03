@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/29 13:39:08 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/02 21:54:41 by pmartine         ###   ########.fr       */
+/*   Updated: 2017/05/03 20:31:05 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,8 @@ static char		*concat_line_list(t_shader_file *shader_file)
 	static char		buff[MAX_SHADER_FILE_SIZE + 1];
 	t_line_list		*line;
 	t_line_list		*prev;
-	int				index;
 
-	index = 0;
+	INIT(int, index, 0);
 	line = shader_file->begin;
 	while (line)
 	{

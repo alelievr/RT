@@ -6,7 +6,7 @@
 /*   By: pmartine <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/02 20:31:30 by pmartine          #+#    #+#             */
-/*   Updated: 2017/05/03 18:02:03 by yalaouf          ###   ########.fr       */
+/*   Updated: 2017/05/03 20:33:21 by yalaouf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ static int		g_cursormode;
 static float	g_lastpausedtime;
 int				g_gl_ssnbr = 1;
 
-static void		key_callback(GLFWwindow *g_window, int key, int scancode, int a,
-							int mods)
-{
-	char	*name;
+#define KCC int a, int
 
+static void		key_callback(GLFWwindow *g_window, int key, int scancode,
+		KCC mods)
+{
 	(void)scancode;
 	key_callback2(g_window, key, a, mods);
 	if (key == GLFW_KEY_SPACE && a == GLFW_PRESS)
@@ -39,7 +39,7 @@ static void		key_callback(GLFWwindow *g_window, int key, int scancode, int a,
 		GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 	if (key == GLFW_KEY_P && a == GLFW_PRESS)
 	{
-		name = (char *)malloc(sizeof(char) * 50);
+		INIT(char *, name, (char *)malloc(sizeof(char) * 50));
 		name = ft_strjoin(name, "screenshot_");
 		name = ft_strjoin(name, ft_itoa(g_gl_ssnbr));
 		name = ft_strjoin(name, ".png");
